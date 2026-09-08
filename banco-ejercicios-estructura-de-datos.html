@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Ejercicios Progresivos — Estructura de Datos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/comun.css">
+<style>
+  /* Ajustes específicos del banco de ejercicios */
+  .wrap{max-width:900px; padding:0 24px 90px;}
+  .hero{padding:56px 24px 30px;}
+  .hero h1{font-size:1.9rem; margin:0 0 10px;}
+  .hero p{max-width:640px; font-size:.98rem;}
+
+  .nav{max-width:900px; margin:28px auto 0; padding:0 24px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .nav a{text-decoration:none; color:var(--text); background:var(--ink-2); border:1px solid #2E3549; padding:7px 14px; border-radius:16px; font-size:.78rem; font-family:'JetBrains Mono',monospace;}
+  .nav a:hover{border-color:var(--amber); color:var(--amber);}
+
+  .topic{max-width:900px; margin:0 auto; padding:40px 24px 0;}
+  details{border-top:1px solid #2E3549; padding-top:26px;}
+  summary{list-style:none; cursor:pointer; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  summary::-webkit-details-marker{display:none;}
+  summary .arrow{color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.9rem; transition:transform .15s;}
+  details[open] summary .arrow{transform:rotate(90deg);}
+  summary h2{font-size:1.35rem; margin:0; color:#fff;}
+  summary .count{color:var(--text-dim); font-size:.8rem; font-family:'JetBrains Mono',monospace;}
+  .topic-desc{color:var(--text-dim); font-size:.92rem; margin:10px 0 22px; max-width:760px;}
+
+  .ex-card{background:var(--ink-2); border:1px solid #2E3549; border-radius:10px; padding:18px 20px; margin-bottom:14px;}
+  .ex-head{display:flex; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap;}
+  .lvl{font-family:'JetBrains Mono',monospace; font-size:.7rem; font-weight:700; padding:3px 9px; border-radius:12px; text-transform:uppercase; letter-spacing:.04em;}
+  .lvl-1{background:rgba(79,176,174,.18); color:var(--teal);}
+  .lvl-2{background:rgba(79,176,174,.18); color:var(--teal);}
+  .lvl-3{background:rgba(232,163,61,.18); color:var(--amber);}
+  .lvl-4{background:rgba(232,163,61,.18); color:var(--amber);}
+  .lvl-5{background:rgba(224,108,117,.18); color:var(--rose);}
+  .ex-card h3{margin:0; font-size:1.02rem; color:#fff;}
+  .ex-label{font-size:.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; font-weight:600; margin:10px 0 4px;}
+  .ex-card p{margin:0; font-size:.92rem; color:var(--text-dim);}
+  .ex-card ul{margin:4px 0 0; padding-left:18px;}
+  .ex-card li{font-size:.88rem; color:var(--text-dim); margin-bottom:3px;}
+
+  .solution{margin-top:14px; border-top:1px solid #3C4459; padding-top:12px;}
+  .solution summary{cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:8px; color:var(--teal); font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:700; letter-spacing:.03em; user-select:none;}
+  .solution summary::-webkit-details-marker{display:none;}
+  .solution summary::before{content:"▶"; font-size:.72rem; transition:transform .15s;}
+  .solution[open] summary::before{transform:rotate(90deg);}
+  .solution[open] summary{border:1px solid var(--teal); background:var(--ink); padding:6px 12px; border-radius:6px; color:#fff;}
+  .solution pre.code{margin:12px 0 0; background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:16px 18px; overflow-x:auto; font-size:.82rem; line-height:1.55; color:#D6D9E0; font-family:'JetBrains Mono',monospace;}
+  .solution pre.code .cm{color:#6A7086;} .solution pre.code .str{color:#E8A33D;}
+
+  .footer-note{color:var(--text-dim); font-size:.85rem; text-align:center; padding:48px 24px 0; border-top:1px solid #2E3549; margin-top:50px;}
+  .footer-note .name{color:#fff; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div class="back-nav"><a href="index.html">← Volver al índice</a></div>
+
+<div class="hero">
+  <div class="badge">Estructura de Datos · E-ETD-2</div>
+  <h1>Banco de Ejercicios Progresivos</h1>
+  <p>Cinco ejercicios por tema, ordenados de nivel básico a avanzado, cada uno redactado como un caso de uso aplicado — pensados como práctica de clase o punto de partida para el caso de estudio en equipo.</p>
+</div>
+
+<div class="nav">
+  <a href="#tda">TDA</a>
+  <a href="#recursion">Recursión</a>
+  <a href="#arreglos">Arreglos</a>
+  <a href="#genericos">Genéricos</a>
+  <a href="#listas">Listas</a>
+  <a href="#pilas">Pilas</a>
+  <a href="#colas">Colas</a>
+  <a href="#ordenamiento">Ordenamiento/Búsqueda</a>
+  <a href="#arboles">Árboles</a>
+  <a href="#diccionarios">Diccionarios</a>
+  <a href="#conjuntos">Conjuntos</a>
+</div>
+
+<div class="wrap">
+
+<!-- TDA -->
+<div class="topic" id="tda">
+<details open>
+<summary><span class="arrow">▶</span><h2>Tipos de Datos Abstractos</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Diseñar una clase que oculte su implementación y exponga solo un contrato de operaciones válidas.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Contador de visitas de una página</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sitio web necesita registrar cuántas veces se ha visitado una página, sin que ningún otro módulo del sistema pueda modificar ese número directamente, solo incrementarlo o consultarlo.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Atributo <code>visitas</code> privado, inicia en 0.</li><li>Método <code>registrarVisita()</code> incrementa en 1.</li><li>Método <code>obtenerVisitas()</code> consulta sin modificar.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public class ContadorVisitas {
+    private int visitas = 0;
+
+    public void registrarVisita() {
+        visitas++;
+    }
+
+    public int obtenerVisitas() {
+        return visitas;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>TDA Fracción</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una calculadora escolar necesita representar fracciones (numerador/denominador) y sumarlas entre sí, garantizando que el denominador nunca pueda quedar en cero.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Atributos <code>numerador</code> y <code>denominador</code> privados.</li><li>Constructor que rechace denominador 0.</li><li>Método <code>sumar(Fraccion otra)</code> que devuelva una nueva fracción.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">class Fraccion {
+    private int numerador;
+    private int denominador;
+
+    public Fraccion(int numerador, int denominador) {
+        if (denominador == 0) {
+            throw new IllegalArgumentException("El denominador no puede ser 0");
+        }
+        this.numerador = numerador;
+        this.denominador = denominador;
+    }
+
+    public Fraccion sumar(Fraccion otra) {
+        int n = this.numerador * otra.denominador + otra.numerador * this.denominador;
+        int d = this.denominador * otra.denominador;
+        return new Fraccion(n, d);
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Agenda de citas de un consultorio</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un consultorio dental necesita agendar citas por hora, evitando que se registren dos citas que se traslapen en el mismo horario.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método <code>agendar(horaInicio, horaFin)</code> que valide traslape contra citas ya guardadas.</li><li>Método <code>cancelar(horaInicio)</code>.</li><li>Estado interno de citas no accesible directamente desde fuera de la clase.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.List;
+import java.util.ArrayList;
+
+class Agenda {
+    private List&lt;int[]&gt; citas = new ArrayList&lt;&gt;();
+
+    public boolean agendar(int inicio, int fin) {
+        for (int[] c : citas) {
+            if (inicio &lt; c[1] &amp;&amp; fin &gt; c[0]) {
+                return false; // traslape con una cita existente
+            }
+        }
+        citas.add(new int[]{inicio, fin});
+        return true;
+    }
+
+    public boolean cancelar(int inicio) {
+        return citas.removeIf(c -&gt; c[0] == inicio);
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Inventario de un producto</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una tienda necesita controlar el stock de un producto: debe poder surtir y vender unidades, pero nunca debe permitirse que el stock quede en negativo, y debe poder consultarse si el stock está por debajo de un umbral de reorden.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Métodos <code>surtir(cantidad)</code> y <code>vender(cantidad)</code> con validación.</li><li>Método <code>necesitaReabastecimiento()</code> según un umbral configurable.</li><li>Excepción propia si se intenta vender más de lo disponible.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">class Inventario {
+    private int stock;
+    private final int umbral;
+
+    public Inventario(int umbral) {
+        this.umbral = umbral;
+    }
+
+    public void surtir(int cantidad) {
+        stock += cantidad;
+    }
+
+    public void vender(int cantidad) {
+        if (cantidad &gt; stock) {
+            throw new IllegalStateException("Stock insuficiente para vender " + cantidad);
+        }
+        stock -= cantidad;
+    }
+
+    public boolean necesitaReabastecimiento() {
+        return stock &lt; umbral;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Cuenta bancaria con historial de movimientos</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Extiende la <code>CuentaBancaria</code> vista en clase para que registre internamente cada depósito y retiro con fecha, y permita consultar el historial completo sin que quien lo consulta pueda alterarlo.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Lista interna privada de movimientos.</li><li><code>obtenerHistorial()</code> debe devolver una copia, nunca la referencia interna.</li><li>Cada movimiento registra tipo, monto y saldo resultante.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.List;
+import java.util.ArrayList;
+
+class CuentaBancaria {
+    private double saldo;
+    private List&lt;String&gt; historial = new ArrayList&lt;&gt;();
+
+    public void depositar(double monto) {
+        saldo += monto;
+        historial.add("Depósito $" + monto + " - saldo $" + saldo);
+    }
+
+    public void retirar(double monto) throws IllegalStateException {
+        if (monto &gt; saldo) {
+            throw new IllegalStateException("Fondos insuficientes");
+        }
+        saldo -= monto;
+        historial.add("Retiro $" + monto + " - saldo $" + saldo);
+    }
+
+    public List&lt;String&gt; obtenerHistorial() {
+        return new ArrayList&lt;&gt;(historial); // copia: la interna nunca se expone
+    }
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- RECURSION -->
+<div class="topic" id="recursion">
+<details>
+<summary><span class="arrow">▶</span><h2>Recursividad</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Identificar el caso base y el caso recursivo, y trazar la pila de llamadas resultante.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Potencia de un número</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una calculadora científica necesita calcular <code>base^exponente</code> usando únicamente multiplicaciones sucesivas, sin usar bucles.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método <code>potencia(base, exponente)</code>.</li><li>Caso base: exponente 0 devuelve 1.</li><li>Caso recursivo: <code>base * potencia(base, exponente-1)</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static long potencia(int base, int exponente) {
+    if (exponente == 0) {
+        return 1;                                   // caso base
+    }
+    return base * potencia(base, exponente - 1);    // caso recursivo
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Suma de dígitos de un número</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sistema de validación de tarjetas necesita sumar todos los dígitos de un número (por ejemplo, para un dígito verificador) sin convertirlo primero a texto.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método <code>sumaDigitos(int numero)</code>.</li><li>Usa <code>numero % 10</code> y <code>numero / 10</code> en cada llamada.</li><li>Caso base: número igual a 0.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static int sumaDigitos(int numero) {
+    if (numero == 0) {
+        return 0;                          // caso base
+    }
+    return numero % 10 + sumaDigitos(numero / 10);
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Verificar si una palabra es palíndromo</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un juego de palabras necesita detectar automáticamente si una palabra ingresada por el usuario se lee igual al derecho y al revés.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método <code>esPalindromo(String texto)</code>.</li><li>Compara primer y último carácter, y recursa sobre el resto.</li><li>Caso base: cadena de longitud 0 o 1.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static boolean esPalindromo(String texto) {
+    if (texto.length() &lt;= 1) {         // caso base
+        return true;
+    }
+    char primero = texto.charAt(0);
+    char ultimo = texto.charAt(texto.length() - 1);
+    if (primero != ultimo) {
+        return false;
+    }
+    return esPalindromo(texto.substring(1, texto.length() - 1));
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Invertir una lista enlazada</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un reproductor de música quiere ofrecer la opción "reproducir en orden inverso" sobre su lista de canciones enlazada, sin crear una lista nueva desde cero.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método recursivo que reciba la cabeza de la lista y devuelva la nueva cabeza invertida.</li><li>Reutiliza los mismos nodos, solo reconecta referencias.</li><li>Caso base: nodo actual es <code>null</code> o es el último.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">class Nodo {
+    Object valor;
+    Nodo siguiente;
+    Nodo(Object v) { this.valor = v; }
+}
+
+public static Nodo invertir(Nodo nodo) {
+    if (nodo == null || nodo.siguiente == null) {
+        return nodo;                       // caso base
+    }
+    Nodo nuevaCabeza = invertir(nodo.siguiente);
+    nodo.siguiente.siguiente = nodo;       // reconecta las referencias
+    nodo.siguiente = null;
+    return nuevaCabeza;
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Torres de Hanói</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un juego educativo de lógica pide mover una torre de discos de un poste a otro, respetando que nunca un disco más grande quede sobre uno más pequeño, usando un poste auxiliar.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método <code>hanoi(n, origen, destino, auxiliar)</code>.</li><li>Imprime cada movimiento individual de disco.</li><li>Caso base: un solo disco (n == 1).</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static void hanoi(int n, char origen, char destino, char auxiliar) {
+    if (n == 1) {
+        System.out.println("Mueve disco 1 de " + origen + " a " + destino);
+        return;
+    }
+    hanoi(n - 1, origen, auxiliar, destino);
+    System.out.println("Mueve disco " + n + " de " + origen + " a " + destino);
+    hanoi(n - 1, auxiliar, destino, origen);
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- ARREGLOS -->
+<div class="topic" id="arreglos">
+<details>
+<summary><span class="arrow">▶</span><h2>Arreglos</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Declarar, crear y manipular arreglos, incluyendo recorridos y operaciones in-place.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Máximo y mínimo en calificaciones</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un profesor capturó las calificaciones de un grupo en un arreglo y necesita saber cuál fue la calificación más alta y la más baja del examen.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Recorrer el arreglo una sola vez.</li><li>Devolver ambos valores (por ejemplo, en un arreglo de tamaño 2).</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static int[] maximoYMinimo(int[] calif) {
+    int max = calif[0];
+    int min = calif[0];
+    for (int c : calif) {
+        if (c &gt; max) max = c;
+        if (c &lt; min) min = c;
+    }
+    return new int[]{max, min};
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Promedio de ventas diarias</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una tienda registró sus ventas de los últimos 30 días en un arreglo y quiere saber cuál fue el promedio diario de ventas del mes.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Sumar todos los elementos con un <code>for</code>.</li><li>Dividir entre <code>arreglo.length</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static double promedio(double[] ventas) {
+    double suma = 0;
+    for (double v : ventas) {
+        suma += v;
+    }
+    return suma / ventas.length;
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Conteo de lecturas pares e impares de un sensor</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sensor de temperatura registra lecturas enteras a lo largo del día; se necesita reportar cuántas lecturas fueron pares y cuántas impares.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Dos contadores acumulados en un solo recorrido.</li><li>Uso del operador módulo (<code>%</code>).</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static void contarParImpar(int[] lecturas) {
+    int pares = 0, impares = 0;
+    for (int l : lecturas) {
+        if (l % 2 == 0) pares++;
+        else impares++;
+    }
+    System.out.println("Pares: " + pares + " · Impares: " + impares);
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Invertir el orden de turnos sin arreglo auxiliar</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una clínica quiere invertir el orden de atención de su lista de turnos del día (el último paciente pasa primero), modificando el mismo arreglo en memoria, sin crear uno nuevo.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Intercambiar elementos de los extremos hacia el centro (dos punteros).</li><li>No usar un segundo arreglo del mismo tamaño.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static void invertir(int[] turnos) {
+    int i = 0, j = turnos.length - 1;
+    while (i &lt; j) {
+        int aux = turnos[i];
+        turnos[i] = turnos[j];
+        turnos[j] = aux;
+        i++;
+        j--;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Matriz de asistencia semanal</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un maestro quiere llevar el control de asistencia de sus alumnos durante la semana (5 días) usando una matriz, y al final calcular cuántos días asistió cada alumno y cuántos alumnos asistieron cada día.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Arreglo bidimensional <code>boolean[][] asistencia</code> (alumnos x días).</li><li>Totales por fila (por alumno) y por columna (por día).</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static void reporte(boolean[][] asistencia) {
+    int alumnos = asistencia.length;
+    int dias = asistencia[0].length;
+
+    for (int a = 0; a &lt; alumnos; a++) {
+        int total = 0;
+        for (int d = 0; d &lt; dias; d++) {
+            if (asistencia[a][d]) total++;
+        }
+        System.out.println("Alumno " + a + ": " + total + " días");
+    }
+
+    for (int d = 0; d &lt; dias; d++) {
+        int total = 0;
+        for (int a = 0; a &lt; alumnos; a++) {
+            if (asistencia[a][d]) total++;
+        }
+        System.out.println("Día " + d + ": " + total + " alumnos");
+    }
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- GENERICOS -->
+<div class="topic" id="genericos">
+<details>
+<summary><span class="arrow">▶</span><h2>Clases parametrizadas y genéricos</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Diseñar clases y métodos que funcionen para distintos tipos sin duplicar código.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Registro con marca de tiempo</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sistema de monitoreo necesita envolver cualquier tipo de dato (temperatura, presión, texto de estado) junto con el momento exacto en que fue capturado.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Clase <code>Registro&lt;T&gt;</code> con <code>valor</code> y <code>marcaTiempo</code>.</li><li>Instanciar con al menos dos tipos distintos.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public class Registro&lt;T&gt; {
+    private final T valor;
+    private final long marcaTiempo;
+
+    public Registro(T valor) {
+        this.valor = valor;
+        this.marcaTiempo = System.currentTimeMillis();
+    }
+
+    public T getValor() { return valor; }
+    public long getMarcaTiempo() { return marcaTiempo; }
+}
+
+// Registro&lt;Double&gt; temp = new Registro&lt;&gt;(36.5);
+// Registro&lt;String&gt; estado = new Registro&lt;&gt;("OK");</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Resultado de una operación (éxito/error)</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un módulo de validación de formularios necesita devolver, para cualquier tipo de dato validado, si la operación tuvo éxito y el valor resultante, o un mensaje de error si falló.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Clase <code>Resultado&lt;T&gt;</code> con <code>exito</code>, <code>valor</code> y <code>mensajeError</code>.</li><li>Dos constructores o métodos estáticos: uno para éxito, otro para error.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public class Resultado&lt;T&gt; {
+    private final boolean exito;
+    private final T valor;
+    private final String mensajeError;
+
+    private Resultado(boolean exito, T valor, String mensajeError) {
+        this.exito = exito;
+        this.valor = valor;
+        this.mensajeError = mensajeError;
+    }
+
+    public static &lt;T&gt; Resultado&lt;T&gt; exito(T valor) {
+        return new Resultado&lt;&gt;(true, valor, null);
+    }
+
+    public static &lt;T&gt; Resultado&lt;T&gt; error(String mensaje) {
+        return new Resultado&lt;&gt;(false, null, mensaje);
+    }
+
+    public boolean esExito() { return exito; }
+    public T getValor() { return valor; }
+    public String getMensajeError() { return mensajeError; }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Elemento más repetido de un arreglo genérico</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una encuesta guarda las respuestas de opción múltiple en un arreglo y se necesita un método reutilizable que funcione tanto para respuestas de texto como para calificaciones numéricas, y devuelva la que más se repitió.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método genérico <code>&lt;T&gt; T masRepetido(T[] datos)</code>.</li><li>Probarlo con <code>String[]</code> e <code>Integer[]</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.HashMap;
+import java.util.Map;
+
+public static &lt;T&gt; T masRepetido(T[] datos) {
+    Map&lt;T, Integer&gt; cont = new HashMap&lt;&gt;();
+    for (T d : datos) {
+        cont.put(d, cont.getOrDefault(d, 0) + 1);
+    }
+    T mejor = datos[0];
+    int max = 0;
+    for (Map.Entry&lt;T, Integer&gt; e : cont.entrySet()) {
+        if (e.getValue() &gt; max) {
+            max = e.getValue();
+            mejor = e.getKey();
+        }
+    }
+    return mejor;
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Par ordenado comparable por clave</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sistema de rankings necesita ordenar pares (nombre del jugador, puntaje) por su clave, permitiendo reutilizar la misma clase para rankings de distintos tipos de identificador (nombre, código de jugador).</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Clase <code>ParOrdenado&lt;K extends Comparable&lt;K&gt;, V&gt;</code>.</li><li>Implementa comparación basada solo en <code>K</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public class ParOrdenado&lt;K extends Comparable&lt;K&gt;, V&gt;
+        implements Comparable&lt;ParOrdenado&lt;K, V&gt;&gt; {
+
+    private final K clave;
+    private final V valor;
+
+    public ParOrdenado(K clave, V valor) {
+        this.clave = clave;
+        this.valor = valor;
+    }
+
+    public K getClave() { return clave; }
+    public V getValor() { return valor; }
+
+    @Override
+    public int compareTo(ParOrdenado&lt;K, V&gt; otro) {
+        return this.clave.compareTo(otro.clave); // solo K
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Caché con capacidad máxima</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una aplicación necesita una caché reutilizable (para distintos tipos de clave y valor) que guarde un número limitado de resultados, descartando el más antiguo cuando se llena.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Clase <code>Cache&lt;K, V&gt;</code> con capacidad fija en el constructor.</li><li>Método <code>put(K,V)</code> que descarte la entrada más antigua si ya está llena.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class Cache&lt;K, V&gt; extends LinkedHashMap&lt;K, V&gt; {
+    private final int capacidad;
+
+    public Cache(int capacidad) {
+        super(capacidad, 0.75f, true); // access-order: "más antiguo" = menos usado
+        this.capacidad = capacidad;
+    }
+
+    @Override
+    protected boolean removeEldestEntry(Map.Entry&lt;K, V&gt; eldest) {
+        return size() &gt; capacidad; // descarta el más antiguo al exceder
+    }
+
+    @Override
+    public V put(K clave, V valor) {
+        return super.put(clave, valor);
+    }
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- LISTAS -->
+<div class="topic" id="listas">
+<details>
+<summary><span class="arrow">▶</span><h2>Listas enlazadas</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Aplicar listas simples, dobles y circulares según el problema lo requiera.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Lista de tareas pendientes</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una aplicación de productividad necesita agregar tareas al final de una lista y mostrarlas todas en el orden en que se capturaron.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Lista simple con <code>insertarFinal(tarea)</code>.</li><li>Método <code>mostrarTodas()</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">class ListaTareas {
+    private Nodo cabeza;
+
+    private static class Nodo {
+        String tarea;
+        Nodo siguiente;
+        Nodo(String t) { this.tarea = t; }
+    }
+
+    public void insertarFinal(String tarea) {
+        Nodo nuevo = new Nodo(tarea);
+        if (cabeza == null) { cabeza = nuevo; return; }
+        Nodo aux = cabeza;
+        while (aux.siguiente != null) aux = aux.siguiente;
+        aux.siguiente = nuevo;
+    }
+
+    public void mostrarTodas() {
+        for (Nodo aux = cabeza; aux != null; aux = aux.siguiente) {
+            System.out.println(aux.tarea);
+        }
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Eliminar una tarea específica</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Sobre la misma lista de tareas, el usuario marca una tarea como completada y esta debe eliminarse de la lista, sin importar en qué posición se encuentre.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método <code>eliminar(valor)</code> que reconecte los nodos vecinos.</li><li>Manejar el caso de eliminar la cabeza.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public void eliminar(String tarea) {
+    if (cabeza == null) return;
+
+    // caso límite: eliminar la cabeza
+    if (cabeza.tarea.equals(tarea)) {
+        cabeza = cabeza.siguiente;
+        return;
+    }
+
+    Nodo previo = cabeza;
+    while (previo.siguiente != null &amp;&amp; !previo.siguiente.tarea.equals(tarea)) {
+        previo = previo.siguiente;
+    }
+    if (previo.siguiente != null) {
+        previo.siguiente = previo.siguiente.siguiente; // reconecta vecinos
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Historial de navegación de un navegador</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un navegador web necesita permitir avanzar y retroceder entre las páginas visitadas, recordando tanto la página anterior como la siguiente desde cualquier punto del historial.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Lista doblemente enlazada.</li><li>Métodos <code>visitar(url)</code>, <code>atras()</code>, <code>adelante()</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">class HistorialNavegador {
+    private Nodo actual;
+
+    private static class Nodo {
+        String url;
+        Nodo anterior, siguiente;
+        Nodo(String u) { url = u; }
+    }
+
+    public void visitar(String url) {
+        Nodo nuevo = new Nodo(url);
+        nuevo.anterior = actual;
+        if (actual != null) actual.siguiente = nuevo;
+        actual = nuevo;
+    }
+
+    public String atras() {
+        if (actual != null &amp;&amp; actual.anterior != null) actual = actual.anterior;
+        return actual == null ? null : actual.url;
+    }
+
+    public String adelante() {
+        if (actual != null &amp;&amp; actual.siguiente != null) actual = actual.siguiente;
+        return actual == null ? null : actual.url;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Turnos rotativos de un juego de mesa</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un juego de mesa para 5 jugadores necesita repartir el turno en orden y, al llegar al último jugador, volver automáticamente al primero, indefinidamente.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Lista circular simple con 5 nodos.</li><li>Método <code>siguienteTurno()</code> que avance y regrese al inicio tras el último.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">class Turnos {
+    private Nodo actual;
+
+    private static class Nodo {
+        String jugador;
+        Nodo siguiente;
+        Nodo(String j) { jugador = j; }
+    }
+
+    public Turnos(String[] jugadores) {
+        Nodo ultimo = null;
+        for (String j : jugadores) {
+            Nodo nuevo = new Nodo(j);
+            if (actual == null) { actual = nuevo; ultimo = nuevo; }
+            else { ultimo.siguiente = nuevo; ultimo = nuevo; }
+        }
+        if (ultimo != null) ultimo.siguiente = actual; // cierra el círculo
+    }
+
+    public String siguienteTurno() {
+        actual = actual.siguiente; // tras el último vuelve al primero
+        return actual.jugador;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Fusionar dos listas ordenadas</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Dos sucursales de una tienda enviaron cada una su lista de productos más vendidos, ya ordenada por código de producto, y se necesita combinarlas en una sola lista ordenada para el reporte general.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método <code>fusionar(lista1, lista2)</code> que devuelva una sola lista simple ordenada.</li><li>No debe volver a ordenar todo desde cero: aprovechar que ambas ya vienen ordenadas.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">static class Nodo {
+    int valor;
+    Nodo siguiente;
+    Nodo(int v) { valor = v; }
+}
+
+public static Nodo fusionar(Nodo l1, Nodo l2) {
+    Nodo centinela = new Nodo(0); // nodo temporal
+    Nodo fin = centinela;
+
+    while (l1 != null &amp;&amp; l2 != null) {
+        if (l1.valor &lt;= l2.valor) { fin.siguiente = l1; l1 = l1.siguiente; }
+        else                       { fin.siguiente = l2; l2 = l2.siguiente; }
+        fin = fin.siguiente;
+    }
+    fin.siguiente = (l1 != null) ? l1 : l2; // resto de la lista que quede
+    return centinela.siguiente;
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- PILAS -->
+<div class="topic" id="pilas">
+<details>
+<summary><span class="arrow">▶</span><h2>Pilas</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Reconocer problemas que requieren procesar "lo último agregado, primero".</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Paréntesis balanceados</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un editor de código necesita marcar en rojo una línea si los paréntesis, corchetes o llaves que contiene no están correctamente balanceados.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Apilar cada símbolo de apertura.</li><li>Al encontrar un cierre, hacer <code>pop()</code> y comparar.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static boolean estaBalanceado(String exp) {
+    Stack&lt;Character&gt; pila = new Stack&lt;&gt;();
+    Map&lt;Character, Character&gt; cierres = Map.of(')', '(', ']', '[', '}', '{');
+    for (char c : exp.toCharArray()) {
+        if (c == '(' || c == '[' || c == '{') {
+            pila.push(c);
+        } else if (cierres.containsKey(c)) {
+            if (pila.isEmpty() || pila.pop() != cierres.get(c)) {
+                return false;
+            }
+        }
+    }
+    return pila.isEmpty();
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Función deshacer de un editor de texto</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un editor de texto simple necesita permitir deshacer la última acción del usuario (escribir, borrar, pegar), en el orden inverso a como se realizaron.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Pila de acciones registradas.</li><li>Método <code>deshacer()</code> que haga <code>pop()</code> y revierta esa acción.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class EditorTexto {
+    private Stack&lt;String&gt; acciones = new Stack&lt;&gt;();
+
+    public void registrar(String accion) {
+        acciones.push(accion);
+    }
+
+    public boolean deshacer() {
+        if (acciones.isEmpty()) return false;
+        String accion = acciones.pop();
+        System.out.println("Revirtiendo: " + accion); // aplica la lógica inversa
+        return true;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Evaluar una expresión postfija</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una calculadora científica interna representa las operaciones en notación postfija (por ejemplo, <code>3 4 +</code>) y necesita evaluarlas correctamente.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Apilar operandos; al leer un operador, desapilar dos y apilar el resultado.</li><li>El resultado final queda como único elemento de la pila.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static int evaluarPostfija(String[] tokens) {
+    Stack&lt;Integer&gt; pila = new Stack&lt;&gt;();
+    for (String t : tokens) {
+        if (Character.isDigit(t.charAt(0))) {
+            pila.push(Integer.parseInt(t));
+        } else {
+            int b = pila.pop();
+            int a = pila.pop();
+            switch (t) {
+                case "+": pila.push(a + b); break;
+                case "-": pila.push(a - b); break;
+                case "*": pila.push(a * b); break;
+                case "/": pila.push(a / b); break;
+            }
+        }
+    }
+    return pila.pop(); // el único elemento que queda
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Convertir una expresión infija a postfija</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Antes de poder evaluar expresiones matemáticas escritas de forma normal (infija), el sistema necesita convertirlas primero a notación postfija respetando la precedencia de operadores.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Pila auxiliar de operadores.</li><li>Reglas de precedencia entre <code>+ - * /</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static List&lt;String&gt; infijaAPostfija(String[] tokens) {
+    Stack&lt;String&gt; ops = new Stack&lt;&gt;();
+    List&lt;String&gt; salida = new ArrayList&lt;&gt;();
+    Map&lt;String, Integer&gt; precedencia = Map.of("+", 1, "-", 1, "*", 2, "/", 2);
+
+    for (String t : tokens) {
+        if (!precedencia.containsKey(t)) {
+            salida.add(t);              // operando: va directo a la salida
+        } else {
+            // saca operadores de igual o mayor precedencia
+            while (!ops.isEmpty() &amp;&amp; precedencia.get(ops.peek()) &gt;= precedencia.get(t)) {
+                salida.add(ops.pop());
+            }
+            ops.push(t);
+        }
+    }
+    while (!ops.isEmpty()) salida.add(ops.pop());
+    return salida;
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Navegación adelante/atrás de un navegador</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>El botón "atrás" y "adelante" de un navegador web debe funcionar aunque el usuario visite nuevas páginas después de haber retrocedido, descartando el historial de "adelante" que ya no aplica.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Dos pilas: <code>atras</code> y <code>adelante</code>.</li><li>Visitar una nueva página limpia la pila <code>adelante</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class Navegador {
+    private Stack&lt;String&gt; atras = new Stack&lt;&gt;();
+    private Stack&lt;String&gt; adelante = new Stack&lt;&gt;();
+    private String actual;
+
+    public void visitar(String url) {
+        if (actual != null) atras.push(actual);
+        adelante.clear(); // un camino nuevo descarta el "adelante"
+        actual = url;
+    }
+
+    public String atras() {
+        if (atras.isEmpty()) return actual;
+        adelante.push(actual);
+        actual = atras.pop();
+        return actual;
+    }
+
+    public String adelante() {
+        if (adelante.isEmpty()) return actual;
+        atras.push(actual);
+        actual = adelante.pop();
+        return actual;
+    }
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- COLAS -->
+<div class="topic" id="colas">
+<details>
+<summary><span class="arrow">▶</span><h2>Colas</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Reconocer problemas que exigen procesar en el mismo orden en que llegan los elementos.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Fila de atención en una caja de banco</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un banco necesita simular su fila de atención: los clientes se forman al llegar y se atienden en el mismo orden en que se formaron.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Métodos <code>llegarCliente(nombre)</code> y <code>atenderCliente()</code>.</li><li>Consultar quién sigue con <code>peek()</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class FilaBanco {
+    private LinkedList&lt;String&gt; fila = new LinkedList&lt;&gt;();
+
+    public void llegarCliente(String nombre) { fila.add(nombre); }
+
+    public String atenderCliente() { return fila.poll(); }
+
+    public String quienSigue() { return fila.peek(); }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Cola de impresión</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una impresora compartida en la oficina recibe documentos de varios usuarios y debe imprimirlos exactamente en el orden en que fueron enviados.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método <code>enviarDocumento(nombre)</code>.</li><li>Método <code>imprimirSiguiente()</code> que procese el frente de la cola.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class ColaImpresion {
+    private Queue&lt;String&gt; cola = new LinkedList<>();
+
+    public void enviarDocumento(String nombre) { cola.offer(nombre); }
+
+    public String imprimirSiguiente() {
+        String doc = cola.poll(); // frente de la cola
+        if (doc != null) System.out.println("Imprimiendo: " + doc);
+        return doc;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Sistema de turnos por urgencia médica</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un módulo de urgencias necesita atender primero a los pacientes de mayor gravedad, manteniendo dentro de cada nivel de gravedad el orden de llegada.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Una cola independiente por nivel de urgencia (por ejemplo, 3 colas).</li><li>Atender siempre la cola de mayor prioridad no vacía primero.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class Urgencias {
+    private Queue&lt;String&gt;[] colas = new Queue[3]; // 0 = mayor gravedad
+
+    @SuppressWarnings("unchecked")
+    public Urgencias() {
+        for (int i = 0; i &lt; colas.length; i++) colas[i] = new LinkedList&lt;&gt;();
+    }
+
+    public void registrarPaciente(int gravedad, String nombre) {
+        colas[gravedad].offer(nombre);
+    }
+
+    public String atender() {
+        for (Queue&lt;String&gt; c : colas) { // revisa de mayor a menor prioridad
+            if (!c.isEmpty()) return c.poll();
+        }
+        return null;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Amigos de segundo grado en una red social</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una red social quiere sugerir contactos mostrando primero a los amigos directos y después a los "amigos de mis amigos", en ese orden exacto de cercanía.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Recorrido BFS sobre la lista de contactos usando una cola.</li><li>Evitar visitar dos veces al mismo contacto.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static void sugerirPorCercania(Map&lt;String, List&lt;String&gt;&gt; amigos, String inicio) {
+    Set&lt;String&gt; visitados = new HashSet&lt;&gt;();
+    Queue&lt;String&gt; cola = new LinkedList&lt;&gt;();
+    cola.add(inicio);
+    visitados.add(inicio);
+
+    while (!cola.isEmpty()) {
+        String actual = cola.poll();
+        for (String vecino : amigos.getOrDefault(actual, List.of())) {
+            if (!visitados.contains(vecino)) { // evita repetir
+                System.out.println(vecino);    // en orden BFS (cercanía)
+                visitados.add(vecino);
+                cola.add(vecino);
+            }
+        }
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Buffer circular de un sensor IoT</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sensor de temperatura envía una lectura por segundo, pero el sistema solo necesita conservar las últimas 10 lecturas; al llegar una nueva y estar lleno el buffer, debe descartarse automáticamente la más antigua.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Cola de capacidad fija (10).</li><li>Al insertar con la cola llena, hacer <code>dequeue()</code> antes de <code>enqueue()</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class BufferCircular {
+    private final int capacidad;
+    private Queue&lt;Double&gt; lecturas = new LinkedList&lt;&gt;();
+
+    public BufferCircular(int capacidad) { this.capacidad = capacidad; }
+
+    public void registrarLectura(double lectura) {
+        if (lecturas.size() == capacidad) {
+            lecturas.poll(); // descarta la más antigua
+        }
+        lecturas.offer(lectura);
+    }
+
+    public Queue&lt;Double&gt; getLecturas() { return lecturas; }
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- ORDENAMIENTO -->
+<div class="topic" id="ordenamiento">
+<details>
+<summary><span class="arrow">▶</span><h2>Ordenamiento, búsqueda y recorrido</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Elegir el algoritmo adecuado según el tamaño de los datos y si están o no ordenados.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Ordenar calificaciones con burbuja</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un profesor quiere mostrar la lista de calificaciones de su grupo de menor a mayor para identificar rápidamente a los alumnos con menor desempeño.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Implementar ordenamiento burbuja.</li><li>Imprimir el arreglo antes y después.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static void burbuja(int[] arr) {
+    int n = arr.length;
+    for (int i = 0; i &lt; n - 1; i++) {
+        for (int j = 0; j &lt; n - 1 - i; j++) {
+            if (arr[j] &gt; arr[j + 1]) {
+                int aux = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = aux;
+            }
+        }
+    }
+}
+
+// Uso: System.out.println(Arrays.toString(calif));
+//      burbuja(calif);
+//      System.out.println(Arrays.toString(calif));</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Buscar un producto en inventario ordenado</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sistema de punto de venta tiene su catálogo de productos ordenado por código, y necesita verificar rápidamente si un código escaneado existe en el inventario.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Implementar búsqueda binaria.</li><li>Devolver la posición o -1 si no existe.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static int busquedaBinaria(int[] arr, int objetivo) {
+    int inicio = 0, fin = arr.length - 1;
+    while (inicio &lt;= fin) {
+        int medio = (inicio + fin) / 2;
+        if (arr[medio] == objetivo) return medio;
+        if (arr[medio] &lt; objetivo) inicio = medio + 1;
+        else fin = medio - 1;
+    }
+    return -1; // no existe
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Comparar inserción vs. burbuja por salario</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Recursos Humanos quiere ordenar la nómina por salario y, además, entender qué tan distinto es el número de comparaciones que hace cada algoritmo de ordenamiento sobre los mismos datos.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Implementar ambos algoritmos con un contador de comparaciones.</li><li>Reportar el conteo final de cada uno sobre el mismo arreglo.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public static int burbujaConConteo(int[] arr) {
+    int n = arr.length, cont = 0;
+    for (int i = 0; i &lt; n - 1; i++)
+        for (int j = 0; j &lt; n - 1 - i; j++) {
+            cont++;
+            if (arr[j] &gt; arr[j + 1]) {
+                int t = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = t;
+            }
+        }
+    return cont;
+}
+
+public static int insercionConConteo(int[] arr) {
+    int cont = 0;
+    for (int i = 1; i &lt; arr.length; i++) {
+        int key = arr[i], j = i - 1;
+        while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {
+            cont++;
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+    return cont;
+}
+
+// Uso: sobre el MISMO arreglo:
+// burbujaConConteo(salarios.clone())  vs  insercionConConteo(salarios.clone())</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Lineal vs. binaria en códigos postales</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sistema de envíos necesita validar códigos postales contra un catálogo grande, y se pide comparar cuántos pasos toma encontrar un código con búsqueda lineal frente a búsqueda binaria.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Contador de pasos en ambas búsquedas.</li><li>Probar con un catálogo de al menos 1000 elementos ordenados.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">// devuelve el número de pasos (no solo la posición)
+public static int linealConPasos(int[] arr, int objetivo) {
+    for (int i = 0; i &lt; arr.length; i++)
+        if (arr[i] == objetivo) return i + 1;
+    return arr.length;
+}
+
+public static int binariaConPasos(int[] arr, int objetivo) {
+    int ini = 0, fin = arr.length - 1, pasos = 0;
+    while (ini &lt;= fin) {
+        pasos++;
+        int medio = (ini + fin) / 2;
+        if (arr[medio] == objetivo) return pasos;
+        if (arr[medio] &lt; objetivo) ini = medio + 1;
+        else fin = medio - 1;
+    }
+    return pasos;
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>BFS y DFS en un mapa de rutas de transporte</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sistema de transporte público quiere saber si existe una ruta entre dos estaciones, explorando primero por cercanía (BFS con cola) y comparándolo contra una exploración a profundidad (DFS con pila).</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Representar el mapa como una estructura de conexiones entre estaciones.</li><li>Implementar ambos recorridos y comparar el orden en que visitan las estaciones.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+// BFS: explora por cercanía con una cola
+public static List&lt;String&gt; bfs(Map&lt;String, List&lt;String&gt;&gt; rutas, String inicio) {
+    List&lt;String&gt; orden = new ArrayList&lt;&gt;();
+    Set&lt;String&gt; visitados = new HashSet&lt;&gt;();
+    Queue&lt;String&gt; cola = new LinkedList&lt;&gt;();
+    cola.add(inicio); visitados.add(inicio);
+    while (!cola.isEmpty()) {
+        String actual = cola.poll();
+        orden.add(actual);
+        for (String v : rutas.getOrDefault(actual, List.of()))
+            if (!visitados.contains(v)) { visitados.add(v); cola.add(v); }
+    }
+    return orden;
+}
+
+// DFS: explora a profundidad con una pila
+public static List&lt;String&gt; dfs(Map&lt;String, List&lt;String&gt;&gt; rutas, String inicio) {
+    List&lt;String&gt; orden = new ArrayList&lt;&gt;();
+    Set&lt;String&gt; visitados = new HashSet&lt;&gt;();
+    Stack&lt;String&gt; pila = new Stack&lt;&gt;();
+    pila.push(inicio);
+    while (!pila.isEmpty()) {
+        String actual = pila.pop();
+        if (!visitados.contains(actual)) {
+            visitados.add(actual);
+            orden.add(actual);
+            for (String v : rutas.getOrDefault(actual, List.of()))
+                if (!visitados.contains(v)) pila.push(v);
+        }
+    }
+    return orden;
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- ARBOLES -->
+<div class="topic" id="arboles">
+<details>
+<summary><span class="arrow">▶</span><h2>Árboles</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Aprovechar la jerarquía de un Árbol Binario de Búsqueda y sus recorridos.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Códigos de producto ordenados</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un almacén quiere insertar sus códigos de producto en un ABB y comprobar, mediante el recorrido inorden, que efectivamente queden ordenados de menor a mayor.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Insertar al menos 8 códigos.</li><li>Imprimir el recorrido inorden.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">class ArbolProductos {
+    private Nodo raiz;
+
+    private static class Nodo {
+        int valor; Nodo izq, der;
+        Nodo(int v) { valor = v; }
+    }
+
+    public void insertar(int codigo) { raiz = insertar(raiz, codigo); }
+
+    private Nodo insertar(Nodo n, int v) {
+        if (n == null) return new Nodo(v);
+        if (v &lt; n.valor) n.izq = insertar(n.izq, v);
+        else n.der = insertar(n.der, v);
+        return n;
+    }
+
+    public void inorden() { inorden(raiz); }
+
+    private void inorden(Nodo n) {
+        if (n == null) return;
+        inorden(n.izq);
+        System.out.print(n.valor + " ");
+        inorden(n.der);
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Buscar un empleado por número de nómina</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>El sistema de Recursos Humanos organiza a los empleados en un ABB por número de nómina, para poder verificar rápidamente si un número existe antes de asignarlo a alguien nuevo.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método <code>buscar(numeroNomina)</code>.</li><li>Manejar el caso de árbol vacío.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">// asumiendo Nodo { int valor; Nodo izq, der; }
+public boolean buscar(int numeroNomina) {
+    return buscar(raiz, numeroNomina);
+}
+
+private boolean buscar(Nodo n, int valor) {
+    if (n == null) return false;   // árbol vacío o no encontrado
+    if (valor == n.valor) return true;
+    if (valor &lt; n.valor) return buscar(n.izq, valor);
+    return buscar(n.der, valor);
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Altura de un árbol genealógico</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una aplicación de genealogía representa a los descendientes de una persona como un árbol y necesita calcular cuántas generaciones de profundidad tiene registradas.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Método recursivo <code>altura(nodo)</code>.</li><li>Caso base: nodo <code>null</code> devuelve 0.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">public int altura(Nodo nodo) {
+    if (nodo == null) return 0;           // caso base
+    int izq = altura(nodo.izq);
+    int der = altura(nodo.der);
+    return 1 + Math.max(izq, der);        // hablamos de nodos, no de aristas
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Árbol de decisión para diagnóstico de fallas</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un manual de soporte técnico de impresoras quiere guiar a un usuario con preguntas de sí/no ("¿enciende la impresora?", "¿hay papel atascado?") hasta llegar a una posible solución.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Árbol binario donde cada nodo interno es una pregunta y cada hoja una solución.</li><li>Recorrido guiado por respuestas del usuario, no automático.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">class NodoDecision {
+    String texto;               // pregunta (interno) o solución (hoja)
+    NodoDecision si, no;
+    NodoDecision(String texto) { this.texto = texto; }
+}
+
+// guía al usuario por el árbol según su respuesta "sí"/"no"
+public NodoDecision avanzar(NodoDecision actual, boolean respuesta) {
+    return respuesta ? actual.si : actual.no; // hoja: es la solución final
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Serializar y reconstruir categorías de un catálogo</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un catálogo en línea organiza sus categorías en un ABB y necesita poder guardar esa estructura como una lista plana de texto (por ejemplo, para enviarla a otro sistema) y luego reconstruir el árbol exacto a partir de esa lista.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Serializar con recorrido preorden.</li><li>Reconstruir el ABB insertando los valores en ese mismo orden.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">// 1) Serializar con recorrido preorden
+public void serializar(Nodo n, List&lt;Integer&gt; salida) {
+    if (n == null) return;
+    salida.add(n.valor);   // primero la raíz...
+    serializar(n.izq, salida);
+    serializar(n.der, salida);
+}
+
+// 2) Reconstruir insertando los valores en ese mismo orden
+public void reconstruir(List&lt;Integer&gt; preorden) {
+    raiz = null;
+    for (int v : preorden) {
+        raiz = insertar(raiz, v); // reinserta en preorden → mismo árbol
+    }
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- DICCIONARIOS -->
+<div class="topic" id="diccionarios">
+<details>
+<summary><span class="arrow">▶</span><h2>Diccionarios</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Usar pares clave-valor para resolver problemas de búsqueda y conteo rápido.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Agenda de contactos</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una aplicación de contactos necesita guardar el número telefónico de cada persona y poder recuperarlo de inmediato escribiendo su nombre.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li><code>HashMap&lt;String, String&gt;</code>.</li><li>Métodos para agregar, consultar y eliminar un contacto.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class Agenda {
+    private Map&lt;String, String&gt; contactos = new HashMap&lt;&gt;();
+
+    public void agregar(String nombre, String telefono) {
+        contactos.put(nombre, telefono);
+    }
+
+    public String consultar(String nombre) {
+        return contactos.get(nombre); // null si no existe
+    }
+
+    public String eliminar(String nombre) {
+        return contactos.remove(nombre);
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Frecuencia de palabras en un texto</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un analizador de reseñas de productos quiere saber qué palabras se repiten más en los comentarios de los clientes, para detectar quejas frecuentes.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li><code>HashMap&lt;String, Integer&gt;</code> como contador.</li><li>Separar el texto en palabras antes de contar.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static Map&lt;String, Integer&gt; frecuenciaPalabras(String texto) {
+    Map&lt;String, Integer&gt; contador = new HashMap&lt;&gt;();
+    for (String palabra : texto.toLowerCase().split("\\s+")) {
+        contador.put(palabra, contador.getOrDefault(palabra, 0) + 1);
+    }
+    return contador;
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Caché de cálculos costosos</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un sistema realiza un cálculo matemático pesado que a veces se repite con los mismos parámetros; se necesita evitar recalcularlo guardando resultados ya obtenidos.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Diccionario que use los parámetros de entrada como clave.</li><li>Verificar con <code>containsKey()</code> antes de recalcular.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class CacheCalculos {
+    private Map&lt;Integer, Long&gt; cache = new HashMap&lt;&gt;();
+
+    public long obtener(int parametro) {
+        if (cache.containsKey(parametro)) {
+            return cache.get(parametro);       // calculado antes: no recalcula
+        }
+        long resultado = procesoCostoso(parametro);
+        cache.put(parametro, resultado);
+        return resultado;
+    }
+
+    private long procesoCostoso(int parametro) {
+        // aquí iría el cálculo matemático pesado
+        return (long) parametro * parametro;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Agrupar estudiantes por resultado</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un profesor tiene la lista de calificaciones de su grupo y quiere separarla automáticamente en dos listas: aprobados y reprobados, para generar reportes distintos de cada grupo.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li><code>Map&lt;String, List&lt;Estudiante&gt;&gt;</code> con claves "Aprobado"/"Reprobado".</li><li>Recorrer la lista original una sola vez, clasificando sobre la marcha.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static Map&lt;String, List&lt;Estudiante&gt;&gt; agrupar(List&lt;Estudiante&gt; grupo) {
+    Map&lt;String, List&lt;Estudiante&gt;&gt; resultado = new HashMap&lt;&gt;();
+    resultado.put("Aprobado", new ArrayList&lt;&gt;());
+    resultado.put("Reprobado", new ArrayList&lt;&gt;());
+
+    for (Estudiante e : grupo) {             // una sola pasada
+        String clave = e.calificacion &gt;= 6 ? "Aprobado" : "Reprobado";
+        resultado.get(clave).add(e);
+    }
+    return resultado;
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Traducción de códigos de error anidados</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Una API devuelve códigos de error agrupados por módulo del sistema (pagos, envíos, cuentas), y se necesita traducir cada código a un mensaje legible para el usuario final, organizado por módulo.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li><code>Map&lt;String, Map&lt;String, String&gt;&gt;</code> (módulo → código → mensaje).</li><li>Método <code>traducir(modulo, codigo)</code> con manejo de módulo o código inexistente.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class TraductorErrores {
+    private Map&lt;String, Map&lt;String, String&gt;&gt; errores = new HashMap&lt;&gt;();
+
+    public String traducir(String modulo, String codigo) {
+        Map&lt;String, String&gt; mod = errores.get(modulo);
+        if (mod == null) return "Módulo desconocido: " + modulo;
+        String mensaje = mod.get(codigo);
+        if (mensaje == null) return "Código desconocido: " + codigo;
+        return mensaje;
+    }
+
+    // registro: errores.computeIfAbsent("pagos", k -&gt; new HashMap&lt;&gt;()).put("PAY-1", "Pago rechazado");
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+<!-- CONJUNTOS -->
+<div class="topic" id="conjuntos">
+<details>
+<summary><span class="arrow">▶</span><h2>Conjuntos</h2><span class="count">5 ejercicios</span></summary>
+<p class="topic-desc">Aprovechar la unicidad para eliminar duplicados y comparar colecciones.</p>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-1">Nivel 1</span><h3>Eliminar correos duplicados</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un boletín de noticias importó su lista de suscriptores desde varias fuentes y ahora tiene correos repetidos; se necesita quedarse solo con los correos únicos antes de enviar el próximo envío masivo.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Pasar la lista original por un <code>HashSet&lt;String&gt;</code>.</li><li>Reportar cuántos duplicados se eliminaron.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static void limpiarDuplicados(List&lt;String&gt; correos) {
+    Set&lt;String&gt; unicos = new HashSet&lt;&gt;(correos);
+    int duplicados = correos.size() - unicos.size();
+    System.out.println("Correos únicos: " + unicos.size());
+    System.out.println("Duplicados eliminados: " + duplicados);
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-2">Nivel 2</span><h3>Verificar registro de usuario</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un formulario de registro necesita rechazar el registro si el nombre de usuario elegido ya está en uso por alguien más.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Conjunto de nombres de usuario existentes.</li><li>Verificación con <code>contains()</code> antes de aceptar el registro.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public class RegistroUsuarios {
+    private Set&lt;String&gt; usernames = new HashSet&lt;&gt;();
+
+    public boolean registrar(String username) {
+        if (usernames.contains(username)) {
+            return false; // ya está en uso: rechaza
+        }
+        usernames.add(username);
+        return true;
+    }
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-3">Nivel 3</span><h3>Asistentes en común a dos eventos</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Los organizadores de una conferencia quieren saber qué personas asistieron tanto al evento de la mañana como al de la tarde, a partir de dos listas de asistencia independientes.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Convertir ambas listas en conjuntos.</li><li>Calcular la intersección con <code>retainAll()</code>.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static Set&lt;String&gt; asistentesEnComun(List&lt;String&gt; manana, List&lt;String&gt; tarde) {
+    Set&lt;String&gt; comun = new HashSet&lt;&gt;(manana);
+    comun.retainAll(new HashSet&lt;&gt;(tarde)); // intersección: los de ambos
+    return comun;
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-4">Nivel 4</span><h3>Productos exclusivos frente a la competencia</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>El área comercial de una tienda quiere saber qué productos de su catálogo no ofrece la competencia, comparando dos listas de productos.</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Calcular la diferencia (catálogo propio − catálogo de competencia) con <code>removeAll()</code>.</li><li>Mostrar el resultado ordenado alfabéticamente.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static Set&lt;String&gt; productosExclusivos(Set&lt;String&gt; propio, Set&lt;String&gt; competencia) {
+    TreeSet&lt;String&gt; resultado = new TreeSet&lt;&gt;(propio); // TreeSet ordena
+    resultado.removeAll(competencia); // diferencia: quedan los exclusivos
+    return resultado;                  // y ya van ordenados alfabéticamente
+}</pre>
+</details>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head"><span class="lvl lvl-5">Nivel 5</span><h3>Unión de etiquetas entre artículos relacionados</h3></div>
+  <div class="ex-label">Caso de uso</div>
+  <p>Un blog quiere fusionar las etiquetas de dos artículos relacionados en un solo conjunto de etiquetas combinadas, sin que ninguna etiqueta quede duplicada, para mostrarlas juntas en una sección de "temas relacionados".</p>
+  <div class="ex-label">Requisitos</div>
+  <ul><li>Calcular la unión con <code>addAll()</code> sobre una copia de uno de los conjuntos.</li><li>Mantener el conjunto original de cada artículo sin modificar.</li></ul>
+<details class="solution">
+  <summary>Ver solución (Java)</summary>
+  <pre class="code">import java.util.*;
+
+public static Set&lt;String&gt; unirEtiquetas(Set&lt;String&gt; articulo1, Set&lt;String&gt; articulo2) {
+    Set&lt;String&gt; combinadas = new HashSet&lt;&gt;(articulo1); // copia: no altera el original
+    combinadas.addAll(articulo2);                       // unión sin duplicados
+    return combinadas;
+}</pre>
+</details>
+</div>
+</details>
+</div>
+
+</div>
+
+<p class="footer-note">
+  Banco de ejercicios progresivos · Estructura de Datos (E-ETD-2)<br>
+  <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+</p>
+
+</body>
+</html>

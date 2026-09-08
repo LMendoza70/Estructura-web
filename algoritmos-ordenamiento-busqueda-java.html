@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoritmos de ordenamiento, búsqueda y recorrido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/comun.css">
+<style>
+  /* Ajustes específicos de esta página */
+  .wrap{max-width:860px;}
+  .hero h1{font-size:2.05rem;}
+  .hero p{max-width:600px; font-size:1.02rem;}
+  h2{font-size:1.5rem; margin:6px 0 16px;}
+  h3.sub{font-size:1.05rem; color:#fff; margin:26px 0 6px;}
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:16px 18px; overflow-x:auto; font-size:.82rem; color:#D6D9E0;}
+  .pager{max-width:860px;}
+
+  .complexity-tag{display:inline-block; background:var(--ink-2); border:1px solid #3C4459; border-radius:6px; padding:4px 10px; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--teal); margin-top:8px;}
+
+  table.cmp{width:100%; border-collapse:collapse; margin-top:16px; font-size:.86rem;}
+  table.cmp th, table.cmp td{border:1px solid #2E3549; padding:9px 11px; text-align:left;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td b, table.cmp td code{color:#fff;}
+
+  /* SIGNATURE: visualizador de ordenamiento */
+  .viz-hero{max-width:860px; margin:36px auto 0; padding:0 24px;}
+  .viz-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:10px; padding:24px 20px;}
+  .bars{display:flex; align-items:flex-end; justify-content:center; gap:8px; height:180px;}
+  .bar{width:34px; background:var(--card); border:1px solid var(--card-line); border-radius:4px 4px 0 0; display:flex; align-items:flex-start; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:.75rem; font-weight:700; color:var(--ink); padding-top:4px; transition:height .25s ease;}
+  .bar.compare{background:var(--amber); border-color:var(--amber);}
+  .bar.swap{background:var(--rose); border-color:var(--rose);}
+  .viz-controls{display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap;}
+  .viz-msg{text-align:center; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--amber); min-height:20px; margin-top:14px;}
+  .viz-caption{text-align:center; color:var(--text-dim); font-size:.85rem; margin-top:10px;}
+</style>
+<script src="js/comun.js" defer></script>
+</head>
+<body>
+
+<div class="back-nav"><a href="index.html">← Volver al índice</a><a href="Apuntes/Algoritmos.png" download>Descargar apunte (infografía de ordenamiento y búsqueda)</a></div>
+
+<div class="hero">
+  <div class="eyebrow">Estructuras de Datos · Java</div>
+  <h1>Ordenar, buscar y recorrer: las tres tareas que se repiten en todo programa</h1>
+  <p>Casi cualquier problema termina reduciéndose a una de tres preguntas: ¿en qué orden deben quedar estos datos?, ¿dónde está el que busco?, y ¿cómo visito todos, uno por uno, sin saltarme ni repetir ninguno?</p>
+</div>
+
+<div class="viz-hero">
+  <div class="type-picker" id="algPicker">
+    <button class="type-btn active" data-alg="burbuja" onclick="pickAlg('burbuja')">Burbuja</button>
+    <button class="type-btn" data-alg="seleccion" onclick="pickAlg('seleccion')">Selección</button>
+    <button class="type-btn" data-alg="insercion" onclick="pickAlg('insercion')">Inserción</button>
+  </div>
+  <div class="viz-zone">
+    <div class="bars" id="bars"></div>
+  </div>
+  <div class="viz-msg" id="vizMsg">Presiona "Reproducir" para ordenar el arreglo paso a paso.</div>
+  <div class="viz-controls">
+    <button onclick="play()" id="playBtn">Reproducir</button>
+    <button class="secondary" onclick="resetViz()">Reiniciar</button>
+  </div>
+  <p class="viz-caption">Ámbar = comparando · Rosa = intercambiando (swap)</p>
+</div>
+
+<div class="wrap">
+
+<section>
+  <div class="eyebrow-sm">01 · Algoritmos de ordenamiento</div>
+  <h2>Poner los datos en un orden específico</h2>
+  <p>Un algoritmo de ordenamiento reorganiza los elementos de una colección (por ejemplo, un arreglo) según un criterio, típicamente de menor a mayor.</p>
+
+  <h3 class="sub">Ordenamiento burbuja (Bubble Sort)</h3>
+  <p>Recorre el arreglo repetidamente, comparando cada pareja de elementos adyacentes y los intercambia si están en el orden incorrecto. Los valores más grandes "burbujean" hacia el final en cada pasada.</p>
+  <pre class="code"><span class="kw">public static void</span> ordenamientoBurbuja(<span class="tp">int</span>[] a) {
+    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i < a.length - <span class="num">1</span>; i++) {
+        <span class="kw">for</span> (<span class="tp">int</span> j = <span class="num">0</span>; j < a.length - <span class="num">1</span> - i; j++) {
+            <span class="kw">if</span> (a[j] > a[j + <span class="num">1</span>]) {
+                <span class="tp">int</span> temp = a[j];
+                a[j] = a[j + <span class="num">1</span>];
+                a[j + <span class="num">1</span>] = temp;
+            }
+        }
+    }
+}</pre>
+  <span class="complexity-tag">Complejidad: O(n²) en el peor y promedio caso</span>
+
+  <h3 class="sub">Ordenamiento por selección (Selection Sort)</h3>
+  <p>En cada vuelta, busca el elemento más pequeño de la parte no ordenada y lo coloca al inicio de esa parte, intercambiándolo con el que estaba ahí.</p>
+  <pre class="code"><span class="kw">public static void</span> ordenamientoSeleccion(<span class="tp">int</span>[] a) {
+    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i < a.length - <span class="num">1</span>; i++) {
+        <span class="tp">int</span> indiceMenor = i;
+        <span class="kw">for</span> (<span class="tp">int</span> j = i + <span class="num">1</span>; j < a.length; j++) {
+            <span class="kw">if</span> (a[j] < a[indiceMenor]) {
+                indiceMenor = j;
+            }
+        }
+        <span class="tp">int</span> temp = a[i];
+        a[i] = a[indiceMenor];
+        a[indiceMenor] = temp;
+    }
+}</pre>
+  <span class="complexity-tag">Complejidad: O(n²) siempre, incluso si ya está ordenado</span>
+
+  <h3 class="sub">Ordenamiento por inserción (Insertion Sort)</h3>
+  <p>Construye el resultado ordenado de a poco: toma cada elemento y lo va insertando en la posición correcta dentro de la parte ya ordenada, desplazando lo necesario.</p>
+  <pre class="code"><span class="kw">public static void</span> ordenamientoInsercion(<span class="tp">int</span>[] a) {
+    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">1</span>; i < a.length; i++) {
+        <span class="tp">int</span> actual = a[i];
+        <span class="tp">int</span> j = i - <span class="num">1</span>;
+        <span class="kw">while</span> (j >= <span class="num">0</span> && a[j] > actual) {
+            a[j + <span class="num">1</span>] = a[j];   <span class="cm">// desplaza el elemento mayor una posición</span>
+            j--;
+        }
+        a[j + <span class="num">1</span>] = actual;
+    }
+}</pre>
+  <span class="complexity-tag">Complejidad: O(n²) en el peor caso, O(n) si ya está casi ordenado</span>
+</section>
+
+<section>
+  <div class="eyebrow-sm">02 · Algoritmos de búsqueda</div>
+  <h2>Encontrar un elemento dentro de una colección</h2>
+
+  <h3 class="sub">Búsqueda lineal (Linear Search)</h3>
+  <p>Recorre el arreglo de principio a fin comparando cada elemento con el valor buscado, hasta encontrarlo o llegar al final. Funciona con cualquier arreglo, ordenado o no.</p>
+  <pre class="code"><span class="kw">public static int</span> busquedaLineal(<span class="tp">int</span>[] a, <span class="tp">int</span> objetivo) {
+    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i < a.length; i++) {
+        <span class="kw">if</span> (a[i] == objetivo) {
+            <span class="kw">return</span> i;
+        }
+    }
+    <span class="kw">return</span> -<span class="num">1</span>;   <span class="cm">// no se encontró</span>
+}</pre>
+  <span class="complexity-tag">Complejidad: O(n)</span>
+
+  <h3 class="sub">Búsqueda binaria (Binary Search)</h3>
+  <p>Requiere que el arreglo esté <b>ordenado</b>. Compara el elemento del medio con el valor buscado y descarta la mitad del arreglo en cada paso, repitiendo el proceso solo sobre la mitad restante.</p>
+  <pre class="code"><span class="kw">public static int</span> busquedaBinaria(<span class="tp">int</span>[] a, <span class="tp">int</span> objetivo) {
+    <span class="tp">int</span> ini = <span class="num">0</span>, fin = a.length - <span class="num">1</span>;
+    <span class="kw">while</span> (ini <= fin) {
+        <span class="tp">int</span> medio = (ini + fin) / <span class="num">2</span>;
+        <span class="kw">if</span> (a[medio] == objetivo) <span class="kw">return</span> medio;
+        <span class="kw">if</span> (a[medio] < objetivo) ini = medio + <span class="num">1</span>;
+        <span class="kw">else</span> fin = medio - <span class="num">1</span>;
+    }
+    <span class="kw">return</span> -<span class="num">1</span>;
+}</pre>
+  <span class="complexity-tag">Complejidad: O(log n) — requiere arreglo ordenado</span>
+</section>
+
+<section>
+  <div class="eyebrow-sm">03 · Algoritmos de recorrido</div>
+  <h2>Visitar todos los elementos, sin saltarse ninguno</h2>
+  <p>Recorrer es visitar sistemáticamente cada elemento de una estructura exactamente una vez. En arreglos y listas es simplemente ir de principio a fin, pero en estructuras con ramificaciones (árboles, grafos) existen dos estrategias clásicas:</p>
+
+  <h3 class="sub">Recorrido en profundidad (DFS — Depth-First Search)</h3>
+  <p>Avanza lo más posible por una rama antes de retroceder. Se apoya naturalmente en una <b>pila</b> (explícita o mediante recursión, que usa la pila de llamadas).</p>
+
+  <h3 class="sub">Recorrido en anchura (BFS — Breadth-First Search)</h3>
+  <p>Visita todos los elementos de un mismo "nivel" antes de pasar al siguiente. Se apoya naturalmente en una <b>cola</b>: se encolan los vecinos y se procesan en el orden en que fueron descubiertos.</p>
+
+  <div class="analogy">
+    <b>Conexión con lo ya visto:</b> DFS y BFS no son más que aplicaciones directas de las estructuras que ya conoces — DFS usa la disciplina LIFO de una pila, BFS usa la disciplina FIFO de una cola. La elección de estructura determina el orden de recorrido.
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">04 · Complejidad algorítmica</div>
+  <h2>¿Qué tan rápido crece el trabajo?</h2>
+  <p>La complejidad algorítmica, expresada en notación <b>Big-O</b>, describe cómo crece el tiempo (o la memoria) que un algoritmo necesita a medida que crece el tamaño de la entrada <code>n</code>. No mide segundos exactos: mide la <b>tendencia de crecimiento</b>.</p>
+  <table class="cmp">
+    <tr><th>Notación</th><th>Nombre</th><th>Ejemplo de este documento</th></tr>
+    <tr><td><code>O(1)</code></td><td>Constante</td><td>Acceder a <code>arreglo[i]</code> por índice</td></tr>
+    <tr><td><code>O(log n)</code></td><td>Logarítmica</td><td>Búsqueda binaria</td></tr>
+    <tr><td><code>O(n)</code></td><td>Lineal</td><td>Búsqueda lineal, recorrido de un arreglo</td></tr>
+    <tr><td><code>O(n²)</code></td><td>Cuadrática</td><td>Burbuja, selección, inserción</td></tr>
+  </table>
+  <p>Por eso, para un arreglo grande, una búsqueda binaria (O(log n)) es dramáticamente más rápida que una lineal (O(n)) — pero solo funciona si el arreglo ya está ordenado, y ordenarlo con un algoritmo básico cuesta O(n²). Esa es la decisión de fondo detrás de elegir un algoritmo: no hay una opción que gane siempre, depende de los datos y de cuántas veces se repetirá la operación.</p>
+</section>
+
+<section>
+  <div class="eyebrow-sm">05 · Errores frecuentes</div>
+  <h2>Lo que suele fallar</h2>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Usar búsqueda binaria sobre un arreglo no ordenado:</b> el algoritmo asume orden; sin él, descarta mitades incorrectas y puede fallar en encontrar un elemento que sí está presente.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Confundir "más código" con "más lento":</b> la complejidad no depende de cuántas líneas tiene el algoritmo, sino de cómo escala el número de operaciones cuando <code>n</code> crece.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Elegir burbuja o selección para arreglos grandes:</b> ambos son O(n²); para volúmenes de datos grandes conviene un algoritmo de ordenamiento más eficiente (como Merge Sort o Quick Sort, O(n log n)), fuera del alcance de esta guía introductoria.</div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">06 · Principio de Pareto</div>
+  <h2>El 20% de reglas que explica el 80% del tema</h2>
+  <ul class="checklist">
+    <li>Ordenar es reorganizar; buscar es localizar; recorrer es visitar todo sin repetir ni saltar.</li>
+    <li>Búsqueda binaria (O(log n)) solo funciona sobre datos ya ordenados; búsqueda lineal (O(n)) funciona siempre.</li>
+    <li>Los tres algoritmos de ordenamiento básicos (burbuja, selección, inserción) son O(n²): útiles para aprender la lógica, no para producción con datos grandes.</li>
+    <li>DFS se apoya en una pila (LIFO); BFS se apoya en una cola (FIFO) — la estructura determina el orden de recorrido.</li>
+    <li>La notación Big-O describe tendencia de crecimiento, no tiempo exacto en segundos.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow-sm">07 · Active recall</div>
+  <h2>Ponte a prueba (haz clic en cada pregunta)</h2>
+
+  <div class="quiz-item">
+    <div class="q">1. ¿Por qué la búsqueda binaria requiere que el arreglo esté ordenado?</div>
+    <div class="a">Porque en cada paso decide qué mitad descartar comparando el elemento del medio con el objetivo; si el arreglo no está ordenado, esa comparación no garantiza que el valor buscado esté en la mitad que se conserva.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">2. ¿Qué tienen en común burbuja, selección e inserción en cuanto a complejidad?</div>
+    <div class="a">Los tres son O(n²) en el peor caso: el trabajo crece proporcionalmente al cuadrado del tamaño de la entrada.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">3. ¿Qué estructura de datos usa naturalmente un recorrido BFS, y cuál usa un DFS?</div>
+    <div class="a">BFS usa una cola (FIFO), procesando nivel por nivel. DFS usa una pila (o recursión, que internamente usa la pila de llamadas), avanzando lo más posible por una rama antes de retroceder.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">4. Si tienes un arreglo de un millón de elementos y necesitas buscar muchas veces en él, ¿qué conviene más: ordenarlo una vez y usar búsqueda binaria, o dejarlo desordenado y usar búsqueda lineal cada vez?</div>
+    <div class="a">Casi siempre conviene ordenarlo una vez (aunque cueste O(n log n) con un algoritmo eficiente, o O(n²) con uno básico) y luego aprovechar múltiples búsquedas binarias en O(log n) cada una — mucho más rápido que repetir búsquedas lineales en O(n) cada vez.</div>
+  </div>
+</section>
+
+</div>
+
+<div class="signature">
+  <div class="line"></div>
+  <div class="name">MTI Luis Alberto Mendoza San Juan</div>
+  <div class="title">Elaboró</div>
+  <div class="subject">Programa de asignatura: Estructura de Datos (E-ETD-2) · Licenciatura en Ingeniería en Tecnologías de la Información e Innovación Digital</div>
+</div>
+
+<p class="footer-note">Guía generada para apoyar la enseñanza de algoritmos de ordenamiento, búsqueda y recorrido en Java · Universidad Tecnológica de la Huasteca Hidalguense</p>
+
+<nav class="pager" aria-label="Navegación entre temas">
+  <a class="pager-item pager-prev" href="colas-java-explicacion.html"><span class="pager-dir">← Tema anterior</span><span class="pager-tema">Colas</span></a>
+  <a class="pager-item pager-home" href="index.html" title="Volver al índice"><span class="pager-dir">Índice</span></a>
+  <a class="pager-item pager-next" href="arboles-java-explicacion.html"><span class="pager-dir">Tema siguiente →</span><span class="pager-tema">Árboles</span></a>
+</nav>
+
+<script>
+const baseArr = [62, 15, 47, 8, 33, 56, 21];
+let currentAlg = 'burbuja';
+let steps = [];
+let stepIdx = 0;
+let playing = false;
+
+function genBubble(arr){
+  let a = arr.slice(); const st=[];
+  for(let i=0;i<a.length-1;i++){
+    for(let j=0;j<a.length-1-i;j++){
+      st.push({arr:a.slice(), hi:[j,j+1], action:'compare'});
+      if(a[j]>a[j+1]){
+        [a[j],a[j+1]]=[a[j+1],a[j]];
+        st.push({arr:a.slice(), hi:[j,j+1], action:'swap'});
+      }
+    }
+  }
+  st.push({arr:a.slice(), hi:[], action:'done'});
+  return st;
+}
+function genSelection(arr){
+  let a = arr.slice(); const st=[];
+  for(let i=0;i<a.length-1;i++){
+    let min=i;
+    for(let j=i+1;j<a.length;j++){
+      st.push({arr:a.slice(), hi:[min,j], action:'compare'});
+      if(a[j]<a[min]) min=j;
+    }
+    if(min!==i){
+      [a[i],a[min]]=[a[min],a[i]];
+      st.push({arr:a.slice(), hi:[i,min], action:'swap'});
+    }
+  }
+  st.push({arr:a.slice(), hi:[], action:'done'});
+  return st;
+}
+function genInsertion(arr){
+  let a = arr.slice(); const st=[];
+  for(let i=1;i<a.length;i++){
+    let j=i;
+    while(j>0){
+      st.push({arr:a.slice(), hi:[j-1,j], action:'compare'});
+      if(a[j-1]>a[j]){
+        [a[j-1],a[j]]=[a[j],a[j-1]];
+        st.push({arr:a.slice(), hi:[j-1,j], action:'swap'});
+        j--;
+      } else break;
+    }
+  }
+  st.push({arr:a.slice(), hi:[], action:'done'});
+  return st;
+}
+
+function buildSteps(){
+  if(currentAlg==='burbuja') steps = genBubble(baseArr);
+  else if(currentAlg==='seleccion') steps = genSelection(baseArr);
+  else steps = genInsertion(baseArr);
+  stepIdx = 0;
+}
+
+function drawBars(arr, hi, action){
+  const zone = document.getElementById('bars');
+  zone.innerHTML = '';
+  const max = Math.max(...baseArr);
+  arr.forEach((v, idx)=>{
+    const div = document.createElement('div');
+    let cls = 'bar';
+    if(hi && hi.includes(idx)) cls += action==='swap' ? ' swap' : ' compare';
+    div.className = cls;
+    div.style.height = (30 + (v/max)*140) + 'px';
+    div.textContent = v;
+    zone.appendChild(div);
+  });
+}
+
+function play(){
+  if(playing) return;
+  buildSteps();
+  playing = true;
+  document.getElementById('playBtn').disabled = true;
+  step();
+}
+
+function step(){
+  if(stepIdx >= steps.length){
+    playing = false;
+    document.getElementById('playBtn').disabled = false;
+    document.getElementById('vizMsg').textContent = 'Arreglo ordenado ✔';
+    return;
+  }
+  const s = steps[stepIdx];
+  drawBars(s.arr, s.hi, s.action);
+  const msg = document.getElementById('vizMsg');
+  if(s.action==='compare') msg.textContent = `Comparando posiciones ${s.hi[0]} y ${s.hi[1]}...`;
+  else if(s.action==='swap') msg.textContent = `Intercambio: posiciones ${s.hi[0]} y ${s.hi[1]}.`;
+  stepIdx++;
+  setTimeout(step, 380);
+}
+
+function pickAlg(a){
+  if(playing) return;
+  currentAlg = a;
+  document.querySelectorAll('.type-btn').forEach(b=> b.classList.toggle('active', b.dataset.alg===a));
+  resetViz();
+}
+
+function resetViz(){
+  playing = false;
+  document.getElementById('playBtn').disabled = false;
+  drawBars(baseArr, [], null);
+  document.getElementById('vizMsg').textContent = 'Presiona "Reproducir" para ordenar el arreglo paso a paso.';
+}
+
+resetViz();
+</script>
+
+</body>
+</html>

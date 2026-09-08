@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de instalación: Java + NetBeans</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/comun.css">
+<style>
+  /* Ajustes específicos de esta guía */
+  .wrap{max-width:860px; padding:0 24px 90px;}
+  .hero{padding:56px 24px 30px;}
+  .hero h1{font-size:1.95rem; margin:0 0 10px;}
+  .hero p{max-width:620px; font-size:.98rem;}
+  section{padding:42px 0;}
+  h2{font-size:1.45rem; margin:6px 0 14px;}
+  .analogy{margin:16px 0; font-size:.95rem;}
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; overflow-x:auto; font-size:.84rem; color:#D6D9E0; margin:10px 0;}
+
+  table.cmp{width:100%; border-collapse:collapse; margin-top:16px; font-size:.88rem;}
+  table.cmp th, table.cmp td{border:1px solid #2E3549; padding:10px 12px; text-align:left; vertical-align:top;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td code{color:#fff;}
+
+  /* barra de progreso de la instalación */
+  .progress-hero{max-width:860px; margin:32px auto 0; padding:0 24px;}
+  .progress-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:10px; padding:20px 22px;}
+  .progress-bar-track{background:#12151E; border-radius:8px; height:10px; overflow:hidden; margin-bottom:6px;}
+  .progress-bar-fill{background:var(--amber); height:100%; width:0%; transition:width .3s ease;}
+  .progress-label{text-align:right; font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--text-dim);}
+  .check-list{margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:8px 18px;}
+  @media (max-width:600px){.check-list{grid-template-columns:1fr;}}
+  .check-item{display:flex; align-items:center; gap:9px; font-size:.86rem; color:var(--text-dim); cursor:pointer;}
+  .check-item input{accent-color:var(--amber); width:16px; height:16px; cursor:pointer;}
+  .check-item.done{color:var(--teal); text-decoration:line-through;}
+
+  /* selector de sistema operativo */
+  .os-picker{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:18px 0;}
+  .os-btn{background:transparent; border:1px solid #3C4459; color:var(--text); padding:8px 16px; border-radius:20px; font-family:'JetBrains Mono',monospace; font-size:.8rem; cursor:pointer;}
+  .os-btn.active{background:var(--amber); color:var(--ink); border-color:var(--amber); font-weight:700;}
+  .os-panel{display:none;}
+  .os-panel.active{display:block;}
+
+  /* pasos numerados y listas */
+  .step-num{color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em;}
+  ol.steps{padding-left:20px; margin:12px 0;}
+  ol.steps li{margin-bottom:10px; font-size:.94rem;}
+  ul.bullets{padding-left:20px; margin:12px 0;}
+  ul.bullets li{margin-bottom:6px; font-size:.92rem; color:var(--text-dim);}
+
+  /* advertencias y consejos */
+  .warn{display:flex; gap:10px; background:rgba(224,108,117,.08); border:1px solid rgba(224,108,117,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem;}
+  .warn .icon{color:var(--rose);}
+  .tip{display:flex; gap:10px; background:rgba(79,176,174,.08); border:1px solid rgba(79,176,174,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem;}
+  .tip .icon{color:var(--teal);}
+
+  /* árbol de paquetes */
+  .tree{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:#D6D9E0; white-space:pre; overflow-x:auto;}
+
+  .footer-note{color:var(--text-dim); font-size:.85rem; text-align:center; padding:48px 24px 0; border-top:1px solid #2E3549; margin-top:50px;}
+  .footer-note .name{color:#fff; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div class="back-nav"><a href="index.html">← Volver al índice</a></div>
+
+<div class="hero">
+  <div class="badge">Estructura de Datos · E-ETD-2</div>
+  <h1>Guía de instalación: entorno de desarrollo Java + NetBeans</h1>
+  <p>Preparación del equipo para trabajar los objetos de aprendizaje, las prácticas y el caso de estudio del curso, desde cero hasta el primer programa ejecutado.</p>
+</div>
+
+<div class="progress-hero">
+  <div class="progress-zone">
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="barFill"></div></div>
+    <div class="progress-label" id="progLabel">0 / 7 pasos completados</div>
+    <div class="check-list" id="checkList">
+      <label class="check-item"><input type="checkbox" data-step="1"> Instalar el JDK</label>
+      <label class="check-item"><input type="checkbox" data-step="2"> Verificar el JDK en terminal</label>
+      <label class="check-item"><input type="checkbox" data-step="3"> Configurar JAVA_HOME</label>
+      <label class="check-item"><input type="checkbox" data-step="4"> Instalar NetBeans IDE</label>
+      <label class="check-item"><input type="checkbox" data-step="5"> Verificar el JDK en NetBeans</label>
+      <label class="check-item"><input type="checkbox" data-step="6"> Crear el proyecto del curso</label>
+      <label class="check-item"><input type="checkbox" data-step="7"> Ejecutar el primer programa</label>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<section>
+  <div class="step-num">Antes de empezar</div>
+  <h2>Requisitos del equipo</h2>
+  <ul class="bullets">
+    <li>Windows 10/11, macOS 12 o superior, o una distribución Linux reciente (Ubuntu 22.04+).</li>
+    <li>Al menos 4 GB de RAM libres (8 GB recomendado) y 3 GB de espacio en disco.</li>
+    <li>Conexión a internet solo para la descarga inicial; una vez instalado, NetBeans funciona sin conexión.</li>
+    <li>Permisos de administrador en el equipo, necesarios para ambas instalaciones.</li>
+  </ul>
+  <div class="tip"><span class="icon">✓</span><span>Todo el material del curso usa Java estándar (sin frameworks externos), así que no necesitas nada más que el JDK y el IDE para trabajar cualquiera de las 11 guías interactivas o el banco de ejercicios.</span></div>
+</section>
+
+<section>
+  <div class="step-num">Paso 1</div>
+  <h2>Descargar e instalar el JDK</h2>
+  <p>El JDK (<i>Java Development Kit</i>) incluye el compilador (<code>javac</code>) y el entorno de ejecución (<code>java</code>) — es lo que realmente convierte y corre tu código, con o sin un IDE.</p>
+
+  <div class="analogy"><b>Distribución recomendada:</b> Eclipse Temurin (antes AdoptOpenJDK), la misma build de OpenJDK usada por la mayoría de las universidades y empresas — es gratuita, de código abierto y sin restricciones de licencia para uso educativo, a diferencia del JDK de Oracle. Se descarga en <code>adoptium.net</code>.</div>
+
+  <p>Versión recomendada: <b>JDK 21 (LTS)</b>. Es la versión con soporte a largo plazo más estable y ampliamente compatible con NetBeans; ninguna guía del curso requiere características exclusivas de versiones más nuevas (como JDK 25 LTS, la más reciente al momento de esta guía).</p>
+
+  <div class="os-picker" id="osPicker1">
+    <button class="os-btn active" data-os="win" onclick="pickOS(1,'win')">Windows</button>
+    <button class="os-btn" data-os="mac" onclick="pickOS(1,'mac')">macOS</button>
+    <button class="os-btn" data-os="linux" onclick="pickOS(1,'linux')">Linux</button>
+  </div>
+
+  <div class="os-panel active" data-group="1" data-os="win">
+    <ol class="steps">
+      <li>Entra a <code>adoptium.net</code> → pestaña "Latest release" → selecciona <b>JDK 21 (LTS)</b>, sistema <b>Windows</b>, arquitectura <b>x64</b>, paquete <b>.msi</b>.</li>
+      <li>Ejecuta el instalador descargado. Acepta todas las opciones por defecto.</li>
+      <li>En el paso "Custom Setup", asegúrate de que esté marcada la opción <b>"Set JAVA_HOME variable"</b> — esto te ahorra el paso 3 manual.</li>
+      <li>Finaliza la instalación y reinicia cualquier ventana de terminal que tuvieras abierta.</li>
+    </ol>
+  </div>
+  <div class="os-panel" data-group="1" data-os="mac">
+    <ol class="steps">
+      <li>Entra a <code>adoptium.net</code> → selecciona <b>JDK 21 (LTS)</b>, sistema <b>macOS</b>, arquitectura según tu Mac (<b>x64</b> para Intel, <b>aarch64</b> para Apple Silicon), paquete <b>.pkg</b>.</li>
+      <li>Abre el instalador <code>.pkg</code> descargado y sigue el asistente.</li>
+      <li>Si macOS bloquea la app por venir de un "desarrollador no identificado": ve a <b>Ajustes del Sistema → Privacidad y Seguridad</b> y pulsa "Abrir de todas formas".</li>
+    </ol>
+  </div>
+  <div class="os-panel" data-group="1" data-os="linux">
+    <p>Para Ubuntu/Debian, la forma más simple es por línea de comandos (repositorio oficial de Temurin):</p>
+    <pre class="code">sudo apt update
+sudo apt install -y wget apt-transport-https gpg
+wget -qO- https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo gpg --dearmor -o /usr/share/keyrings/adoptium.gpg
+echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(awk -F= '/VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list
+sudo apt update
+sudo apt install -y temurin-21-jdk</pre>
+  </div>
+</section>
+
+<section>
+  <div class="step-num">Paso 2</div>
+  <h2>Verificar la instalación en terminal</h2>
+  <p>Abre una terminal (<code>cmd</code> o PowerShell en Windows, Terminal en macOS/Linux) y ejecuta:</p>
+  <pre class="code">java -version
+javac -version</pre>
+  <p>Debes ver algo similar a <code>openjdk version "21.0.x"</code> en ambos comandos. Si el sistema responde <code>"java" no se reconoce como un comando</code> (Windows) o <code>command not found</code> (macOS/Linux), continúa con el Paso 3.</p>
+</section>
+
+<section>
+  <div class="step-num">Paso 3</div>
+  <h2>Configurar la variable de entorno JAVA_HOME</h2>
+  <p>Esta variable indica a otras herramientas dónde está instalado el JDK. Si marcaste la opción del instalador en Windows en el Paso 1, puedes omitir este paso.</p>
+
+  <div class="os-picker" id="osPicker3">
+    <button class="os-btn active" data-os="win" onclick="pickOS(3,'win')">Windows</button>
+    <button class="os-btn" data-os="mac" onclick="pickOS(3,'mac')">macOS</button>
+    <button class="os-btn" data-os="linux" onclick="pickOS(3,'linux')">Linux</button>
+  </div>
+
+  <div class="os-panel active" data-group="3" data-os="win">
+    <ol class="steps">
+      <li>Busca "Variables de entorno" en el menú de inicio y abre <b>"Editar las variables de entorno del sistema"</b>.</li>
+      <li>Pulsa el botón <b>"Variables de entorno..."</b>.</li>
+      <li>En "Variables del sistema", pulsa <b>"Nueva..."</b> → nombre <code>JAVA_HOME</code>, valor la ruta de instalación (por ejemplo <code>C:\Program Files\Eclipse Adoptium\jdk-21.0.x-hotspot</code>).</li>
+      <li>Edita la variable <code>Path</code> y agrega <code>%JAVA_HOME%\bin</code>.</li>
+      <li>Cierra y vuelve a abrir la terminal para que tome efecto.</li>
+    </ol>
+  </div>
+  <div class="os-panel" data-group="3" data-os="mac">
+    <p>El instalador de Temurin ya configura esto automáticamente. Para verificarlo o forzarlo manualmente, agrega esto a tu <code>~/.zshrc</code> (o <code>~/.bash_profile</code>):</p>
+    <pre class="code">export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+export PATH=$JAVA_HOME/bin:$PATH</pre>
+    <p>Luego ejecuta <code>source ~/.zshrc</code> o abre una terminal nueva.</p>
+  </div>
+  <div class="os-panel" data-group="3" data-os="linux">
+    <p>Agrega estas líneas al final de tu <code>~/.bashrc</code> (o <code>~/.zshrc</code>):</p>
+    <pre class="code">export JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
+export PATH=$JAVA_HOME/bin:$PATH</pre>
+    <p>Ajusta la ruta según lo que muestre <code>update-alternatives --list java</code>. Después ejecuta <code>source ~/.bashrc</code>.</p>
+  </div>
+
+  <div class="warn"><span class="icon">⚠</span><span>Un error común es apuntar <code>JAVA_HOME</code> a la carpeta <code>bin</code> en lugar de la carpeta raíz del JDK. La ruta correcta termina en algo como <code>jdk-21.0.x-hotspot</code>, no en <code>...\bin</code>.</span></div>
+</section>
+
+<section>
+  <div class="step-num">Paso 4</div>
+  <h2>Descargar e instalar NetBeans IDE</h2>
+  <p>Descarga la versión estable más reciente desde <code>netbeans.apache.org/download</code> — la página siempre ofrece la última disponible, así que no te guíes por un número de versión fijo. Elige el paquete <b>"Java SE"</b> o el bundle completo (incluye soporte web, que no necesitas pero no estorba).</p>
+
+  <div class="os-picker" id="osPicker4">
+    <button class="os-btn active" data-os="win" onclick="pickOS(4,'win')">Windows</button>
+    <button class="os-btn" data-os="mac" onclick="pickOS(4,'mac')">macOS</button>
+    <button class="os-btn" data-os="linux" onclick="pickOS(4,'linux')">Linux</button>
+  </div>
+
+  <div class="os-panel active" data-group="4" data-os="win">
+    <ol class="steps">
+      <li>Descarga el instalador <code>.exe</code> para Windows.</li>
+      <li>Ejecútalo y sigue el asistente; si pregunta por el JDK a usar, selecciona la carpeta donde instalaste Temurin 21.</li>
+      <li>Acepta la ubicación de instalación por defecto.</li>
+    </ol>
+  </div>
+  <div class="os-panel" data-group="4" data-os="mac">
+    <ol class="steps">
+      <li>Descarga el archivo <code>.dmg</code> para macOS.</li>
+      <li>Ábrelo y arrastra NetBeans a la carpeta <b>Aplicaciones</b>.</li>
+      <li>Si macOS bloquea la apertura, repite el paso de "Abrir de todas formas" del Paso 1.</li>
+    </ol>
+  </div>
+  <div class="os-panel" data-group="4" data-os="linux">
+    <p>Opción recomendada: instalar como paquete Snap (mantiene actualizaciones automáticas):</p>
+    <pre class="code">sudo snap install netbeans --classic</pre>
+    <p>Alternativa: descarga el <code>.zip</code> desde <code>netbeans.apache.org/download</code>, descomprime y ejecuta <code>bin/netbeans</code>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="step-num">Paso 5</div>
+  <h2>Verificar que NetBeans detecta el JDK</h2>
+  <ol class="steps">
+    <li>Abre NetBeans.</li>
+    <li>Ve al menú <b>Tools → Java Platforms</b> (o <b>Herramientas → Plataformas Java</b> si está en español).</li>
+    <li>Debe aparecer <b>JDK 21</b> en la lista, marcado como plataforma por defecto. Si no aparece, pulsa <b>"Add Platform..."</b> y navega manualmente hasta la carpeta de instalación del JDK.</li>
+  </ol>
+</section>
+
+<section>
+  <div class="step-num">Paso 6</div>
+  <h2>Crear el proyecto base del curso</h2>
+  <ol class="steps">
+    <li><b>File → New Project...</b></li>
+    <li>Categoría <b>Java with Ant</b> (o <b>Java with Maven → Java Application</b> si prefieres Maven) → <b>Java Application</b>.</li>
+    <li>Nombre del proyecto: <code>estructura-de-datos-practicas</code>.</li>
+    <li>Desmarca "Create Main Class" si prefieres organizar por paquetes primero (recomendado).</li>
+  </ol>
+
+  <p>Para que coincida con la organización usada en las guías y en el repositorio del curso, crea un paquete por tema dentro de <code>com.uthh.edd</code>, agrupados por unidad (clic derecho sobre <b>Source Packages → New → Java Package</b>):</p>
+
+  <div class="tree">com.uthh.edd
+├── unidad1
+│   ├── tda
+│   ├── recursion
+│   ├── arreglos
+│   └── genericos
+├── unidad2
+│   ├── listas
+│   ├── pilas
+│   ├── colas
+│   └── ordenamiento
+└── unidad3
+    ├── arboles
+    ├── diccionarios
+    └── conjuntos</div>
+
+  <div class="tip"><span class="icon">✓</span><span>Esta estructura es la misma que usa el repositorio <code>src-java/</code> del curso, así que el código que escribas en NetBeans se puede copiar directamente a los paquetes correspondientes cuando subas tus prácticas a GitHub.</span></div>
+</section>
+
+<section>
+  <div class="step-num">Paso 6.1 (recomendado)</div>
+  <h2>Configurar el proyecto: codificación UTF-8</h2>
+  <p>Como el material y los comentarios del código usan acentos y "ñ", configura el proyecto para evitar caracteres corruptos al compartir archivos entre Windows, macOS y Linux:</p>
+  <ol class="steps">
+    <li>Clic derecho sobre el proyecto → <b>Properties</b>.</li>
+    <li>Categoría <b>Sources</b> → campo <b>Encoding</b> → selecciona <b>UTF-8</b>.</li>
+  </ol>
+</section>
+
+<section>
+  <div class="step-num">Paso 7</div>
+  <h2>Ejecutar el primer programa</h2>
+  <p>Dentro del paquete <code>com.uthh.edd.unidad1.tda</code>, crea una clase nueva (clic derecho → <b>New → Java Class</b>) llamada <code>PruebaEntorno</code>:</p>
+  <pre class="code">package com.uthh.edd.unidad1.tda;
+
+public class PruebaEntorno {
+    public static void main(String[] args) {
+        System.out.println("Entorno configurado correctamente.");
+    }
+}</pre>
+  <p>Ejecuta con <b>clic derecho sobre el archivo → Run File</b> (o <code>Shift+F6</code>). Si ves el mensaje en la consola inferior de NetBeans, el entorno está listo para las 11 guías del curso y el banco de ejercicios.</p>
+</section>
+
+<section>
+  <div class="step-num">Solución de problemas comunes</div>
+  <h2>Cuando algo no funciona</h2>
+  <table class="cmp">
+    <tr><th>Síntoma</th><th>Causa probable</th><th>Solución</th></tr>
+    <tr><td><code>'java' no se reconoce...</code> (Windows)</td><td><code>JAVA_HOME</code>/<code>Path</code> no configurados o terminal abierta antes de instalar</td><td>Revisa el Paso 3 y abre una terminal nueva</td></tr>
+    <tr><td>NetBeans no lista ningún JDK</td><td>El JDK se instaló después de abrir NetBeans, o en una ruta no estándar</td><td>Tools → Java Platforms → Add Platform, y navega a la carpeta del JDK</td></tr>
+    <tr><td>macOS: "no se puede abrir porque proviene de un desarrollador no identificado"</td><td>Gatekeeper de macOS</td><td>Ajustes del Sistema → Privacidad y Seguridad → "Abrir de todas formas"</td></tr>
+    <tr><td>Acentos/ñ se ven como símbolos raros</td><td>Codificación del proyecto no es UTF-8</td><td>Revisa el Paso 6.1</td></tr>
+    <tr><td>Linux: <code>Permission denied</code> al ejecutar <code>bin/netbeans</code></td><td>Falta el permiso de ejecución</td><td><code>chmod +x bin/netbeans</code></td></tr>
+  </table>
+</section>
+
+</div>
+
+<p class="footer-note">
+  Guía de instalación · Estructura de Datos (E-ETD-2)<br>
+  <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+</p>
+
+<script>
+function pickOS(group, os){
+  document.querySelectorAll('#osPicker'+group+' .os-btn').forEach(b=> b.classList.toggle('active', b.dataset.os===os));
+  document.querySelectorAll('.os-panel[data-group="'+group+'"]').forEach(p=> p.classList.toggle('active', p.dataset.os===os));
+}
+
+const checks = document.querySelectorAll('#checkList input[type=checkbox]');
+checks.forEach(c=>{
+  c.addEventListener('change', ()=>{
+    c.closest('.check-item').classList.toggle('done', c.checked);
+    updateProgress();
+  });
+});
+function updateProgress(){
+  const total = checks.length;
+  const done = Array.from(checks).filter(c=> c.checked).length;
+  document.getElementById('barFill').style.width = (done/total*100) + '%';
+  document.getElementById('progLabel').textContent = done + ' / ' + total + ' pasos completados';
+}
+</script>
+
+</body>
+</html>

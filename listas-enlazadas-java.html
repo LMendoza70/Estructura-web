@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estructuras de datos dinámicas: Listas enlazadas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/comun.css">
+<style>
+  /* Ajustes específicos de esta página */
+  .wrap{max-width:840px;}
+  .hero h1{font-size:2.1rem;}
+  .hero p{max-width:580px; font-size:1.03rem;}
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:18px 20px; overflow-x:auto; font-size:.84rem; color:#D6D9E0;}
+  .traits .box h3{margin:0 0 8px; font-size:1rem; color:var(--teal);}
+  .pager{max-width:840px;}
+
+  table.cmp{width:100%; border-collapse:collapse; margin-top:16px; font-size:.88rem;}
+  table.cmp th, table.cmp td{border:1px solid #2E3549; padding:10px 12px; text-align:left;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td b{color:#fff;}
+
+  /* SIGNATURE: cadena de vagones/nodos */
+  .chain-hero{max-width:860px; margin:36px auto 0; padding:0 24px;}
+  .chain-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:10px; padding:30px 20px; overflow-x:auto;}
+  .chain-row{display:flex; align-items:center; justify-content:center; gap:0; min-width:max-content; margin:0 auto; flex-wrap:wrap;}
+  .node{background:var(--card); color:var(--ink); border:1px solid var(--card-line); border-radius:8px; padding:10px 16px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.9rem; display:flex; flex-direction:column; align-items:center; gap:2px; min-width:60px;}
+  .node .addr{font-size:.65rem; color:#9A8F73; font-weight:400;}
+  .arrow{color:var(--amber); font-size:1.3rem; margin:0 6px; font-family:'JetBrains Mono',monospace;}
+  .arrow.back{color:var(--rose); font-size:.85rem; align-self:flex-end;}
+  .null-tag{color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:.85rem; margin-left:6px;}
+  .loop-note{text-align:center; color:var(--rose); font-family:'JetBrains Mono',monospace; font-size:.78rem; margin-top:14px;}
+  .chain-controls{display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap;}
+  .chain-caption{text-align:center; color:var(--text-dim); font-size:.85rem; margin-top:14px;}
+</style>
+<script src="js/comun.js" defer></script>
+</head>
+<body>
+
+<div class="back-nav"><a href="index.html">← Volver al índice</a><a href="Apuntes/Listas.png" download>Descargar apunte (infografía de listas enlazadas)</a></div>
+
+<div class="hero">
+  <div class="eyebrow">Estructuras de Datos · Java</div>
+  <h1>Estructuras de datos dinámicas: listas enlazadas</h1>
+  <p>Mientras un arreglo es un tren con vagones fijos y soldados entre sí, una lista enlazada es una cadena de vagones sueltos que se enganchan y desenganchan sobre la marcha, según se necesite.</p>
+</div>
+
+<div class="chain-hero">
+  <div class="type-picker" id="typePicker">
+    <button class="type-btn active" data-type="simple" onclick="pickType('simple')">Lista simple</button>
+    <button class="type-btn" data-type="doble" onclick="pickType('doble')">Lista doble</button>
+    <button class="type-btn" data-type="circular" onclick="pickType('circular')">Lista circular</button>
+  </div>
+  <div class="chain-zone">
+    <div class="chain-row" id="chainRow"></div>
+    <div class="loop-note" id="loopNote"></div>
+  </div>
+  <div class="chain-controls">
+    <button onclick="insertarNodo()">Insertar al final</button>
+    <button class="secondary" onclick="eliminarNodo()">Eliminar último</button>
+    <button class="secondary" onclick="resetChain()">Reiniciar</button>
+  </div>
+  <p class="chain-caption">Cada nodo aparece en una dirección de memoria distinta y no contigua; lo único que los conecta es la referencia que guarda cada nodo hacia el siguiente (y, en la doble, también hacia el anterior).</p>
+</div>
+
+<div class="wrap">
+
+<section>
+  <div class="eyebrow-sm">01 · Concepto de estructura de datos dinámica</div>
+  <h2>¿Qué es una estructura de datos dinámica?</h2>
+  <p>Es una estructura cuyo tamaño <b>no se fija de antemano</b>: la memoria para cada uno de sus elementos se reserva en tiempo de ejecución, a medida que el programa los va necesitando, y se libera cuando ya no se usan.</p>
+  <div class="analogy">
+    <b>Analogía:</b> un arreglo es como un tren con vagones soldados de fábrica: si compraste un tren de 6 vagones, siempre serán 6, estén ocupados o no. Una estructura dinámica es un tren de vagones sueltos: enganchas uno nuevo cuando llega un pasajero, y lo desenganchas cuando ya no se usa. El tren crece y se encoge según la demanda real.
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">02 · Características</div>
+  <h2>Lo que distingue a una estructura dinámica de un arreglo</h2>
+  <div class="traits">
+    <div class="box"><h3>Tamaño variable</h3><p>Crece o se reduce mientras el programa se ejecuta, sin necesidad de declarar un límite máximo por adelantado.</p></div>
+    <div class="box"><h3>Memoria no contigua</h3><p>Cada elemento (nodo) puede vivir en cualquier parte de la memoria; lo que los mantiene unidos son referencias explícitas, no la cercanía física.</p></div>
+    <div class="box"><h3>Inserción/eliminación eficiente</h3><p>Agregar o quitar un elemento en medio de la estructura no requiere desplazar a los demás, como sí ocurre en un arreglo.</p></div>
+    <div class="box"><h3>Acceso secuencial</h3><p>Para llegar al elemento 5 hay que pasar por el 1, 2, 3 y 4 primero: no existe acceso directo por índice como en un arreglo.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">03 · Metodología de codificación</div>
+  <h2>Las dos clases que forman toda estructura dinámica</h2>
+  <p>En Java, una estructura dinámica se construye siempre con el mismo patrón: una clase <b>Nodo</b> que guarda un dato y una o más referencias a otros nodos, y una clase <b>contenedora</b> que administra el punto de entrada (la cabeza) y las operaciones sobre el conjunto.</p>
+
+  <pre class="code"><span class="cm">// Pieza 1: el nodo — la unidad mínima de la estructura</span>
+<span class="kw">public class</span> Nodo&lt;<span class="tv">T</span>&gt; {
+    <span class="tv">T</span> dato;
+    Nodo&lt;<span class="tv">T</span>&gt; siguiente;
+
+    <span class="kw">public</span> Nodo(<span class="tv">T</span> dato) {
+        <span class="kw">this</span>.dato = dato;
+        <span class="kw">this</span>.siguiente = <span class="kw">null</span>;
+    }
+}
+
+<span class="cm">// Pieza 2: la lista — administra el punto de entrada y las operaciones</span>
+<span class="kw">public class</span> ListaEnlazada&lt;<span class="tv">T</span>&gt; {
+    <span class="kw">private</span> Nodo&lt;<span class="tv">T</span>&gt; cabeza;
+
+    <span class="kw">public void</span> insertarFinal(<span class="tv">T</span> valor) {
+        Nodo&lt;<span class="tv">T</span>&gt; nuevo = <span class="kw">new</span> Nodo&lt;&gt;(valor);
+        <span class="kw">if</span> (cabeza == <span class="kw">null</span>) {
+            cabeza = nuevo;
+            <span class="kw">return</span>;
+        }
+        Nodo&lt;<span class="tv">T</span>&gt; actual = cabeza;
+        <span class="kw">while</span> (actual.siguiente != <span class="kw">null</span>) {
+            actual = actual.siguiente;   <span class="cm">// avanzar hasta el último nodo</span>
+        }
+        actual.siguiente = nuevo;
+    }
+
+    <span class="kw">public void</span> recorrer() {
+        Nodo&lt;<span class="tv">T</span>&gt; actual = cabeza;
+        <span class="kw">while</span> (actual != <span class="kw">null</span>) {
+            System.out.println(actual.dato);
+            actual = actual.siguiente;
+        }
+    }
+}</pre>
+  <p>Todas las operaciones (insertar, eliminar, buscar, recorrer) se reducen a manipular estas referencias: nunca se mueve el contenido de un nodo, solo se reconectan los enlaces entre ellos.</p>
+</section>
+
+<section>
+  <div class="eyebrow-sm">04 · Concepto de listas</div>
+  <h2>¿Qué es una lista enlazada?</h2>
+  <p>Una lista enlazada es la estructura dinámica más básica: una secuencia de nodos donde cada nodo conoce (mediante una referencia) cuál es el siguiente. La lista en sí solo necesita recordar un punto de partida — la <b>cabeza</b> — para poder llegar a todos los demás nodos siguiendo la cadena de referencias.</p>
+</section>
+
+<section>
+  <div class="eyebrow-sm">05 · Tipos de listas</div>
+  <h2>Simples, dobles y circulares</h2>
+
+  <h3 class="sub">Lista simple</h3>
+  <p>Cada nodo apunta solo <b>hacia adelante</b>. Para retroceder no hay forma directa: habría que volver a recorrer desde la cabeza.</p>
+  <pre class="code"><span class="kw">class</span> Nodo&lt;<span class="tv">T</span>&gt; {
+    <span class="tv">T</span> dato;
+    Nodo&lt;<span class="tv">T</span>&gt; siguiente;   <span class="cm">// una sola referencia</span>
+}</pre>
+  <p><b>Uso práctico:</b> pilas y colas simples, listas de reproducción sin retroceso, historial de deshacer de un solo sentido.</p>
+
+  <h3 class="sub">Lista doble</h3>
+  <p>Cada nodo guarda referencia tanto al <b>siguiente</b> como al <b>anterior</b>, permitiendo recorrer la lista en ambas direcciones.</p>
+  <pre class="code"><span class="kw">class</span> NodoDoble&lt;<span class="tv">T</span>&gt; {
+    <span class="tv">T</span> dato;
+    NodoDoble&lt;<span class="tv">T</span>&gt; siguiente;
+    NodoDoble&lt;<span class="tv">T</span>&gt; anterior;   <span class="cm">// referencia extra hacia atrás</span>
+}</pre>
+  <p><b>Uso práctico:</b> historial de navegación (adelante/atrás), reproductores de música con "anterior" y "siguiente", edición de texto con deshacer/rehacer en ambos sentidos.</p>
+
+  <h3 class="sub">Lista circular</h3>
+  <p>El último nodo, en vez de apuntar a <code>null</code>, apunta de regreso a la cabeza — la cadena nunca "termina", forma un círculo. Puede ser circular simple o circular doble.</p>
+  <pre class="code"><span class="cm">// Al insertar el último nodo, en vez de dejar null:</span>
+ultimo.siguiente = cabeza;   <span class="cm">// cierra el círculo</span></pre>
+  <p><b>Uso práctico:</b> turnos rotativos (round-robin) entre procesos o jugadores, listas de reproducción en modo "repetir todo", buffers circulares.</p>
+
+  <table class="cmp">
+    <tr><th>Tipo</th><th>Componentes del nodo</th><th>Recorrido</th><th>Caso práctico</th></tr>
+    <tr><td><b>Simple</b></td><td>dato + siguiente</td><td>Solo hacia adelante</td><td>Colas, historial de un solo sentido</td></tr>
+    <tr><td><b>Doble</b></td><td>dato + siguiente + anterior</td><td>Adelante y atrás</td><td>Navegación, deshacer/rehacer</td></tr>
+    <tr><td><b>Circular</b></td><td>dato + siguiente (el último vuelve al primero)</td><td>Infinito, sin fin natural</td><td>Turnos rotativos, listas en bucle</td></tr>
+  </table>
+</section>
+
+<section>
+  <div class="eyebrow-sm">06 · Errores frecuentes</div>
+  <h2>Lo que suele fallar</h2>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>No verificar si la cabeza es <code>null</code>:</b> intentar recorrer o insertar sin comprobar primero si la lista está vacía provoca un <code>NullPointerException</code>.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Perder la referencia a la cabeza:</b> si reasignas la variable que apunta a la cabeza antes de haber recorrido o guardado la lista, pierdes el acceso a todos los nodos siguientes: quedan "flotando" en memoria sin forma de alcanzarlos.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Bucle infinito al recorrer una lista circular:</b> la condición clásica <code>while (actual != null)</code> nunca se cumple en una lista circular, porque ningún nodo apunta a <code>null</code>. Hay que detenerse cuando se vuelve a llegar a la cabeza.</div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">07 · Principio de Pareto</div>
+  <h2>El 20% de reglas que explica el 80% de las listas enlazadas</h2>
+  <ul class="checklist">
+    <li>Todo se reduce a dos piezas: el <b>Nodo</b> (dato + referencia(s)) y la <b>lista</b> que guarda la cabeza y las operaciones.</li>
+    <li>Insertar o eliminar es reconectar referencias, nunca mover datos de lugar.</li>
+    <li>Simple = una referencia (adelante); Doble = dos referencias (adelante y atrás); Circular = el último nodo vuelve al primero.</li>
+    <li>Siempre revisa primero si la cabeza es <code>null</code> antes de recorrer o modificar la lista.</li>
+    <li>En una lista circular, la condición de paro del recorrido es "volví a la cabeza", no "llegué a null".</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow-sm">08 · Active recall</div>
+  <h2>Ponte a prueba (haz clic en cada pregunta)</h2>
+
+  <div class="quiz-item">
+    <div class="q">1. ¿Cuál es la diferencia clave entre la memoria de un arreglo y la de una lista enlazada?</div>
+    <div class="a">El arreglo usa un bloque de memoria contiguo y de tamaño fijo; la lista enlazada usa nodos dispersos por la memoria, conectados mediante referencias, y puede crecer o encogerse en tiempo de ejecución.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">2. ¿Qué campo adicional tiene un nodo de lista doble que no tiene uno de lista simple?</div>
+    <div class="a">Una referencia <code>anterior</code>, que apunta al nodo previo, además de la referencia <code>siguiente</code> que ya tenía la lista simple.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">3. ¿Qué distingue a una lista circular de una lista simple?</div>
+    <div class="a">En la lista circular, el último nodo no apunta a <code>null</code>: apunta de regreso a la cabeza, cerrando el círculo. En la simple, el último nodo apunta a <code>null</code>.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">4. ¿Por qué usar <code>while (actual != null)</code> para recorrer una lista circular provoca un bucle infinito?</div>
+    <div class="a">Porque en una lista circular ningún nodo tiene una referencia <code>null</code>: el último siempre apunta de vuelta a la cabeza, así que la condición nunca se vuelve falsa por sí sola.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">5. Da un ejemplo práctico donde convenga más una lista circular que una simple.</div>
+    <div class="a">Un sistema de turnos rotativos (round-robin) entre varios procesos o jugadores, donde después del último elemento se debe volver automáticamente al primero sin reiniciar el recorrido manualmente.</div>
+  </div>
+</section>
+
+</div>
+
+<div class="signature">
+  <div class="line"></div>
+  <div class="name">MTI Luis Alberto Mendoza San Juan</div>
+  <div class="title">Elaboró</div>
+  <div class="subject">Programa de asignatura: Estructura de Datos (E-ETD-2) · Licenciatura en Ingeniería en Tecnologías de la Información e Innovación Digital</div>
+</div>
+
+<p class="footer-note">Guía generada para apoyar la enseñanza de estructuras de datos dinámicas y listas enlazadas en Java · Universidad Tecnológica de la Huasteca Hidalguense</p>
+
+<nav class="pager" aria-label="Navegación entre temas">
+  <a class="pager-item pager-prev" href="genericos-java-explicacion.html"><span class="pager-dir">← Tema anterior</span><span class="pager-tema">Genéricos y Clases Parametrizadas</span></a>
+  <a class="pager-item pager-home" href="index.html" title="Volver al índice"><span class="pager-dir">Índice</span></a>
+  <a class="pager-item pager-next" href="pilas-java-explicacion.html"><span class="pager-dir">Tema siguiente →</span><span class="pager-tema">Pilas</span></a>
+</nav>
+
+<script>
+let type = 'simple';
+let nodes = ['A', 'B', 'C'];
+const row = document.getElementById('chainRow');
+const loopNote = document.getElementById('loopNote');
+let counter = 3;
+
+function pickType(t){
+  type = t;
+  document.querySelectorAll('.type-btn').forEach(b=> b.classList.toggle('active', b.dataset.type===t));
+  render();
+}
+
+function render(){
+  row.innerHTML = '';
+  loopNote.textContent = '';
+  nodes.forEach((val, idx)=>{
+    if(idx>0){
+      const arrowFwd = document.createElement('span');
+      arrowFwd.className = 'arrow';
+      arrowFwd.textContent = type==='doble' ? '⇄' : '→';
+      row.appendChild(arrowFwd);
+    }
+    const n = document.createElement('div');
+    n.className = 'node';
+    n.innerHTML = `<span>${val}</span><span class="addr">0x${(idx*97+40).toString(16)}</span>`;
+    row.appendChild(n);
+  });
+  const tail = document.createElement('span');
+  if(type==='circular'){
+    tail.className='arrow'; tail.textContent='↻';
+    row.appendChild(tail);
+    loopNote.textContent = `El último nodo (${nodes[nodes.length-1]}) apunta de nuevo a la cabeza (${nodes[0]}) — la cadena no tiene fin.`;
+  } else {
+    tail.className='null-tag'; tail.textContent='→ null';
+    row.appendChild(tail);
+  }
+}
+
+function insertarNodo(){
+  if(nodes.length>=7) return;
+  const letras = 'ABCDEFGHIJ';
+  nodes.push(letras[counter % letras.length]);
+  counter++;
+  render();
+}
+function eliminarNodo(){
+  if(nodes.length<=1) return;
+  nodes.pop();
+  render();
+}
+function resetChain(){
+  nodes = ['A','B','C'];
+  counter = 3;
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>

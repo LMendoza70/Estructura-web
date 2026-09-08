@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursividad en Java - Clase</title>
+    <style>
+        :root {
+            --color-fondo: #f4f7f6;
+            --color-texto: #2c3e50;
+            --color-titulo: #1a5276;
+            --color-seccion: #ffffff;
+            --color-acento: #3498db;
+            --color-codigo-fondo: #2d2d2d;
+            --color-codigo-texto: #f8f8f2;
+            --color-borde: #d5dbdb;
+            --color-boton: #2980b9;
+            --color-boton-hover: #1f618d;
+            --color-respuesta-correcta: #27ae60;
+            --color-respuesta-incorrecta: #e74c3c;
+            --sombra: 0 4px 6px rgba(0,0,0,0.1);
+            --transicion: 0.3s ease;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+            line-height: 1.7;
+            scroll-behavior: smooth;
+        }
+        /* Barra de navegación fija */
+        nav {
+            background-color: var(--color-titulo);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.2rem;
+            box-shadow: var(--sombra);
+        }
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0.8rem;
+            border-radius: 5px;
+            transition: background-color var(--transicion), color var(--transicion);
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        nav a:hover {
+            background-color: rgba(255,255,255,0.15);
+            color: #ffffff;
+        }
+        /* Contenedor principal */
+        .contenedor {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        /* Encabezado principal */
+        header {
+            background: linear-gradient(135deg, #1a5276, #2e86c1);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            box-shadow: var(--sombra);
+        }
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        /* Secciones generales */
+        section {
+            background-color: var(--color-seccion);
+            border-radius: 12px;
+            padding: 2rem 2.2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--sombra);
+            border-left: 5px solid var(--color-acento);
+            transition: transform var(--transicion);
+        }
+        section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+        h2 {
+            color: var(--color-titulo);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            color: #1f618d;
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+        h4 {
+            color: #34495e;
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.6rem;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        /* Bloques de código */
+        pre {
+            background-color: var(--color-codigo-fondo);
+            color: var(--color-codigo-texto);
+            padding: 1.2rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        pre code {
+            font-family: inherit;
+            white-space: pre;
+            display: block;
+        }
+        /* Estilo para comentarios en código (simulado) */
+        .comentario {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        /* Tarjetas para errores, preguntas, etc. */
+        .tarjeta {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--color-borde);
+            transition: box-shadow var(--transicion);
+        }
+        .tarjeta:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .error {
+            border-left: 5px solid #e74c3c;
+        }
+        .pregunta {
+            border-left: 5px solid #f39c12;
+        }
+        .ejemplo {
+            border-left: 5px solid #27ae60;
+        }
+        .boton-respuesta {
+            background-color: var(--color-boton);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color var(--transicion);
+            margin-top: 0.8rem;
+        }
+        .boton-respuesta:hover {
+            background-color: var(--color-boton-hover);
+        }
+        .respuesta-oculta {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #eafaf1;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+        }
+        .respuesta-visible {
+            display: block;
+            animation: aparecer 0.3s ease-out;
+        }
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correcta {
+            background-color: #d5f5e3;
+            color: #1a7a42;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .incorrecta {
+            background-color: #fadbd8;
+            color: #c0392b;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .nota {
+            background-color: #fef9e7;
+            border-left: 4px solid #f1c40f;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        .advertencia {
+            background-color: #fdedec;
+            border-left: 4px solid #e74c3c;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        /* Lista de verificación */
+        .checklist {
+            list-style-type: none;
+            margin-left: 0;
+        }
+        .checklist li::before {
+            content: "✅ ";
+            margin-right: 0.5rem;
+        }
+        /* Tabla de contenido flotante opcional */
+        .indice {
+            background-color: #eaf2f8;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .indice ul {
+            list-style-type: none;
+            margin-left: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        .indice a {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .indice a:hover {
+            text-decoration: underline;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+                padding: 0.8rem;
+            }
+            nav a {
+                text-align: center;
+                font-size: 0.9rem;
+                padding: 0.4rem;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+            section {
+                padding: 1.5rem;
+            }
+            h2 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de navegación -->
+    <nav>
+        <a href="#definicion">Definición</a>
+        <a href="#analogia">Analogía</a>
+        <a href="#partes">Partes</a>
+        <a href="#errores">Errores</a>
+        <a href="#preguntas">Preguntas</a>
+        <a href="#ejemplos">Ejemplos</a>
+        <a href="#practica">Práctica</a>
+        <a href="#advertencia">Advertencia</a>
+    </nav>
+
+    <div class="contenedor">
+        <!-- Encabezado -->
+        <header>
+            <h1>Recursividad en Java</h1>
+            <p>Clase introductoria para estudiantes de POO</p>
+        </header>
+
+        <!-- Índice rápido -->
+        <div class="indice">
+            <strong>Contenido:</strong>
+            <ul>
+                <li><a href="#definicion">1. Definición esencial</a></li>
+                <li><a href="#analogia">2. Analogía simple</a></li>
+                <li><a href="#partes">3. División en partes</a></li>
+                <li><a href="#errores">4. Errores comunes</a></li>
+                <li><a href="#preguntas">5. Preguntas de verificación</a></li>
+                <li><a href="#ejemplos">6. Ejemplos prácticos</a></li>
+                <li><a href="#practica">7. Práctica</a></li>
+                <li><a href="#advertencia">8. Advertencia</a></li>
+            </ul>
+        </div>
+
+        <!-- 1. Definición esencial -->
+        <section id="definicion">
+            <h2>1. Definición esencial</h2>
+            <p>La <strong>recursividad</strong> es una técnica de programación en la que un método se invoca a sí mismo para resolver un problema dividiéndolo en subproblemas más pequeños del mismo tipo, hasta alcanzar un caso base trivial que detiene la cadena de llamadas; se utiliza para procesar estructuras jerárquicas (árboles, directorios, grafos) y en algoritmos como búsqueda, ordenamiento y backtracking.</p>
+        </section>
+
+        <!-- 2. Analogía simple -->
+        <section id="analogia">
+            <h2>2. Analogía simple</h2>
+            <p>Imagina que tienes una clase <code>Empleado</code> con un atributo <code>jefe</code> (también de tipo <code>Empleado</code>). Quieres saber cuántos niveles jerárquicos hay por encima de ti hasta llegar al CEO. Podrías escribir un método <code>nivelesHastaCEO()</code> que funcione así:</p>
+            <pre><code><span class="comentario">// Método recursivo dentro de la clase Empleado</span>
+public int nivelesHastaCEO() {
+    <span class="comentario">// Caso base: soy el CEO, no hay nadie por encima</span>
+    if (this.jefe == null) {
+        return 0;
+    } else {
+        <span class="comentario">// Caso recursivo: pregunto a mi jefe y sumo 1</span>
+        return 1 + this.jefe.nivelesHastaCEO();
+    }
+}</code></pre>
+            <p>Cada objeto <code>Empleado</code> ejecuta el mismo método, pero con sus propios datos. El empleado de base le pregunta a su jefe, ese jefe le pregunta a su jefe, y así hasta llegar al CEO, que responde <code>0</code>. Luego las respuestas se van sumando de regreso.</p>
+            <p>Esta analogía conecta directamente con la <strong>programación orientada a objetos</strong>: cada objeto cumple un "contrato" (el método), y para cumplirlo puede delegar la misma responsabilidad en otro objeto de su misma clase. La recursividad es, en esencia, un objeto (o método) que se llama a sí mismo a través de una cadena de delegaciones.</p>
+        </section>
+
+        <!-- 3. División en partes pequeñas -->
+        <section id="partes">
+            <h2>3. División en partes pequeñas</h2>
+
+            <!-- Parte 1 -->
+            <h3>Parte 1: Caso base y caso recursivo</h3>
+            <p><strong>Definición breve:</strong> Todo método recursivo debe tener al menos una condición que detenga la recursión (<em>caso base</em>) y una llamada a sí mismo con una versión reducida del problema (<em>caso recursivo</em>). Sin caso base, el método se llamaría infinitamente y provocaría un desbordamiento de pila.</p>
+            <pre><code><span class="comentario">// Ejemplo: factorial</span>
+public class Calculadora {
+    public static long factorial(int n) {
+        <span class="comentario">// Caso base: si n es 0, la respuesta es 1</span>
+        if (n == 0) {
+            return 1;
+        }
+        <span class="comentario">// Caso recursivo: n! = n * (n-1)!</span>
+        return n * factorial(n - 1);
+    }
+}</code></pre>
+            <p>La condición <code>if (n == 0)</code> actúa como el "contrato del caso base". En el caso recursivo, reducimos el problema: <code>factorial(n - 1)</code> es una versión más pequeña.</p>
+
+            <!-- Parte 2 -->
+            <h3>Parte 2: La pila de llamadas y el orden de ejecución</h3>
+            <p><strong>Definición breve:</strong> Cada vez que un método se llama a sí mismo, se crea un nuevo <strong>marco de pila</strong> (stack frame) que contiene variables locales y punto de retorno. Las llamadas se apilan y se resuelven en orden inverso (LIFO).</p>
+            <p>Con <code>factorial(3)</code>:</p>
+            <ol>
+                <li><code>factorial(3)</code> espera a <code>factorial(2)</code>.</li>
+                <li><code>factorial(2)</code> espera a <code>factorial(1)</code>.</li>
+                <li><code>factorial(1)</code> espera a <code>factorial(0)</code>.</li>
+                <li><code>factorial(0)</code> devuelve 1.</li>
+                <li>Se desenrolla: 1*1=1, 2*1=2, 3*2=6.</li>
+            </ol>
+            <p>Puedes imaginar que cada llamada recursiva es como crear un nuevo objeto de una clase interna con su propia variable <code>n</code> y su propio contexto. La pila de llamadas mantiene separados estos contextos, igual que dos instancias de una clase tienen atributos independientes.</p>
+
+            <!-- Parte 3 -->
+            <h3>Parte 3: Diseño de métodos recursivos (pensar en subproblemas)</h3>
+            <p><strong>Definición breve:</strong> Para escribir un método recursivo, no simules toda la cadena. Sigue tres pasos: 1) identifica el caso base, 2) expresa el problema en términos de una versión más pequeña, 3) confía en que la llamada recursiva resuelve el subproblema (hipótesis de inducción).</p>
+            <pre><code><span class="comentario">// Ejemplo: contar nodos en lista enlazada</span>
+class Nodo {
+    int valor;
+    Nodo siguiente;
+
+    Nodo(int valor, Nodo siguiente) {
+        this.valor = valor;
+        this.siguiente = siguiente;
+    }
+
+    <span class="comentario">// Método recursivo para contar nodos desde este nodo</span>
+    int contar() {
+        <span class="comentario">// Caso base: si no hay siguiente, este nodo es el último</span>
+        if (this.siguiente == null) {
+            return 1;
+        }
+        <span class="comentario">// Caso recursivo: cuento este nodo + los del resto</span>
+        return 1 + this.siguiente.contar();
+    }
+}</code></pre>
+            <p>Este diseño refleja la <strong>delegación</strong> en POO: un objeto no resuelve todo el problema, pide a otro objeto de su misma clase que resuelva una parte.</p>
+
+            <!-- Parte 4 -->
+            <h3>Parte 4: Recursión vs iteración y recursión de cola</h3>
+            <p><strong>Definición breve:</strong> Cualquier problema recursivo puede reescribirse con bucles y viceversa. La recursión brilla en estructuras ramificadas (árboles, grafos). La <em>recursión de cola</em> ocurre cuando la llamada recursiva es la última operación; algunos lenguajes la optimizan, pero Java no lo hace automáticamente.</p>
+            <pre><code><span class="comentario">// Factorial iterativo</span>
+public static long factorialIterativo(int n) {
+    long resultado = 1;
+    for (int i = 1; i <= n; i++) {
+        resultado *= i;
+    }
+    return resultado;
+}
+
+<span class="comentario">// Factorial recursivo de cola (con acumulador)</span>
+public static long factorialCola(int n, long acumulador) {
+    if (n == 0) return acumulador;
+    return factorialCola(n - 1, n * acumulador);
+}</code></pre>
+            <p>En Java, la recursión de cola no está optimizada, así que para problemas lineales muy profundos se prefiere la iteración. Pero para problemas jerárquicos, la recursión es mucho más clara.</p>
+        </section>
+
+        <!-- 4. Los 3 errores más comunes -->
+        <section id="errores">
+            <h2>4. Los 3 errores más comunes</h2>
+
+            <div class="tarjeta error">
+                <h4>Error 1: Olvidar el caso base o definirlo incorrectamente</h4>
+                <p><strong>Por qué ocurre:</strong> Al concentrarse en el caso recursivo, se olvida la condición de parada o nunca se alcanza.</p>
+                <p><strong>Cómo evitarlo:</strong> Antes de escribir la llamada recursiva, pregúntate cuál es la versión más pequeña y trivial del problema. Escríbela primero como un <code>if</code> que devuelve un valor constante. Luego asegúrate de que cada llamada reduce el problema hacia ese caso base.</p>
+            </div>
+
+            <div class="tarjeta error">
+                <h4>Error 2: Intentar seguir mentalmente toda la cadena de llamadas</h4>
+                <p><strong>Por qué ocurre:</strong> Querer "ejecutar" paso a paso cada llamada satura la memoria de trabajo.</p>
+                <p><strong>Cómo evitarlo:</strong> Adopta el pensamiento inductivo: asume que tu método ya funciona para entradas más pequeñas y solo combina esa solución con el caso actual. Verifica el caso base por separado. Es como confiar en un método de otra clase sin mirar su implementación.</p>
+            </div>
+
+            <div class="tarjeta error">
+                <h4>Error 3: Creer que las variables se comparten entre llamadas recursivas</h4>
+                <p><strong>Por qué ocurre:</strong> Acostumbrados a que los atributos de un objeto persisten, piensan que una variable local es la misma en todas las llamadas.</p>
+                <p><strong>Cómo evitarlo:</strong> Recuerda que cada llamada tiene sus propias copias de parámetros y variables locales (marcos de pila separados). Si necesitas acumular, pásalo como parámetro o usa atributos de instancia (aunque introduce estado mutable).</p>
+            </div>
+        </section>
+
+        <!-- 5. Preguntas de verificación -->
+        <section id="preguntas">
+            <h2>5. Preguntas de verificación</h2>
+            <p>Haz clic en "Mostrar respuesta" para ver la solución y la explicación.</p>
+
+            <div class="tarjeta pregunta">
+                <h4>Pregunta 1</h4>
+                <p>¿Cuál es el caso base en el siguiente método?</p>
+                <pre><code>public static int sumaDigitos(int n) {
+    if (n < 10) return n;
+    return n % 10 + sumaDigitos(n / 10);
+}</code></pre>
+                <p>A) <code>n % 10</code> &nbsp; B) <code>n < 10</code> &nbsp; C) <code>sumaDigitos(n / 10)</code> &nbsp; D) No tiene caso base</p>
+                <button class="boton-respuesta" onclick="mostrarRespuesta('resp1')">Mostrar respuesta</button>
+                <div id="resp1" class="respuesta-oculta">
+                    <p><strong>Respuesta correcta: B) <code>n < 10</code></strong></p>
+                    <p><strong>Si fallas:</strong> El caso base es la condición que detiene la recursión. Aquí, cuando el número tiene un solo dígito, se devuelve ese dígito sin más recursión.</p>
+                </div>
+            </div>
+
+            <div class="tarjeta pregunta">
+                <h4>Pregunta 2</h4>
+                <p>Verdadero o falso: En una llamada recursiva, las variables locales del método son compartidas entre todas las llamadas.</p>
+                <button class="boton-respuesta" onclick="mostrarRespuesta('resp2')">Mostrar respuesta</button>
+                <div id="resp2" class="respuesta-oculta">
+                    <p><strong>Falso.</strong> Cada llamada recursiva tiene su propio conjunto de variables locales en un marco de pila separado, igual que dos objetos de una clase tienen sus propios atributos.</p>
+                </div>
+            </div>
+
+            <div class="tarjeta pregunta">
+                <h4>Pregunta 3</h4>
+                <p>¿Qué ocurre si olvidas el caso base en un método recursivo?</p>
+                <p>A) El programa compila pero devuelve 0. &nbsp; B) Se lanza <code>StackOverflowError</code>. &nbsp; C) El compilador lo detecta. &nbsp; D) El método se ejecuta una sola vez.</p>
+                <button class="boton-respuesta" onclick="mostrarRespuesta('resp3')">Mostrar respuesta</button>
+                <div id="resp3" class="respuesta-oculta">
+                    <p><strong>Respuesta correcta: B) Se lanza <code>StackOverflowError</code></strong></p>
+                    <p><strong>Si fallas:</strong> Sin caso base, cada llamada genera otra, llenando la pila hasta agotar la memoria.</p>
+                </div>
+            </div>
+
+            <div class="tarjeta pregunta">
+                <h4>Pregunta 4</h4>
+                <p>Dado el siguiente método recursivo, ¿qué devuelve <code>misterio(3)</code>?</p>
+                <pre><code>public static int misterio(int n) {
+    if (n == 0) return 0;
+    return n + misterio(n - 1);
+}</code></pre>
+                <p>A) 6 &nbsp; B) 3 &nbsp; C) 0 &nbsp; D) 1</p>
+                <button class="boton-respuesta" onclick="mostrarRespuesta('resp4')">Mostrar respuesta</button>
+                <div id="resp4" class="respuesta-oculta">
+                    <p><strong>Respuesta correcta: A) 6</strong> (suma 3 + 2 + 1 + 0)</p>
+                    <p><strong>Si fallas:</strong> Simula la pila: <code>misterio(3)</code> espera a <code>misterio(2)</code>, que espera a <code>misterio(1)</code>, que espera a <code>misterio(0)</code>. Luego se suman al desenrollar.</p>
+                </div>
+            </div>
+
+            <div class="tarjeta pregunta">
+                <h4>Pregunta 5</h4>
+                <p>¿Cuál de las siguientes afirmaciones sobre recursión es correcta?</p>
+                <p>A) La recursión siempre es más eficiente que la iteración. &nbsp; B) La recursión solo sirve para factoriales. &nbsp; C) Cualquier problema iterativo se puede expresar recursivamente y viceversa. &nbsp; D) En Java, la recursión de cola está optimizada automáticamente.</p>
+                <button class="boton-respuesta" onclick="mostrarRespuesta('resp5')">Mostrar respuesta</button>
+                <div id="resp5" class="respuesta-oculta">
+                    <p><strong>Respuesta correcta: C)</strong></p>
+                    <p><strong>Si fallas:</strong> La recursión no es intrínsecamente más rápida (usa más memoria por la pila). En Java no hay optimización automática de recursión de cola. La recursión es preferible en estructuras jerárquicas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Ejemplos prácticos para clase y práctica -->
+        <section id="ejemplos">
+            <h2>6. Ejemplos prácticos</h2>
+
+            <!-- Ejemplo en clase 1 -->
+            <div class="tarjeta ejemplo">
+                <h3>Ejemplo en clase 1: Factorial recursivo (introducción)</h3>
+                <p><strong>Momento de la clase:</strong> Al inicio, justo después de explicar caso base y caso recursivo.</p>
+                <pre><code><span class="comentario">// EjemploFactorial.java</span>
+public class EjemploFactorial {
+
+    <span class="comentario">/** Calcula el factorial de n de forma recursiva. */</span>
+    public static long factorial(int n) {
+        <span class="comentario">// Caso base: 0! = 1</span>
+        if (n == 0) {
+            return 1;
+        }
+        <span class="comentario">// Caso recursivo: n! = n * (n-1)!</span>
+        return n * factorial(n - 1);
+    }
+
+    public static void main(String[] args) {
+        int numero = 5;
+        long resultado = factorial(numero);
+        System.out.println("El factorial de " + numero + " es " + resultado);
+    }
+}</code></pre>
+                <p><strong>Explicación paso a paso:</strong> <code>main</code> llama a <code>factorial(5)</code>; como <code>5 != 0</code>, se ejecuta <code>return 5 * factorial(4)</code>. Esto continúa hasta <code>factorial(0)</code> que devuelve 1. Luego se desenrolla: 1*1=1, 2*1=2, ..., 5*24=120.</p>
+                <p><strong>Qué resaltar:</strong> Importancia del caso base, reducción del problema, y que la multiplicación ocurre después de que la llamada recursiva retorna.</p>
+            </div>
+
+            <!-- Ejemplo en clase 2 -->
+            <div class="tarjeta ejemplo">
+                <h3>Ejemplo en clase 2: Recorrido de árbol binario</h3>
+                <p><strong>Momento de la clase:</strong> Después de la Parte 3, para mostrar recursión natural en estructuras jerárquicas.</p>
+                <pre><code><span class="comentario">// Clase NodoArbol con inserción y recorrido recursivos</span>
+class NodoArbol {
+    int valor;
+    NodoArbol izquierdo;
+    NodoArbol derecho;
+
+    NodoArbol(int valor) {
+        this.valor = valor;
+        this.izquierdo = null;
+        this.derecho = null;
+    }
+
+    <span class="comentario">// Inserción recursiva</span>
+    void insertar(int nuevoValor) {
+        if (nuevoValor &lt; this.valor) {
+            if (this.izquierdo == null) {
+                this.izquierdo = new NodoArbol(nuevoValor);
+            } else {
+                this.izquierdo.insertar(nuevoValor);
+            }
+        } else if (nuevoValor &gt; this.valor) {
+            if (this.derecho == null) {
+                this.derecho = new NodoArbol(nuevoValor);
+            } else {
+                this.derecho.insertar(nuevoValor);
+            }
+        }
+        <span class="comentario">// Si es igual, no se hace nada (evita duplicados)</span>
+    }
+
+    <span class="comentario">// Recorrido inorden recursivo: izquierdo, raíz, derecho</span>
+    void imprimirInorden() {
+        if (this.izquierdo != null) {
+            this.izquierdo.imprimirInorden();
+        }
+        System.out.print(this.valor + " ");
+        if (this.derecho != null) {
+            this.derecho.imprimirInorden();
+        }
+    }
+}
+
+public class EjemploArbol {
+    public static void main(String[] args) {
+        NodoArbol raiz = new NodoArbol(50);
+        raiz.insertar(30);
+        raiz.insertar(70);
+        raiz.insertar(20);
+        raiz.insertar(40);
+        raiz.insertar(60);
+        raiz.insertar(80);
+
+        System.out.println("Recorrido inorden:");
+        raiz.imprimirInorden();  <span class="comentario">// 20 30 40 50 60 70 80</span>
+    }
+}</code></pre>
+                <p><strong>Qué resaltar:</strong> La recursión permite expresar el algoritmo en términos del propio árbol. Cada objeto delega a otros de su misma clase. La alternativa iterativa requeriría una pila explícita.</p>
+            </div>
+        </section>
+
+        <!-- Práctica para el alumno -->
+        <section id="practica">
+            <h2>Práctica para el alumno</h2>
+            <div class="tarjeta" style="border-left: 5px solid #8e44ad;">
+                <h3>Enunciado: Búsqueda binaria recursiva</h3>
+                <p>Implementa un método recursivo que realice una búsqueda binaria sobre un arreglo ordenado de enteros. Firma:</p>
+                <pre><code>public static int busquedaBinaria(int[] arreglo, int objetivo, int inicio, int fin)</code></pre>
+                <p>Debe devolver el índice del elemento si lo encuentra, o <code>-1</code> si no está. No puedes usar bucles; la solución debe ser recursiva.</p>
+                <p><strong>Objetivos de aprendizaje:</strong> Identificar caso base, definir caso recursivo reduciendo a la mitad, confiar en la llamada recursiva, manejar índices correctamente.</p>
+                <p><strong>Pista:</strong> Caso base: si <code>inicio &gt; fin</code>, subarreglo vacío. Calcula medio, compara, y llama recursivamente con <code>fin = medio - 1</code> o <code>inicio = medio + 1</code>. Devuelve el resultado de la llamada recursiva.</p>
+                <p><strong>Solución de referencia (para el profesor):</strong></p>
+                <pre><code>public static int busquedaBinaria(int[] arreglo, int objetivo, int inicio, int fin) {
+    if (inicio &gt; fin) return -1;
+    int medio = (inicio + fin) / 2;
+    if (arreglo[medio] == objetivo) return medio;
+    if (objetivo &lt; arreglo[medio])
+        return busquedaBinaria(arreglo, objetivo, inicio, medio - 1);
+    else
+        return busquedaBinaria(arreglo, objetivo, medio + 1, fin);
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- 7. Advertencia sobre malas prácticas -->
+        <section id="advertencia">
+            <h2>Advertencia sobre malas prácticas de enseñanza</h2>
+            <div class="advertencia">
+                <p>Un error común en muchos cursos es presentar la recursividad <strong>únicamente</strong> con ejemplos lineales como factorial o Fibonacci. Esto lleva a pensar que la recursión es una alternativa rebuscada e ineficiente a los bucles. Si solo ves factorial recursivo, es lógico preguntarse: "¿por qué no usar un simple <code>for</code>?".</p>
+                <p>Otro enfoque equivocado es obligar a los estudiantes a <strong>simular manualmente cada paso de la pila</strong> para programas recursivos complejos. Si bien entender la pila es importante, obsesionarse con el seguimiento paso a paso impide desarrollar el pensamiento inductivo: confiar en que la llamada recursiva resuelve el subproblema.</p>
+                <p>Además, algunos profesores afirman que "la recursión es mala porque llena la pila" sin matizar. Si bien es cierto que una recursión profunda puede causar <code>StackOverflowError</code>, en problemas con estructuras jerárquicas (árboles balanceados, directorios, divide y vencerás) la profundidad es logarítmica o acotada, y la recursión es la solución más natural y mantenible.</p>
+                <p><strong>Desde el principio, entiende que la recursividad es una herramienta de diseño, no una simple técnica de control de flujo.</strong> Es la manera natural de expresar soluciones para problemas con estructura autorreplicante.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript para mostrar/ocultar respuestas -->
+    <script>
+        function mostrarRespuesta(id) {
+            const elemento = document.getElementById(id);
+            if (elemento.classList.contains('respuesta-visible')) {
+                elemento.classList.remove('respuesta-visible');
+                elemento.classList.add('respuesta-oculta');
+            } else {
+                elemento.classList.remove('respuesta-oculta');
+                elemento.classList.add('respuesta-visible');
+            }
+        }
+    </script>
+</body>
+</html>

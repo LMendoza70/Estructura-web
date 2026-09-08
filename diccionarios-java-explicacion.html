@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diccionarios en Java</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/comun.css">
+<style>
+  /* Ajustes específicos de esta página */
+  .wrap{max-width:860px;}
+  .hero h1{font-size:2.1rem;}
+  .hero p{max-width:600px; font-size:1.02rem;}
+  h2{font-size:1.5rem; margin:6px 0 16px;}
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:16px 18px; overflow-x:auto; font-size:.83rem; color:#D6D9E0;}
+  .pager{max-width:860px;}
+  .traits .box h3{margin:0 0 6px; font-size:1rem; color:var(--teal); font-family:'JetBrains Mono',monospace;}
+  .traits .box p{margin:0; font-size:.9rem;}
+  .uses .box h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .uses .box p{margin:0; font-size:.88rem; color:var(--text-dim);}
+
+  /* SIGNATURE: cubetas de hash */
+  .hash-hero{max-width:880px; margin:36px auto 0; padding:0 24px;}
+  .hash-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:10px; padding:24px 20px;}
+  .buckets{display:grid; grid-template-columns:repeat(6,1fr); gap:10px;}
+  @media (max-width:640px){.buckets{grid-template-columns:repeat(3,1fr);}}
+  .bucket{background:#12151E; border:1px solid #2E3549; border-radius:8px; min-height:70px; padding:8px; display:flex; flex-direction:column; gap:4px;}
+  .bucket .idx{font-size:.68rem; color:var(--text-dim); font-family:'JetBrains Mono',monospace; text-align:center;}
+  .bucket.active{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber) inset;}
+  .entry{background:var(--card); color:var(--ink); border-radius:5px; padding:4px 8px; font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:700; text-align:center; animation:pop .25s ease-out;}
+  @keyframes pop{ from{transform:scale(.8); opacity:0;} to{transform:scale(1); opacity:1;} }
+  .hash-controls{display:flex; gap:8px; justify-content:center; margin-top:20px; flex-wrap:wrap;}
+  input.h-input{padding:9px 10px; border-radius:6px; border:1px solid #3C4459; background:#12151E; color:var(--text); font-family:'JetBrains Mono',monospace; width:110px;}
+  .hash-msg{text-align:center; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--amber); min-height:20px; margin-top:14px;}
+  .hash-caption{text-align:center; color:var(--text-dim); font-size:.85rem; margin-top:10px;}
+</style>
+<script src="js/comun.js" defer></script>
+</head>
+<body>
+
+<div class="back-nav"><a href="index.html">← Volver al índice</a><a href="Apuntes/Diccionarios.png" download>Descargar apunte (infografía de diccionarios)</a></div>
+
+<div class="hero">
+  <div class="eyebrow">Estructuras de Datos Avanzadas · Java</div>
+  <h1>Diccionarios: buscar por nombre, no por posición</h1>
+  <p>En un arreglo preguntas "¿qué hay en la posición 3?". En un diccionario preguntas "¿qué hay bajo la clave <code>"manzana"</code>?" — y la respuesta llega casi instantáneamente, sin importar cuántos elementos existan.</p>
+</div>
+
+<div class="hash-hero">
+  <div class="hash-zone">
+    <div class="buckets" id="buckets"></div>
+  </div>
+  <div class="hash-msg" id="hashMsg">Un diccionario vacío tiene sus cubetas listas para recibir pares clave-valor.</div>
+  <div class="hash-controls">
+    <input class="h-input" id="keyInput" placeholder="clave">
+    <input class="h-input" id="valInput" placeholder="valor">
+    <button onclick="putEntry()">put()</button>
+    <button class="secondary" onclick="getEntry()">get()</button>
+    <button class="secondary" onclick="resetHash()">Reiniciar</button>
+  </div>
+  <p class="hash-caption">Cada clave pasa por una función hash que decide directamente en qué cubeta vive — por eso <code>get()</code> no necesita recorrer todo el diccionario.</p>
+</div>
+
+<div class="wrap">
+
+<section>
+  <div class="eyebrow-sm">01 · Concepto de diccionarios</div>
+  <h2>¿Qué es un diccionario?</h2>
+  <p>Un diccionario (también llamado <i>mapa</i> o <i>Map</i>) es una estructura de datos que almacena información en <b>pares clave-valor</b>. Cada clave es única dentro del diccionario y se usa para acceder directamente a su valor asociado, sin necesidad de un índice numérico ni de recorrer los demás elementos.</p>
+  <div class="analogy">
+    <b>Analogía:</b> un diccionario de español de toda la vida. No lo lees de la página 1 a la 900 para encontrar "manzana": vas directo a la sección que corresponde a esa palabra porque el libro está organizado para que la <b>palabra misma</b> (la clave) te lleve directo a su definición (el valor). Un diccionario en programación funciona con la misma idea, solo que la clave puede ser cualquier tipo de dato, no solo texto.
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">02 · Componentes</div>
+  <h2>Las piezas de un diccionario</h2>
+  <div class="traits">
+    <div class="box"><h3>clave (key)</h3><p>El identificador único que se usa para guardar y recuperar un valor. No puede repetirse dentro del mismo diccionario.</p></div>
+    <div class="box"><h3>valor (value)</h3><p>El dato asociado a esa clave. A diferencia de las claves, los valores sí pueden repetirse.</p></div>
+    <div class="box"><h3>entrada (entry)</h3><p>El par clave-valor completo, tal como vive dentro de la estructura.</p></div>
+    <div class="box"><h3>función hash</h3><p>Convierte la clave en un número (el índice de una cubeta), determinando en qué parte de la memoria interna vivirá esa entrada.</p></div>
+    <div class="box"><h3>cubetas (buckets)</h3><p>Las "casillas" internas donde caen las entradas según el resultado de la función hash — lo que ves representado arriba.</p></div>
+    <div class="box"><h3>colisión</h3><p>Cuando dos claves distintas producen el mismo resultado de hash y deben convivir en la misma cubeta; el diccionario las maneja internamente (por ejemplo, en una pequeña lista dentro de la cubeta).</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">03 · Función práctica</div>
+  <h2>Dónde se usan los diccionarios para resolver problemas reales</h2>
+  <div class="uses">
+    <div class="box"><h3>Agenda de contactos</h3><p>La clave es el nombre; el valor, el número de teléfono. Buscar un contacto es instantáneo.</p></div>
+    <div class="box"><h3>Conteo de frecuencia de palabras</h3><p>La clave es la palabra; el valor, cuántas veces apareció — el patrón más común para este tipo de análisis.</p></div>
+    <div class="box"><h3>Caché / memorización</h3><p>Se guarda el resultado de un cálculo costoso usando sus parámetros de entrada como clave, evitando repetir el trabajo.</p></div>
+    <div class="box"><h3>Traducción de códigos</h3><p>Convertir un código de país, de error o de moneda en su nombre completo, en un solo paso.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">04 · Operaciones</div>
+  <h2>Lo que se le puede hacer a un diccionario</h2>
+  <div class="traits">
+    <div class="box"><h3>put(clave, valor)</h3><p>Agrega una nueva entrada, o reemplaza el valor si la clave ya existía.</p></div>
+    <div class="box"><h3>get(clave)</h3><p>Devuelve el valor asociado a esa clave, o <code>null</code> si no existe.</p></div>
+    <div class="box"><h3>remove(clave)</h3><p>Elimina la entrada correspondiente a esa clave.</p></div>
+    <div class="box"><h3>containsKey(clave)</h3><p>Indica si esa clave existe en el diccionario, sin necesidad de comparar con <code>null</code> manualmente.</p></div>
+  </div>
+
+  <pre class="code"><span class="kw">import</span> java.util.HashMap;
+<span class="kw">import</span> java.util.Map;
+
+Map&lt;<span class="tp">String</span>, <span class="tp">String</span>&gt; agenda = <span class="kw">new</span> HashMap&lt;&gt;();
+
+<span class="cm">// put: agregar o actualizar una entrada</span>
+agenda.put(<span class="str">"Ana"</span>, <span class="str">"555-1234"</span>);
+agenda.put(<span class="str">"Luis"</span>, <span class="str">"555-5678"</span>);
+agenda.put(<span class="str">"Ana"</span>, <span class="str">"555-0000"</span>);   <span class="cm">// reemplaza el valor anterior de "Ana"</span>
+
+<span class="cm">// get: obtener un valor por su clave</span>
+<span class="tp">String</span> numero = agenda.get(<span class="str">"Luis"</span>);   <span class="cm">// "555-5678"</span>
+
+<span class="cm">// containsKey: verificar existencia antes de usar el valor</span>
+<span class="kw">if</span> (agenda.containsKey(<span class="str">"Marco"</span>)) {
+    System.out.println(agenda.get(<span class="str">"Marco"</span>));
+} <span class="kw">else</span> {
+    System.out.println(<span class="str">"Contacto no encontrado"</span>);
+}
+
+<span class="cm">// remove: eliminar una entrada</span>
+agenda.remove(<span class="str">"Ana"</span>);
+
+<span class="cm">// recorrer todas las entradas</span>
+<span class="kw">for</span> (Map.Entry&lt;<span class="tp">String</span>, <span class="tp">String</span>&gt; entrada : agenda.entrySet()) {
+    System.out.println(entrada.getKey() + <span class="str">" -> "</span> + entrada.getValue());
+}</pre>
+</section>
+
+<section>
+  <div class="eyebrow-sm">05 · Errores frecuentes</div>
+  <h2>Lo que suele fallar</h2>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Asumir que <code>get()</code> lanza un error si la clave no existe:</b> en realidad devuelve <code>null</code>. Si no se valida antes de usar el resultado, puede provocar un <code>NullPointerException</code> más adelante en el código.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Esperar un orden específico al recorrer un <code>HashMap</code>:</b> el orden de iteración no está garantizado. Si el orden importa, hay que usar <code>LinkedHashMap</code> (orden de inserción) o <code>TreeMap</code> (orden por clave).</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Usar como clave un objeto que puede cambiar después de insertarlo:</b> si el contenido de la clave cambia tras el <code>put()</code>, su hash cambia también, y el diccionario puede "perder" esa entrada — ya no la encontrará en su cubeta original.</div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">06 · Principio de Pareto</div>
+  <h2>El 20% de reglas que explica el 80% de los diccionarios</h2>
+  <ul class="checklist">
+    <li>Toda entrada es un par clave-valor; las claves son únicas, los valores no tienen por qué serlo.</li>
+    <li>La función hash convierte la clave en la posición interna donde vivirá el valor — por eso el acceso es prácticamente O(1) en promedio, sin importar el tamaño del diccionario.</li>
+    <li><code>put()</code> agrega o reemplaza; <code>get()</code> consulta (y devuelve <code>null</code> si no existe); <code>remove()</code> elimina; <code>containsKey()</code> verifica antes de asumir.</li>
+    <li>Si necesitas orden garantizado al recorrer, un <code>HashMap</code> normal no lo ofrece: usa <code>LinkedHashMap</code> o <code>TreeMap</code>.</li>
+    <li>Si el problema es "necesito buscar algo por su nombre/código/identificador rápidamente", casi siempre la respuesta es un diccionario.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow-sm">07 · Active recall</div>
+  <h2>Ponte a prueba (haz clic en cada pregunta)</h2>
+
+  <div class="quiz-item">
+    <div class="q">1. ¿Qué diferencia principal hay entre acceder a un elemento de un arreglo y a uno de un diccionario?</div>
+    <div class="a">En el arreglo se accede por posición numérica (índice); en el diccionario se accede por una clave, que puede ser de cualquier tipo, no solo un número.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">2. ¿Qué hace la función hash dentro de un diccionario?</div>
+    <div class="a">Convierte la clave en un número que determina en qué cubeta interna se guardará (o se buscará) la entrada, permitiendo un acceso casi directo sin recorrer todas las entradas.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">3. ¿Qué devuelve <code>get()</code> si la clave que buscas no existe en el diccionario?</div>
+    <div class="a"><code>null</code>, no una excepción. Por eso es recomendable verificar con <code>containsKey()</code> antes de usar el resultado, para evitar un <code>NullPointerException</code>.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">4. Si haces <code>put("Ana", "555-1234")</code> y luego <code>put("Ana", "555-0000")</code>, ¿cuántas entradas quedan para "Ana" y con qué valor?</div>
+    <div class="a">Queda una sola entrada, con el valor más reciente: "555-0000". Como las claves son únicas, el segundo <code>put()</code> reemplaza el valor anterior en vez de crear una entrada nueva.</div>
+  </div>
+</section>
+
+</div>
+
+<div class="signature">
+  <div class="line"></div>
+  <div class="name">MTI Luis Alberto Mendoza San Juan</div>
+  <div class="title">Elaboró</div>
+  <div class="subject">Programa de asignatura: Estructura de Datos (E-ETD-2) · Licenciatura en Ingeniería en Tecnologías de la Información e Innovación Digital</div>
+</div>
+
+<p class="footer-note">Guía generada para apoyar la enseñanza de diccionarios en Java · Universidad Tecnológica de la Huasteca Hidalguense</p>
+
+<nav class="pager" aria-label="Navegación entre temas">
+  <a class="pager-item pager-prev" href="arboles-java-explicacion.html"><span class="pager-dir">← Tema anterior</span><span class="pager-tema">Árboles</span></a>
+  <a class="pager-item pager-home" href="index.html" title="Volver al índice"><span class="pager-dir">Índice</span></a>
+  <a class="pager-item pager-next" href="conjuntos-java-explicacion.html"><span class="pager-dir">Tema siguiente →</span><span class="pager-tema">Conjuntos</span></a>
+</nav>
+
+<script>
+const NUM_BUCKETS = 6;
+let dict = {}; // key -> value
+const zone = document.getElementById('buckets');
+
+function hashKey(key){
+  let sum = 0;
+  for(let i=0;i<key.length;i++) sum += key.charCodeAt(i);
+  return sum % NUM_BUCKETS;
+}
+
+function render(activeBucket){
+  zone.innerHTML = '';
+  for(let b=0;b<NUM_BUCKETS;b++){
+    const div = document.createElement('div');
+    div.className = 'bucket' + (b===activeBucket ? ' active' : '');
+    let html = `<div class="idx">cubeta ${b}</div>`;
+    Object.keys(dict).forEach(k=>{
+      if(hashKey(k)===b){
+        html += `<div class="entry">${k}: ${dict[k]}</div>`;
+      }
+    });
+    div.innerHTML = html;
+    zone.appendChild(div);
+  }
+}
+
+function putEntry(){
+  const k = document.getElementById('keyInput').value.trim();
+  const v = document.getElementById('valInput').value.trim();
+  const msg = document.getElementById('hashMsg');
+  if(k===''||v===''){ msg.textContent = 'Escribe una clave y un valor antes de put().'; return; }
+  const existed = dict.hasOwnProperty(k);
+  dict[k] = v;
+  const b = hashKey(k);
+  msg.textContent = existed
+    ? `put("${k}", "${v}") → se actualizó el valor existente en la cubeta ${b}.`
+    : `put("${k}", "${v}") → hash("${k}") = cubeta ${b}.`;
+  render(b);
+  document.getElementById('keyInput').value='';
+  document.getElementById('valInput').value='';
+}
+
+function getEntry(){
+  const k = document.getElementById('keyInput').value.trim();
+  const msg = document.getElementById('hashMsg');
+  if(k===''){ msg.textContent = 'Escribe una clave antes de get().'; return; }
+  const b = hashKey(k);
+  if(dict.hasOwnProperty(k)){
+    msg.textContent = `get("${k}") → va directo a la cubeta ${b} y devuelve "${dict[k]}".`;
+  } else {
+    msg.textContent = `get("${k}") → la cubeta ${b} no tiene esa clave; devuelve null.`;
+  }
+  render(b);
+}
+
+function resetHash(){
+  dict = {};
+  document.getElementById('hashMsg').textContent = 'Diccionario reiniciado.';
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conjuntos en Java</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/comun.css">
+<style>
+  /* Ajustes específicos de esta página */
+  .wrap{max-width:860px;}
+  .hero h1{font-size:2.1rem;}
+  .hero p{max-width:600px; font-size:1.02rem;}
+  h2{font-size:1.5rem; margin:6px 0 16px;}
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:16px 18px; overflow-x:auto; font-size:.83rem; color:#D6D9E0;}
+  .pager{max-width:860px;}
+  .traits .box h3{margin:0 0 6px; font-size:1rem; color:var(--teal);}
+  .traits .box p{margin:0; font-size:.9rem;}
+  .uses .box h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .uses .box p{margin:0; font-size:.88rem; color:var(--text-dim);}
+
+  /* SIGNATURE: diagrama de Venn */
+  .venn-hero{max-width:880px; margin:36px auto 0; padding:0 24px;}
+  .venn-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:10px; padding:20px;}
+  svg{display:block; margin:0 auto;}
+  .circleA{fill:rgba(232,163,61,.14); stroke:var(--amber); stroke-width:1.5;}
+  .circleB{fill:rgba(79,176,174,.14); stroke:var(--teal); stroke-width:1.5;}
+  .circleA.hi{fill:rgba(232,163,61,.4);}
+  .circleB.hi{fill:rgba(79,176,174,.4);}
+  .venn-label{font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700;}
+  .venn-el{font-family:'JetBrains Mono',monospace; font-size:12px; fill:var(--text); text-anchor:middle;}
+  .op-row{display:flex; gap:8px; justify-content:center; margin-top:16px; flex-wrap:wrap;}
+  .op-row button{font-size:.8rem; padding:8px 14px;}
+  .venn-controls{display:flex; gap:8px; justify-content:center; margin-top:16px; flex-wrap:wrap;}
+  input.v-input{padding:9px 10px; border-radius:6px; border:1px solid #3C4459; background:#12151E; color:var(--text); font-family:'JetBrains Mono',monospace; width:80px;}
+  .venn-msg{text-align:center; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--amber); min-height:36px; margin-top:14px;}
+  .venn-caption{text-align:center; color:var(--text-dim); font-size:.85rem; margin-top:6px;}
+</style>
+<script src="js/comun.js" defer></script>
+</head>
+<body>
+
+<div class="back-nav"><a href="index.html">← Volver al índice</a><a href="Apuntes/Conjuntos.png" download>Descargar apunte (infografía de conjuntos)</a></div>
+
+<div class="hero">
+  <div class="eyebrow">Estructuras de Datos Avanzadas · Java</div>
+  <h1>Conjuntos: lo único que importa es quién pertenece</h1>
+  <p>No hay posiciones, no hay orden garantizado, y jamás hay dos elementos iguales. Un conjunto solo responde una pregunta: ¿esto pertenece o no pertenece?</p>
+</div>
+
+<div class="venn-hero">
+  <div class="venn-zone">
+    <svg id="vennSvg" width="520" height="280" viewBox="0 0 520 280"></svg>
+  </div>
+  <div class="op-row">
+    <button class="secondary" onclick="showOp('union')">A ∪ B (unión)</button>
+    <button class="secondary" onclick="showOp('inter')">A ∩ B (intersección)</button>
+    <button class="secondary" onclick="showOp('diffAB')">A − B (diferencia)</button>
+    <button class="secondary" onclick="showOp('diffBA')">B − A (diferencia)</button>
+    <button class="secondary" onclick="showOp('none')">Limpiar resaltado</button>
+  </div>
+  <div class="venn-controls">
+    <input class="v-input" id="valInput" placeholder="valor">
+    <button onclick="addTo('A')">agregar a A</button>
+    <button onclick="addTo('B')">agregar a B</button>
+    <button class="secondary" onclick="resetVenn()">Reiniciar</button>
+  </div>
+  <div class="venn-msg" id="vennMsg">Conjunto A = {1, 2, 3, 4} · Conjunto B = {3, 4, 5, 6}</div>
+  <p class="venn-caption">Intenta agregar un valor que ya existe en un conjunto: no se duplicará.</p>
+</div>
+
+<div class="wrap">
+
+<section>
+  <div class="eyebrow-sm">01 · Concepto de conjuntos</div>
+  <h2>¿Qué es un conjunto?</h2>
+  <p>Un conjunto (<i>Set</i>) es una colección de elementos donde <b>ningún valor puede repetirse</b> y, a diferencia de un arreglo o una lista, no existe un orden garantizado ni una posición numérica para acceder a sus elementos. Lo único relevante es si un elemento <b>pertenece</b> o no al conjunto.</p>
+  <div class="analogy">
+    <b>Analogía:</b> piensa en una bolsa de canicas de distintos colores. No importa en qué orden metiste las canicas a la bolsa, y si intentas meter una segunda canica exactamente del mismo color y tamaño que otra que ya está adentro, en realidad la bolsa "ya la tenía": no se duplica. Lo único que puedes preguntar con sentido es "¿hay una canica azul en la bolsa?", no "¿qué canica está en la posición 3?".
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">02 · Componentes</div>
+  <h2>Las piezas de un conjunto</h2>
+  <div class="traits">
+    <div class="box"><h3>elemento</h3><p>Cada valor individual que pertenece al conjunto.</p></div>
+    <div class="box"><h3>unicidad</h3><p>La regla central: si intentas agregar un elemento que ya existe, el conjunto simplemente lo ignora — no genera un duplicado ni un error.</p></div>
+    <div class="box"><h3>pertenencia</h3><p>La operación fundamental: preguntar si un valor específico está o no dentro del conjunto.</p></div>
+    <div class="box"><h3>implementación interna</h3><p>La implementación más común, <code>HashSet</code>, usa internamente la misma idea de función hash y cubetas que un diccionario — de hecho, un <code>HashSet</code> se construye por dentro sobre un <code>HashMap</code>.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">03 · Función práctica</div>
+  <h2>Dónde se usan los conjuntos para resolver problemas reales</h2>
+  <div class="uses">
+    <div class="box"><h3>Eliminar duplicados</h3><p>Pasar una lista con repetidos por un conjunto es la forma más directa de quedarte solo con los valores únicos.</p></div>
+    <div class="box"><h3>Verificar pertenencia rápidamente</h3><p>Preguntar "¿este correo ya está registrado?" en O(1) promedio, sin recorrer toda la lista de usuarios.</p></div>
+    <div class="box"><h3>Comparar dos colecciones</h3><p>Encontrar qué tienen en común dos grupos (intersección), qué le falta a uno respecto al otro (diferencia), o combinarlos sin duplicar (unión).</p></div>
+    <div class="box"><h3>Etiquetas o permisos únicos</h3><p>Un conjunto de roles o etiquetas asignadas a un usuario, donde no tiene sentido que un mismo rol aparezca dos veces.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">04 · Operaciones</div>
+  <h2>Lo que se le puede hacer a un conjunto</h2>
+  <div class="traits">
+    <div class="box"><h3>add(valor)</h3><p>Agrega un elemento. Si ya existía, no ocurre nada — el conjunto sigue teniendo un solo ejemplar.</p></div>
+    <div class="box"><h3>remove(valor)</h3><p>Elimina un elemento si está presente.</p></div>
+    <div class="box"><h3>contains(valor)</h3><p>Devuelve <code>true</code> o <code>false</code> según si el valor pertenece al conjunto.</p></div>
+    <div class="box"><h3>size()</h3><p>Devuelve cuántos elementos únicos tiene el conjunto.</p></div>
+  </div>
+
+  <pre class="code"><span class="kw">import</span> java.util.HashSet;
+<span class="kw">import</span> java.util.Set;
+
+Set&lt;<span class="tp">Integer</span>&gt; numeros = <span class="kw">new</span> HashSet&lt;&gt;();
+
+numeros.add(<span class="num">3</span>);
+numeros.add(<span class="num">7</span>);
+numeros.add(<span class="num">3</span>);   <span class="cm">// se ignora: 3 ya estaba en el conjunto</span>
+
+System.out.println(numeros.size());        <span class="cm">// 2, no 3</span>
+System.out.println(numeros.contains(<span class="num">7</span>));  <span class="cm">// true</span>
+
+numeros.remove(<span class="num">7</span>);
+System.out.println(numeros.contains(<span class="num">7</span>));  <span class="cm">// false</span></pre>
+
+  <h3 style="font-size:1.05rem; color:#fff; margin-top:26px;">Operaciones de conjuntos matemáticos</h3>
+  <p>Java permite realizar directamente las operaciones clásicas de la teoría de conjuntos usando los métodos de colecciones:</p>
+  <pre class="code">Set&lt;<span class="tp">Integer</span>&gt; a = <span class="kw">new</span> HashSet&lt;&gt;(List.of(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>));
+Set&lt;<span class="tp">Integer</span>&gt; b = <span class="kw">new</span> HashSet&lt;&gt;(List.of(<span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>));
+
+<span class="cm">// Unión: todos los elementos de ambos, sin repetir</span>
+Set&lt;<span class="tp">Integer</span>&gt; union = <span class="kw">new</span> HashSet&lt;&gt;(a);
+union.addAll(b);   <span class="cm">// {1,2,3,4,5,6}</span>
+
+<span class="cm">// Intersección: solo los que están en ambos</span>
+Set&lt;<span class="tp">Integer</span>&gt; interseccion = <span class="kw">new</span> HashSet&lt;&gt;(a);
+interseccion.retainAll(b);   <span class="cm">// {3,4}</span>
+
+<span class="cm">// Diferencia: los que están en A pero no en B</span>
+Set&lt;<span class="tp">Integer</span>&gt; diferencia = <span class="kw">new</span> HashSet&lt;&gt;(a);
+diferencia.removeAll(b);   <span class="cm">// {1,2}</span></pre>
+</section>
+
+<section>
+  <div class="eyebrow-sm">05 · Errores frecuentes</div>
+  <h2>Lo que suele fallar</h2>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Intentar acceder por índice:</b> un conjunto no tiene <code>get(i)</code> ni posiciones — si necesitas orden y acceso posicional, la estructura correcta es una lista, no un conjunto.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Esperar un orden de iteración predecible con <code>HashSet</code>:</b> el orden no está garantizado. Si el orden de inserción importa, usa <code>LinkedHashSet</code>; si necesitas orden ascendente automático, usa <code>TreeSet</code>.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Confundir <code>removeAll()</code> con la intersección:</b> <code>removeAll(b)</code> calcula la diferencia (A − B), quitando de A todo lo que está en B — no la intersección, que se logra con <code>retainAll()</code>.</div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">06 · Principio de Pareto</div>
+  <h2>El 20% de reglas que explica el 80% de los conjuntos</h2>
+  <ul class="checklist">
+    <li>Ningún elemento puede repetirse: agregar un duplicado no tiene efecto.</li>
+    <li>No hay índices ni orden garantizado (salvo que uses <code>LinkedHashSet</code> o <code>TreeSet</code>).</li>
+    <li><code>add()</code>, <code>remove()</code> y <code>contains()</code> son, en promedio, tan rápidos como las operaciones de un diccionario — porque internamente usan el mismo mecanismo de hash.</li>
+    <li>Unión = <code>addAll()</code>; Intersección = <code>retainAll()</code>; Diferencia = <code>removeAll()</code>.</li>
+    <li>Si el problema es "quiero saber si algo ya existe" o "quiero quitar duplicados", casi siempre la respuesta es un conjunto.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow-sm">07 · Active recall</div>
+  <h2>Ponte a prueba (haz clic en cada pregunta)</h2>
+
+  <div class="quiz-item">
+    <div class="q">1. Si agregas el número 5 dos veces seguidas a un <code>HashSet</code>, ¿cuántas veces aparece dentro del conjunto?</div>
+    <div class="a">Solo una vez. La regla de unicidad hace que el segundo <code>add(5)</code> no tenga ningún efecto.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">2. ¿Qué método de <code>Set</code> calcula la intersección entre dos conjuntos?</div>
+    <div class="a"><code>retainAll()</code>: conserva únicamente los elementos que también están presentes en el otro conjunto.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">3. ¿Por qué no se puede escribir <code>conjunto.get(0)</code> como en un arreglo?</div>
+    <div class="a">Porque un conjunto no tiene posiciones ni orden garantizado; su única operación de consulta relevante es preguntar si un valor pertenece (<code>contains()</code>), no recuperarlo por índice.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">4. Tienes dos listas con posibles usuarios repetidos entre sí y quieres saber cuáles usuarios están en ambas listas a la vez. ¿Qué operación de conjuntos usarías?</div>
+    <div class="a">La intersección (<code>retainAll()</code>): convertir cada lista en un conjunto y calcular los elementos que ambos conjuntos tienen en común.</div>
+  </div>
+</section>
+
+</div>
+
+<div class="signature">
+  <div class="line"></div>
+  <div class="name">MTI Luis Alberto Mendoza San Juan</div>
+  <div class="title">Elaboró</div>
+  <div class="subject">Programa de asignatura: Estructura de Datos (E-ETD-2) · Licenciatura en Ingeniería en Tecnologías de la Información e Innovación Digital</div>
+</div>
+
+<p class="footer-note">Guía generada para apoyar la enseñanza de conjuntos en Java · Universidad Tecnológica de la Huasteca Hidalguense</p>
+
+<nav class="pager" aria-label="Navegación entre temas">
+  <a class="pager-item pager-prev" href="diccionarios-java-explicacion.html"><span class="pager-dir">← Tema anterior</span><span class="pager-tema">Diccionarios</span></a>
+  <a class="pager-item pager-home" href="index.html" title="Volver al índice"><span class="pager-dir">Índice</span></a>
+  <a class="pager-item pager-next" href="index.html"><span class="pager-dir">Volver al índice →</span><span class="pager-tema">Índice de temas</span></a>
+</nav>
+
+<script>
+let setA = [1,2,3,4];
+let setB = [3,4,5,6];
+let currentOp = 'none';
+
+function computeRegions(){
+  const onlyA = setA.filter(x=> !setB.includes(x));
+  const both = setA.filter(x=> setB.includes(x));
+  const onlyB = setB.filter(x=> !setA.includes(x));
+  return {onlyA, both, onlyB};
+}
+
+function drawVenn(){
+  const svg = document.getElementById('vennSvg');
+  const {onlyA, both, onlyB} = computeRegions();
+
+  let hiA=false, hiB=false;
+  if(currentOp==='union'){ hiA=true; hiB=true; }
+  if(currentOp==='inter'){ hiA='mid'; hiB='mid'; }
+  if(currentOp==='diffAB'){ hiA='only'; }
+  if(currentOp==='diffBA'){ hiB='only'; }
+
+  let html = '';
+  html += `<circle class="circleA${hiA===true||hiA==='only'?' hi':''}" cx="200" cy="140" r="100"/>`;
+  html += `<circle class="circleB${hiB===true||hiB==='only'?' hi':''}" cx="320" cy="140" r="100"/>`;
+  html += `<text class="venn-label" x="130" y="60" fill="var(--amber)">A</text>`;
+  html += `<text class="venn-label" x="390" y="60" fill="var(--teal)">B</text>`;
+
+  function place(list, xCenter, y0){
+    list.forEach((v,i)=>{
+      html += `<text class="venn-el" x="${xCenter}" y="${y0 + i*20}">${v}</text>`;
+    });
+  }
+  place(onlyA, 150, 110);
+  place(both, 260, 110);
+  place(onlyB, 370, 110);
+
+  svg.innerHTML = html;
+}
+
+function showOp(op){
+  currentOp = op;
+  const {onlyA, both, onlyB} = computeRegions();
+  const msg = document.getElementById('vennMsg');
+  if(op==='union') msg.textContent = `A ∪ B = {${[...onlyA,...both,...onlyB].join(', ')}}`;
+  else if(op==='inter') msg.textContent = `A ∩ B = {${both.join(', ')}}`;
+  else if(op==='diffAB') msg.textContent = `A − B = {${onlyA.join(', ')}}`;
+  else if(op==='diffBA') msg.textContent = `B − A = {${onlyB.join(', ')}}`;
+  else msg.textContent = `Conjunto A = {${setA.join(', ')}} · Conjunto B = {${setB.join(', ')}}`;
+  drawVenn();
+}
+
+function addTo(which){
+  const input = document.getElementById('valInput');
+  const v = parseInt(input.value);
+  const msg = document.getElementById('vennMsg');
+  if(isNaN(v)){ msg.textContent = 'Escribe un número antes de agregar.'; return; }
+  const target = which==='A' ? setA : setB;
+  if(target.includes(v)){
+    msg.textContent = `add(${v}) sobre el conjunto ${which} → ya existía, no se duplicó.`;
+  } else {
+    target.push(v);
+    msg.textContent = `add(${v}) sobre el conjunto ${which} → agregado.`;
+  }
+  input.value='';
+  currentOp='none';
+  drawVenn();
+}
+
+function resetVenn(){
+  setA = [1,2,3,4];
+  setB = [3,4,5,6];
+  currentOp='none';
+  showOp('none');
+}
+
+drawVenn();
+</script>
+
+</body>
+</html>

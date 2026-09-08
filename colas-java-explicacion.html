@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colas en Java</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/comun.css">
+<style>
+  /* Ajustes específicos de esta página */
+  .hero p{font-size:1.03rem;}
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:18px 20px; overflow-x:auto; font-size:.84rem; color:#D6D9E0;}
+  .ops .box2 h3{margin:0 0 6px; font-size:1rem; color:var(--teal); font-family:'JetBrains Mono',monospace;}
+  .ops .box2 p{margin:0; font-size:.9rem;}
+  .uses .box2 h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .uses .box2 p{margin:0; font-size:.88rem; color:var(--text-dim);}
+
+  table.cmp{width:100%; border-collapse:collapse; margin-top:16px; font-size:.88rem;}
+  table.cmp th, table.cmp td{border:1px solid #2E3549; padding:10px 12px; text-align:left;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td b{color:#fff;}
+
+  /* SIGNATURE: fila de personas / paquetes */
+  .queue-hero{max-width:860px; margin:36px auto 0; padding:0 24px;}
+  .queue-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:10px; padding:34px 20px 20px; overflow-x:auto;}
+  .queue-row{display:flex; align-items:flex-end; justify-content:center; gap:10px; min-width:max-content; margin:0 auto; min-height:76px;}
+  .qslot{display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .qtag{font-size:.68rem; color:var(--text-dim); font-family:'JetBrains Mono',monospace; height:14px;}
+  .qtag.front{color:var(--teal); font-weight:700;}
+  .qtag.rear{color:var(--rose); font-weight:700;}
+  .box{background:var(--card); color:var(--ink); border:1px solid var(--card-line); border-radius:8px; padding:12px 16px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.9rem; min-width:52px; text-align:center; animation:pop .25s ease-out;}
+  @keyframes pop{ from{transform:scale(.8); opacity:0;} to{transform:scale(1); opacity:1;} }
+  .arrow-flow{color:var(--text-dim); font-size:.75rem; text-align:center; margin-top:14px; font-family:'JetBrains Mono',monospace;}
+  .queue-controls{display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap;}
+  input.q-input{padding:9px 10px; border-radius:6px; border:1px solid #3C4459; background:#12151E; color:var(--text); font-family:'JetBrains Mono',monospace; width:120px;}
+  .queue-msg{text-align:center; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--amber); min-height:20px; margin-top:12px;}
+  .queue-caption{text-align:center; color:var(--text-dim); font-size:.85rem; margin-top:10px;}
+</style>
+<script src="js/comun.js" defer></script>
+</head>
+<body>
+
+<div class="back-nav"><a href="index.html">← Volver al índice</a><a href="Apuntes/Colas.png" download>Descargar apunte (infografía de colas)</a></div>
+
+<div class="hero">
+  <div class="eyebrow">Estructuras de Datos · Java</div>
+  <h1>Colas: el primero en llegar es el primero en salir</h1>
+  <p>Una cola es una fila para comprar boletos: quien llega se forma al final, y quien es atendido siempre sale por el frente. Nadie se salta la fila.</p>
+</div>
+
+<div class="queue-hero">
+  <div class="queue-zone">
+    <div class="queue-row" id="queueRow"></div>
+    <div class="arrow-flow">← sale por aquí (frente)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entra por aquí (final) →</div>
+  </div>
+  <div class="queue-msg" id="queueMsg">Cola vacía.</div>
+  <div class="queue-controls">
+    <input class="q-input" id="qInput" placeholder="valor">
+    <button onclick="enqueue()">enqueue()</button>
+    <button class="secondary" onclick="dequeue()">dequeue()</button>
+    <button class="secondary" onclick="peekFront()">peek()</button>
+  </div>
+  <p class="queue-caption">FIFO: <i>First In, First Out</i> — el orden de salida es el mismo orden en que fueron llegando.</p>
+</div>
+
+<div class="wrap">
+
+<section>
+  <div class="eyebrow-sm">01 · Concepto de colas</div>
+  <h2>¿Qué es una cola?</h2>
+  <p>Una cola (<i>queue</i>) es una estructura de datos dinámica que organiza sus elementos bajo la política <b>FIFO</b> (<i>First In, First Out</i>): el primer elemento que entra es el primero en salir. A diferencia de la pila, una cola tiene <b>dos</b> puntos de acceso: se agrega por un extremo (el final) y se retira por el otro (el frente).</p>
+  <div class="analogy">
+    <b>Analogía:</b> la fila para comprar boletos en el cine. Cada persona que llega se forma al final de la fila. La taquilla siempre atiende a quien está hasta el frente. Nadie puede "colarse" a media fila ni ser atendido antes que quienes llegaron primero. Ese orden estricto de llegada-salida es exactamente el de una cola.
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">02 · Componentes</div>
+  <h2>Las piezas de una cola</h2>
+  <div class="ops">
+    <div class="box2"><h3>frente (front)</h3><p>Referencia al primer elemento, el siguiente que será retirado. Es el punto de salida.</p></div>
+    <div class="box2"><h3>final (rear / tail)</h3><p>Referencia al último elemento agregado. Es el punto de entrada para los nuevos elementos.</p></div>
+    <div class="box2"><h3>elementos</h3><p>El conjunto de datos almacenados en el orden exacto en que fueron llegando.</p></div>
+    <div class="box2"><h3>estructura interna</h3><p>Puede implementarse con un arreglo circular o, de forma dinámica, con nodos enlazados que mantienen referencias tanto al frente como al final.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">03 · Operaciones</div>
+  <h2>Lo que se le puede hacer a una cola</h2>
+  <div class="ops">
+    <div class="box2"><h3>enqueue(valor)</h3><p>Agrega un nuevo elemento al final de la cola.</p></div>
+    <div class="box2"><h3>dequeue()</h3><p>Retira y devuelve el elemento que está en el frente. El siguiente elemento pasa a ser el nuevo frente.</p></div>
+    <div class="box2"><h3>peek() / front()</h3><p>Devuelve el valor del frente <b>sin</b> retirarlo de la cola.</p></div>
+    <div class="box2"><h3>isEmpty()</h3><p>Indica si la cola no tiene elementos. Debe consultarse antes de <code>dequeue()</code> o <code>peek()</code>.</p></div>
+  </div>
+
+  <pre class="code"><span class="kw">public class</span> Cola&lt;<span class="tv">T</span>&gt; {
+
+    <span class="kw">private class</span> Nodo {
+        <span class="tv">T</span> dato;
+        Nodo siguiente;
+        Nodo(<span class="tv">T</span> dato) { <span class="kw">this</span>.dato = dato; }
+    }
+
+    <span class="kw">private</span> Nodo frente;
+    <span class="kw">private</span> Nodo final_;
+    <span class="kw">private</span> <span class="tp">int</span> tamano = <span class="num">0</span>;
+
+    <span class="kw">public void</span> enqueue(<span class="tv">T</span> valor) {
+        Nodo nuevo = <span class="kw">new</span> Nodo(valor);
+        <span class="kw">if</span> (isEmpty()) {
+            frente = nuevo;        <span class="cm">// primer elemento: es a la vez frente y final</span>
+        } <span class="kw">else</span> {
+            final_.siguiente = nuevo;   <span class="cm">// se engancha después del último actual</span>
+        }
+        final_ = nuevo;
+        tamano++;
+    }
+
+    <span class="kw">public</span> <span class="tv">T</span> dequeue() {
+        <span class="kw">if</span> (isEmpty()) {
+            <span class="kw">throw new</span> IllegalStateException(<span class="str">"La cola está vacía"</span>);
+        }
+        <span class="tv">T</span> valor = frente.dato;
+        frente = frente.siguiente;   <span class="cm">// el segundo elemento pasa a ser el nuevo frente</span>
+        <span class="kw">if</span> (frente == <span class="kw">null</span>) {
+            final_ = <span class="kw">null</span>;         <span class="cm">// la cola quedó vacía: también se limpia el final</span>
+        }
+        tamano--;
+        <span class="kw">return</span> valor;
+    }
+
+    <span class="kw">public</span> <span class="tv">T</span> peek() {
+        <span class="kw">if</span> (isEmpty()) {
+            <span class="kw">throw new</span> IllegalStateException(<span class="str">"La cola está vacía"</span>);
+        }
+        <span class="kw">return</span> frente.dato;
+    }
+
+    <span class="kw">public boolean</span> isEmpty() {
+        <span class="kw">return</span> frente == <span class="kw">null</span>;
+    }
+
+    <span class="kw">public int</span> size() {
+        <span class="kw">return</span> tamano;
+    }
+}</pre>
+  <p>Nótese la diferencia clave con la pila: <code>enqueue()</code> agrega por el <b>final</b>, pero <code>dequeue()</code> retira por el <b>frente</b> — son dos extremos distintos, no el mismo.</p>
+</section>
+
+<section>
+  <div class="eyebrow-sm">04 · Función práctica</div>
+  <h2>Dónde se usan las colas para resolver problemas reales</h2>
+  <div class="uses">
+    <div class="box2"><h3>Cola de impresión</h3><p>Los documentos se imprimen en el mismo orden en que se enviaron a la impresora.</p></div>
+    <div class="box2"><h3>Atención al cliente / call center</h3><p>Las llamadas o tickets de soporte se atienden en el orden en que llegaron.</p></div>
+    <div class="box2"><h3>Planificación de procesos (CPU)</h3><p>El sistema operativo puede repartir tiempo de procesador entre tareas en el orden en que fueron encoladas.</p></div>
+    <div class="box2"><h3>Recorrido BFS en grafos y árboles</h3><p>La búsqueda en anchura (<i>Breadth-First Search</i>) usa una cola para visitar los nodos nivel por nivel.</p></div>
+    <div class="box2"><h3>Buffers de datos</h3><p>Streaming de video o audio: los datos se encolan al llegar y se procesan en el mismo orden de llegada.</p></div>
+    <div class="box2"><h3>Simulación de filas reales</h3><p>Modelar bancos, cajas de supermercado o cualquier sistema de atención por turnos.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">05 · Cola vs. pila</div>
+  <h2>No las confundas</h2>
+  <table class="cmp">
+    <tr><th>Aspecto</th><th>Pila</th><th>Cola</th></tr>
+    <tr><td><b>Política</b></td><td>LIFO — último en entrar, primero en salir</td><td>FIFO — primero en entrar, primero en salir</td></tr>
+    <tr><td><b>Puntos de acceso</b></td><td>Uno solo: el tope</td><td>Dos: frente (salida) y final (entrada)</td></tr>
+    <tr><td><b>Ejemplo cotidiano</b></td><td>Torre de charolas</td><td>Fila para comprar boletos</td></tr>
+  </table>
+</section>
+
+<section>
+  <div class="eyebrow-sm">06 · Errores frecuentes</div>
+  <h2>Lo que suele fallar</h2>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Hacer <code>dequeue()</code> o <code>peek()</code> sobre una cola vacía:</b> sin verificar <code>isEmpty()</code> antes, se produce una excepción o un comportamiento indefinido.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Olvidar actualizar <code>final_</code> cuando la cola queda vacía:</b> si tras un <code>dequeue()</code> el frente queda en <code>null</code> pero el final no se limpia, el siguiente <code>enqueue()</code> puede dejar la estructura inconsistente.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Confundir cola con pila:</b> aplicar lógica LIFO donde el problema exige FIFO (o viceversa) invierte por completo el orden en que se procesan los elementos.</div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">07 · Principio de Pareto</div>
+  <h2>El 20% de reglas que explica el 80% de las colas</h2>
+  <ul class="checklist">
+    <li>Se agrega por el final y se retira por el frente: son dos extremos distintos.</li>
+    <li>FIFO: el orden de salida siempre respeta el orden de llegada.</li>
+    <li><code>enqueue()</code> agrega al final; <code>dequeue()</code> quita y devuelve el frente; <code>peek()</code> solo consulta el frente.</li>
+    <li>Siempre valida <code>isEmpty()</code> antes de <code>dequeue()</code> o <code>peek()</code>.</li>
+    <li>Si el problema exige procesar en el mismo orden en que van llegando los elementos, casi siempre hay una cola detrás.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow-sm">08 · Active recall</div>
+  <h2>Ponte a prueba (haz clic en cada pregunta)</h2>
+
+  <div class="quiz-item">
+    <div class="q">1. ¿Qué significa que una cola sea FIFO?</div>
+    <div class="a">Que el primer elemento en entrar es el primero en salir: el orden de salida respeta exactamente el orden de llegada.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">2. ¿Por qué una cola necesita dos referencias (frente y final) y una pila solo necesita una (tope)?</div>
+    <div class="a">Porque en la cola las operaciones ocurren en extremos distintos: se agrega por el final y se retira por el frente. En la pila, tanto agregar como retirar ocurren en el mismo extremo (el tope), por lo que una sola referencia basta.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">3. Si encolas A, B y C en ese orden, ¿en qué orden saldrán al hacer <code>dequeue()</code> tres veces?</div>
+    <div class="a">A, luego B, luego C — el mismo orden en que entraron, porque la cola es FIFO.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">4. Menciona un algoritmo clásico que dependa de una cola para funcionar correctamente.</div>
+    <div class="a">La búsqueda en anchura (BFS) en grafos o árboles, que usa una cola para visitar los nodos nivel por nivel, en el orden en que se van descubriendo.</div>
+  </div>
+</section>
+
+</div>
+
+<div class="signature">
+  <div class="line"></div>
+  <div class="name">MTI Luis Alberto Mendoza San Juan</div>
+  <div class="title">Elaboró</div>
+  <div class="subject">Programa de asignatura: Estructura de Datos (E-ETD-2) · Licenciatura en Ingeniería en Tecnologías de la Información e Innovación Digital</div>
+</div>
+
+<p class="footer-note">Guía generada para apoyar la enseñanza de colas en Java · Universidad Tecnológica de la Huasteca Hidalguense</p>
+
+<nav class="pager" aria-label="Navegación entre temas">
+  <a class="pager-item pager-prev" href="pilas-java-explicacion.html"><span class="pager-dir">← Tema anterior</span><span class="pager-tema">Pilas</span></a>
+  <a class="pager-item pager-home" href="index.html" title="Volver al índice"><span class="pager-dir">Índice</span></a>
+  <a class="pager-item pager-next" href="algoritmos-ordenamiento-busqueda-java.html"><span class="pager-dir">Tema siguiente →</span><span class="pager-tema">Algoritmos de Ordenamiento y Búsqueda</span></a>
+</nav>
+
+<script>
+let queue = ['A', 'B'];
+const row = document.getElementById('queueRow');
+const msg = document.getElementById('queueMsg');
+
+function render(){
+  row.innerHTML = '';
+  queue.forEach((v, idx)=>{
+    const slot = document.createElement('div');
+    slot.className = 'qslot';
+    let tag = '';
+    if(queue.length===1) tag = '<span class="qtag front">frente/final</span>';
+    else if(idx===0) tag = '<span class="qtag front">frente</span>';
+    else if(idx===queue.length-1) tag = '<span class="qtag rear">final</span>';
+    else tag = '<span class="qtag"></span>';
+    slot.innerHTML = `${tag}<div class="box">${v}</div>`;
+    row.appendChild(slot);
+  });
+}
+
+function enqueue(){
+  const input = document.getElementById('qInput');
+  const v = input.value.trim();
+  if(v===''){ msg.textContent = 'Escribe un valor antes de hacer enqueue().'; return; }
+  if(queue.length>=7){ msg.textContent = 'Límite visual de la demo alcanzado (7 elementos).'; return; }
+  queue.push(v);
+  msg.textContent = `enqueue(${v}) → "${v}" se agregó al final de la cola.`;
+  input.value='';
+  render();
+}
+
+function dequeue(){
+  if(queue.length===0){ msg.textContent = 'IllegalStateException: la cola está vacía.'; return; }
+  const v = queue.shift();
+  msg.textContent = `dequeue() → se retiró "${v}" del frente. Nuevo frente: ${queue.length? queue[0] : '(cola vacía)'}`;
+  render();
+}
+
+function peekFront(){
+  if(queue.length===0){ msg.textContent = 'IllegalStateException: la cola está vacía.'; return; }
+  msg.textContent = `peek() → el frente es "${queue[0]}" (no se retiró nada).`;
+}
+
+render();
+</script>
+
+</body>
+</html>

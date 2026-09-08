@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Árboles en Java</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/comun.css">
+<style>
+  /* Ajustes específicos de esta página */
+  .wrap{max-width:860px;}
+  .hero h1{font-size:2.1rem;}
+  .hero p{max-width:600px; font-size:1.02rem;}
+  h2{font-size:1.5rem; margin:6px 0 16px;}
+  h3.sub{font-size:1.05rem; color:#fff; margin:24px 0 6px;}
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:16px 18px; overflow-x:auto; font-size:.82rem; color:#D6D9E0;}
+  .pager{max-width:860px;}
+  .traits .box h3{margin:0 0 6px; font-size:1rem; color:var(--teal);}
+  .traits .box p{margin:0; font-size:.9rem;}
+  .uses .box h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .uses .box p{margin:0; font-size:.88rem; color:var(--text-dim);}
+
+  table.cmp{width:100%; border-collapse:collapse; margin-top:16px; font-size:.86rem;}
+  table.cmp th, table.cmp td{border:1px solid #2E3549; padding:9px 11px; text-align:left;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td b, table.cmp td code{color:#fff;}
+
+  /* SIGNATURE: árbol binario de búsqueda interactivo */
+  .tree-hero{max-width:880px; margin:36px auto 0; padding:0 24px;}
+  .tree-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:10px; padding:16px; overflow-x:auto;}
+  svg{display:block; margin:0 auto;}
+  .tnode circle{fill:var(--card); stroke:var(--card-line); stroke-width:1;}
+  .tnode text{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; fill:var(--ink); text-anchor:middle; dominant-baseline:central;}
+  .tnode.hi circle{fill:var(--amber); stroke:var(--amber);}
+  .tedge{stroke:#3C4459; stroke-width:1.5;}
+  .tree-controls{display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;}
+  input.t-input{padding:9px 10px; border-radius:6px; border:1px solid #3C4459; background:#12151E; color:var(--text); font-family:'JetBrains Mono',monospace; width:90px;}
+  .tree-msg{text-align:center; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--amber); min-height:20px; margin-top:14px;}
+  .traversal-row{display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap;}
+  .traversal-row button{font-size:.8rem; padding:7px 14px;}
+  .tree-caption{text-align:center; color:var(--text-dim); font-size:.85rem; margin-top:10px;}
+</style>
+<script src="js/comun.js" defer></script>
+</head>
+<body>
+
+<div class="back-nav"><a href="index.html">← Volver al índice</a><a href="Apuntes/Arboles.png" download>Descargar apunte (infografía de árboles)</a></div>
+
+<div class="hero">
+  <div class="eyebrow">Estructuras de Datos Avanzadas · Java</div>
+  <h1>Árboles: cuando una estructura deja de ser una fila</h1>
+  <p>Arreglos, listas, pilas y colas son lineales: cada elemento tiene un único "siguiente". Un árbol rompe esa regla — un nodo puede tener varios hijos, formando una jerarquía en vez de una fila.</p>
+</div>
+
+<div class="tree-hero">
+  <div class="tree-zone">
+    <svg id="treeSvg" width="720" height="280" viewBox="0 0 720 280"></svg>
+  </div>
+  <div class="tree-controls">
+    <input class="t-input" id="tInput" placeholder="valor" type="number">
+    <button onclick="insertNode()">Insertar</button>
+    <button class="secondary" onclick="resetTree()">Reiniciar</button>
+  </div>
+  <div class="traversal-row">
+    <button class="secondary" onclick="animateTraversal('pre')">Preorden</button>
+    <button class="secondary" onclick="animateTraversal('in')">Inorden</button>
+    <button class="secondary" onclick="animateTraversal('post')">Postorden</button>
+    <button class="secondary" onclick="animateTraversal('level')">Por niveles</button>
+  </div>
+  <div class="tree-msg" id="treeMsg">Árbol binario de búsqueda: inserta un valor o prueba un recorrido.</div>
+  <p class="tree-caption">Este es un Árbol Binario de Búsqueda (ABB): todo valor menor que un nodo va a su izquierda, todo mayor va a su derecha.</p>
+</div>
+
+<div class="wrap">
+
+<section>
+  <div class="eyebrow-sm">01 · Concepto de árboles</div>
+  <h2>¿Qué es un árbol?</h2>
+  <p>Un árbol es una estructura de datos <b>jerárquica y no lineal</b>: un conjunto de nodos conectados de tal forma que existe un único nodo inicial (la raíz) y cada nodo puede tener cero o más nodos "hijos", sin que existan ciclos — nunca se puede volver a un nodo ya visitado siguiendo las conexiones hacia abajo.</p>
+  <div class="analogy">
+    <b>Analogía:</b> piensa en el árbol genealógico de una familia o en el organigrama de una empresa. Hay una persona en la cima (el fundador, la raíz), esa persona tiene subordinados directos (hijos), y esos subordinados pueden tener los suyos propios. Nadie es su propio jefe ni el jefe de alguien que ya está por encima de él — no hay ciclos.
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">02 · Componentes</div>
+  <h2>El vocabulario de un árbol</h2>
+  <div class="traits">
+    <div class="box"><h3>Raíz</h3><p>El único nodo sin padre; el punto de entrada a todo el árbol.</p></div>
+    <div class="box"><h3>Padre / hijo</h3><p>Un nodo conectado directamente hacia abajo con otro es su padre; el de abajo es su hijo.</p></div>
+    <div class="box"><h3>Hoja</h3><p>Un nodo sin hijos: el final de una rama.</p></div>
+    <div class="box"><h3>Subárbol</h3><p>Cualquier nodo, junto con todos sus descendientes, forma un árbol más pequeño dentro del árbol completo.</p></div>
+    <div class="box"><h3>Altura</h3><p>La distancia (en número de conexiones) desde la raíz hasta la hoja más lejana.</p></div>
+    <div class="box"><h3>Nivel / profundidad</h3><p>La distancia desde la raíz hasta un nodo específico; la raíz está en el nivel 0.</p></div>
+  </div>
+  <p>En un <b>árbol binario</b>, cada nodo tiene como máximo dos hijos, distinguidos como "izquierdo" y "derecho". Cuando además se cumple que todo valor a la izquierda es menor y todo valor a la derecha es mayor que el nodo, se llama <b>Árbol Binario de Búsqueda (ABB)</b> — el tipo que estás viendo en el visualizador de arriba.</p>
+</section>
+
+<section>
+  <div class="eyebrow-sm">03 · Función práctica</div>
+  <h2>Dónde aparecen los árboles en la práctica</h2>
+  <div class="uses">
+    <div class="box"><h3>Sistemas de archivos</h3><p>Carpetas que contienen carpetas y archivos: una jerarquía clásica de árbol.</p></div>
+    <div class="box"><h3>El DOM de una página web</h3><p>Cada etiqueta HTML es un nodo con posibles hijos (otras etiquetas anidadas).</p></div>
+    <div class="box"><h3>Árboles de decisión</h3><p>Cada nodo representa una pregunta o condición; cada rama, una posible respuesta.</p></div>
+    <div class="box"><h3>Búsqueda eficiente (ABB)</h3><p>Un Árbol Binario de Búsqueda permite buscar, insertar y eliminar en O(log n) en promedio, mucho más rápido que recorrer una lista completa.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">04 · Operaciones</div>
+  <h2>Insertar y buscar en un Árbol Binario de Búsqueda</h2>
+  <pre class="code"><span class="kw">public class</span> NodoArbol&lt;<span class="tv">T</span> <span class="kw">extends</span> Comparable&lt;<span class="tv">T</span>&gt;&gt; {
+    <span class="tv">T</span> dato;
+    NodoArbol&lt;<span class="tv">T</span>&gt; izquierdo;
+    NodoArbol&lt;<span class="tv">T</span>&gt; derecho;
+
+    NodoArbol(<span class="tv">T</span> dato) { <span class="kw">this</span>.dato = dato; }
+}
+
+<span class="kw">public class</span> ArbolBinarioBusqueda&lt;<span class="tv">T</span> <span class="kw">extends</span> Comparable&lt;<span class="tv">T</span>&gt;&gt; {
+    <span class="kw">private</span> NodoArbol&lt;<span class="tv">T</span>&gt; raiz;
+
+    <span class="kw">public void</span> insertar(<span class="tv">T</span> valor) {
+        raiz = insertar(raiz, valor);
+    }
+
+    <span class="kw">private</span> NodoArbol&lt;<span class="tv">T</span>&gt; insertar(NodoArbol&lt;<span class="tv">T</span>&gt; nodo, <span class="tv">T</span> valor) {
+        <span class="kw">if</span> (nodo == <span class="kw">null</span>) {
+            <span class="kw">return new</span> NodoArbol&lt;&gt;(valor);   <span class="cm">// aquí va el nuevo nodo</span>
+        }
+        <span class="kw">if</span> (valor.compareTo(nodo.dato) < <span class="num">0</span>) {
+            nodo.izquierdo = insertar(nodo.izquierdo, valor);
+        } <span class="kw">else if</span> (valor.compareTo(nodo.dato) > <span class="num">0</span>) {
+            nodo.derecho = insertar(nodo.derecho, valor);
+        }
+        <span class="kw">return</span> nodo;
+    }
+
+    <span class="kw">public boolean</span> buscar(<span class="tv">T</span> valor) {
+        <span class="kw">return</span> buscar(raiz, valor);
+    }
+
+    <span class="kw">private boolean</span> buscar(NodoArbol&lt;<span class="tv">T</span>&gt; nodo, <span class="tv">T</span> valor) {
+        <span class="kw">if</span> (nodo == <span class="kw">null</span>) <span class="kw">return false</span>;   <span class="cm">// caso base: no encontrado</span>
+        <span class="kw">if</span> (valor.compareTo(nodo.dato) == <span class="num">0</span>) <span class="kw">return true</span>;
+        <span class="kw">return</span> valor.compareTo(nodo.dato) < <span class="num">0</span>
+            ? buscar(nodo.izquierdo, valor)
+            : buscar(nodo.derecho, valor);
+    }
+}</pre>
+  <p>Eliminar un nodo es la operación más delicada: si el nodo tiene dos hijos, hay que reemplazarlo por su sucesor (el menor valor de su subárbol derecho) para no romper la propiedad de orden del ABB — un detalle que suele dejarse para un tema aparte por su complejidad.</p>
+</section>
+
+<section>
+  <div class="eyebrow-sm">05 · Algoritmos de recorrido en árboles</div>
+  <h2>Cuatro formas distintas de visitar los mismos nodos</h2>
+
+  <h3 class="sub">Preorden (raíz → izquierda → derecha)</h3>
+  <p>Visita el nodo actual antes que sus hijos. Útil para copiar o serializar la estructura del árbol.</p>
+  <pre class="code"><span class="kw">private void</span> preorden(NodoArbol&lt;<span class="tv">T</span>&gt; nodo) {
+    <span class="kw">if</span> (nodo == <span class="kw">null</span>) <span class="kw">return</span>;
+    System.out.println(nodo.dato);
+    preorden(nodo.izquierdo);
+    preorden(nodo.derecho);
+}</pre>
+
+  <h3 class="sub">Inorden (izquierda → raíz → derecha)</h3>
+  <p>En un ABB, este recorrido visita los valores <b>en orden ascendente</b> — la forma más directa de obtener los datos ya ordenados.</p>
+  <pre class="code"><span class="kw">private void</span> inorden(NodoArbol&lt;<span class="tv">T</span>&gt; nodo) {
+    <span class="kw">if</span> (nodo == <span class="kw">null</span>) <span class="kw">return</span>;
+    inorden(nodo.izquierdo);
+    System.out.println(nodo.dato);
+    inorden(nodo.derecho);
+}</pre>
+
+  <h3 class="sub">Postorden (izquierda → derecha → raíz)</h3>
+  <p>Visita los hijos antes que el nodo actual. Útil cuando hay que procesar dependencias antes que el elemento que depende de ellas, como al eliminar un árbol completo de memoria.</p>
+  <pre class="code"><span class="kw">private void</span> postorden(NodoArbol&lt;<span class="tv">T</span>&gt; nodo) {
+    <span class="kw">if</span> (nodo == <span class="kw">null</span>) <span class="kw">return</span>;
+    postorden(nodo.izquierdo);
+    postorden(nodo.derecho);
+    System.out.println(nodo.dato);
+}</pre>
+
+  <h3 class="sub">Por niveles (BFS)</h3>
+  <p>Visita nodo por nodo, nivel por nivel, de arriba hacia abajo. A diferencia de los tres anteriores (que son recursivos y usan la pila de llamadas), este recorrido usa explícitamente una <b>cola</b>.</p>
+  <pre class="code"><span class="kw">private void</span> porNiveles(NodoArbol&lt;<span class="tv">T</span>&gt; raiz) {
+    <span class="kw">if</span> (raiz == <span class="kw">null</span>) <span class="kw">return</span>;
+    Queue&lt;NodoArbol&lt;<span class="tv">T</span>&gt;&gt; cola = <span class="kw">new</span> LinkedList&lt;&gt;();
+    cola.add(raiz);
+    <span class="kw">while</span> (!cola.isEmpty()) {
+        NodoArbol&lt;<span class="tv">T</span>&gt; actual = cola.poll();
+        System.out.println(actual.dato);
+        <span class="kw">if</span> (actual.izquierdo != <span class="kw">null</span>) cola.add(actual.izquierdo);
+        <span class="kw">if</span> (actual.derecho != <span class="kw">null</span>) cola.add(actual.derecho);
+    }
+}</pre>
+
+  <table class="cmp">
+    <tr><th>Recorrido</th><th>Orden de visita</th><th>Estructura de apoyo</th><th>Uso típico</th></tr>
+    <tr><td><b>Preorden</b></td><td>raíz, izq, der</td><td>Pila (recursión)</td><td>Copiar / serializar el árbol</td></tr>
+    <tr><td><b>Inorden</b></td><td>izq, raíz, der</td><td>Pila (recursión)</td><td>Obtener valores ordenados (en un ABB)</td></tr>
+    <tr><td><b>Postorden</b></td><td>izq, der, raíz</td><td>Pila (recursión)</td><td>Liberar memoria, evaluar expresiones</td></tr>
+    <tr><td><b>Por niveles</b></td><td>nivel por nivel</td><td>Cola (BFS)</td><td>Encontrar el nodo más cercano a la raíz</td></tr>
+  </table>
+</section>
+
+<section>
+  <div class="eyebrow-sm">06 · Errores frecuentes</div>
+  <h2>Lo que suele fallar</h2>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Olvidar el caso base en la recursión:</b> todo recorrido recursivo necesita <code>if (nodo == null) return;</code> al inicio, igual que cualquier función recursiva — sin él, se produce un <code>NullPointerException</code>.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Confundir árbol binario con ABB:</b> todo Árbol Binario de Búsqueda es un árbol binario, pero no todo árbol binario cumple la propiedad de orden (izquierda menor, derecha mayor) que hace eficiente la búsqueda.</div>
+  </div>
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Esperar O(log n) sin garantías:</b> si los valores se insertan en un ABB ya ordenados (por ejemplo 1, 2, 3, 4...), el árbol degenera en una lista enlazada y las operaciones caen a O(n).</div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow-sm">07 · Principio de Pareto</div>
+  <h2>El 20% de reglas que explica el 80% de los árboles</h2>
+  <ul class="checklist">
+    <li>Un árbol es jerárquico: un nodo puede tener varios hijos, y no hay ciclos.</li>
+    <li>En un ABB: menor a la izquierda, mayor a la derecha — esa regla es lo que hace posible buscar en O(log n).</li>
+    <li>Preorden, inorden y postorden solo cambian <b>cuándo</b> se visita la raíz respecto a sus hijos.</li>
+    <li>Inorden en un ABB siempre entrega los valores ordenados de menor a mayor.</li>
+    <li>Si necesitas el nodo más cercano a la raíz primero, usa recorrido por niveles (BFS con cola); si necesitas explorar a fondo antes de retroceder, usa preorden/inorden/postorden (DFS con pila o recursión).</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow-sm">08 · Active recall</div>
+  <h2>Ponte a prueba (haz clic en cada pregunta)</h2>
+
+  <div class="quiz-item">
+    <div class="q">1. ¿Qué diferencia estructural fundamental separa a un árbol de una lista enlazada?</div>
+    <div class="a">En una lista, cada nodo tiene como máximo un "siguiente" (estructura lineal). En un árbol, un nodo puede tener varios hijos, formando una jerarquía en vez de una secuencia.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">2. En un Árbol Binario de Búsqueda, ¿qué recorrido entrega los valores ya ordenados de menor a mayor?</div>
+    <div class="a">El recorrido inorden (izquierda, raíz, derecha).</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">3. ¿Qué estructura de apoyo usa el recorrido por niveles, y en qué se diferencia de los otros tres recorridos?</div>
+    <div class="a">Usa una cola (FIFO) de forma explícita, mientras que preorden, inorden y postorden son recursivos y se apoyan implícitamente en la pila de llamadas.</div>
+  </div>
+  <div class="quiz-item">
+    <div class="q">4. ¿Por qué insertar valores ya ordenados (1, 2, 3, 4...) en un ABB es un mal escenario?</div>
+    <div class="a">Porque cada nuevo valor siempre es mayor que el anterior, así que el árbol crece en una sola dirección y termina pareciéndose a una lista enlazada, perdiendo la ventaja de O(log n) y cayendo a O(n).</div>
+  </div>
+</section>
+
+</div>
+
+<div class="signature">
+  <div class="line"></div>
+  <div class="name">MTI Luis Alberto Mendoza San Juan</div>
+  <div class="title">Elaboró</div>
+  <div class="subject">Programa de asignatura: Estructura de Datos (E-ETD-2) · Licenciatura en Ingeniería en Tecnologías de la Información e Innovación Digital</div>
+</div>
+
+<p class="footer-note">Guía generada para apoyar la enseñanza de árboles en Java · Universidad Tecnológica de la Huasteca Hidalguense</p>
+
+<nav class="pager" aria-label="Navegación entre temas">
+  <a class="pager-item pager-prev" href="algoritmos-ordenamiento-busqueda-java.html"><span class="pager-dir">← Tema anterior</span><span class="pager-tema">Algoritmos de Ordenamiento y Búsqueda</span></a>
+  <a class="pager-item pager-home" href="index.html" title="Volver al índice"><span class="pager-dir">Índice</span></a>
+  <a class="pager-item pager-next" href="diccionarios-java-explicacion.html"><span class="pager-dir">Tema siguiente →</span><span class="pager-tema">Diccionarios</span></a>
+</nav>
+
+<script>
+let root = null;
+function insertBST(node, value){
+  if(!node) return {value, left:null, right:null};
+  if(value < node.value) node.left = insertBST(node.left, value);
+  else if(value > node.value) node.right = insertBST(node.right, value);
+  return node;
+}
+[50,30,70,20,40,60,80].forEach(v=> root = insertBST(root, v));
+
+function assignPositions(node, depth, counter, spacing){
+  if(!node) return;
+  assignPositions(node.left, depth+1, counter, spacing);
+  node.x = 40 + counter.i * spacing;
+  node.y = 40 + depth * 70;
+  counter.i++;
+  assignPositions(node.right, depth+1, counter, spacing);
+}
+
+function countNodes(node){
+  if(!node) return 0;
+  return 1 + countNodes(node.left) + countNodes(node.right);
+}
+
+function drawTree(highlightVal){
+  const svg = document.getElementById('treeSvg');
+  const n = countNodes(root);
+  const spacing = Math.max(50, Math.min(90, 640/Math.max(n,1)));
+  const width = Math.max(720, n*spacing + 80);
+  svg.setAttribute('viewBox', `0 0 ${width} 280`);
+  svg.setAttribute('width', width);
+  assignPositions(root, 0, {i:0}, spacing);
+
+  let edges = '', nodes = '';
+  function walk(node){
+    if(!node) return;
+    if(node.left){
+      edges += `<line class="tedge" x1="${node.x}" y1="${node.y}" x2="${node.left.x}" y2="${node.left.y}"/>`;
+      walk(node.left);
+    }
+    if(node.right){
+      edges += `<line class="tedge" x1="${node.x}" y1="${node.y}" x2="${node.right.x}" y2="${node.right.y}"/>`;
+      walk(node.right);
+    }
+  }
+  walk(root);
+
+  function walkNodes(node){
+    if(!node) return;
+    const hi = (highlightVal!==undefined && node.value===highlightVal) ? ' hi' : '';
+    nodes += `<g class="tnode${hi}"><circle cx="${node.x}" cy="${node.y}" r="18"/><text x="${node.x}" y="${node.y}">${node.value}</text></g>`;
+    walkNodes(node.left);
+    walkNodes(node.right);
+  }
+  walkNodes(root);
+
+  svg.innerHTML = edges + nodes;
+}
+
+function insertNode(){
+  const input = document.getElementById('tInput');
+  const v = parseInt(input.value);
+  const msg = document.getElementById('treeMsg');
+  if(isNaN(v)){ msg.textContent = 'Escribe un número antes de insertar.'; return; }
+  root = insertBST(root, v);
+  msg.textContent = `insertar(${v}) → colocado según la regla: menor a la izquierda, mayor a la derecha.`;
+  input.value='';
+  drawTree();
+}
+
+function resetTree(){
+  root = null;
+  [50,30,70,20,40,60,80].forEach(v=> root = insertBST(root, v));
+  document.getElementById('treeMsg').textContent = 'Árbol reiniciado a su estado inicial.';
+  drawTree();
+}
+
+function preorderList(node, out){ if(!node) return; out.push(node.value); preorderList(node.left,out); preorderList(node.right,out); }
+function inorderList(node, out){ if(!node) return; inorderList(node.left,out); out.push(node.value); inorderList(node.right,out); }
+function postorderList(node, out){ if(!node) return; postorderList(node.left,out); postorderList(node.right,out); out.push(node.value); }
+function levelList(root){
+  const out=[]; if(!root) return out;
+  const q=[root];
+  while(q.length){ const n=q.shift(); out.push(n.value); if(n.left) q.push(n.left); if(n.right) q.push(n.right); }
+  return out;
+}
+
+function animateTraversal(kind){
+  const out=[];
+  if(kind==='pre') preorderList(root, out);
+  else if(kind==='in') inorderList(root, out);
+  else if(kind==='post') postorderList(root, out);
+  else out.push(...levelList(root));
+
+  const names = {pre:'Preorden', in:'Inorden', post:'Postorden', level:'Por niveles'};
+  let i=0;
+  const seen=[];
+  function tick(){
+    if(i>=out.length){
+      drawTree();
+      document.getElementById('treeMsg').textContent = `${names[kind]}: ${seen.join(' → ')}`;
+      return;
+    }
+    drawTree(out[i]);
+    seen.push(out[i]);
+    document.getElementById('treeMsg').textContent = `${names[kind]} (visitando): ${seen.join(' → ')}`;
+    i++;
+    setTimeout(tick, 550);
+  }
+  tick();
+}
+
+drawTree();
+</script>
+
+</body>
+</html>
