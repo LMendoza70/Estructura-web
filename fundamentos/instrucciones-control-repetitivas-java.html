@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instrucciones de control: repetición (ciclos) en Java</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1F2B; --ink-2:#242A3B; --card:#F5F1E8; --card-line:#DED6C2;
+    --text:#E4E7ED; --text-dim:#9AA1B4; --amber:#E8A33D; --teal:#4FB0AE; --rose:#E06C75;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink); color:var(--text); font-family:'Inter',sans-serif; line-height:1.6;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
+  code,pre,.mono{font-family:'JetBrains Mono',monospace;}
+  p code,li code,.quiz-item code,.pitfall code,.key-point code,.tip code,.warn code{background:rgba(232,163,61,.12); border:1px solid rgba(232,163,61,.28); color:var(--amber); padding:.5px 5px; border-radius:4px; font-size:.86em;}
+  .wrap{max-width:900px; margin:0 auto; padding:0 24px 90px;}
+
+  /* HERO */
+  .hero{padding:56px 24px 30px; text-align:center; border-bottom:1px solid #2E3549;}
+  .hero .badge{color:var(--amber); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem; font-weight:700; margin-bottom:10px;}
+  .hero h1{font-size:1.95rem; margin:0 0 10px; color:#fff;}
+  .hero p{color:var(--text-dim); max-width:660px; margin:0 auto; font-size:.98rem;}
+  .hero .src{margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; color:var(--text-dim);}
+  .hero .src b{color:var(--teal); font-weight:500;}
+
+  /* navegación de regreso */
+  .top-nav{max-width:900px; margin:0 auto; padding:20px 24px 0;}
+  .top-nav a{display:inline-block; color:var(--teal); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:.82rem; border:1px solid #2E3549; padding:7px 13px; border-radius:6px; background:var(--ink-2); transition:border-color .15s, color .15s;}
+  .top-nav a:hover{border-color:var(--teal); color:var(--amber);}
+
+  /* NAV de saltos rápidos */
+  .nav{max-width:960px; margin:22px auto 0; padding:0 24px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .nav a{text-decoration:none; color:var(--text); background:var(--ink-2); border:1px solid #2E3549; padding:6px 13px; border-radius:16px; font-size:.76rem; font-family:'JetBrains Mono',monospace;}
+  .nav a:hover{border-color:var(--amber); color:var(--amber);}
+
+  /* PESTAÑAS */
+  .tab-picker{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:18px 0;}
+  .tab-btn{background:transparent; border:1px solid #3C4459; color:var(--text); padding:8px 16px; border-radius:20px; font-family:'JetBrains Mono',monospace; font-size:.8rem; cursor:pointer;}
+  .tab-btn.active{background:var(--amber); color:var(--ink); border-color:var(--amber); font-weight:700;}
+  /* SECCIONES */
+  section{padding:42px 0; border-bottom:1px solid #2E3549;}
+  section:last-child{border-bottom:none;}
+  .eyebrow-sm{color:var(--amber); text-transform:uppercase; font-size:.72rem; letter-spacing:.12em; font-weight:600;}
+  h2{font-size:1.45rem; margin:6px 0 14px; color:#fff;}
+  h3.sub{font-size:1.05rem; color:#fff; margin:24px 0 6px;}
+  p{font-size:.96rem; color:var(--text);}
+  .muted{color:var(--text-dim); font-size:.92rem;}
+
+  /* ANALOGÍA */
+  .analogy{background:var(--ink-2); border-left:3px solid var(--teal); padding:16px 20px; border-radius:0 8px 8px 0; margin:16px 0; color:var(--text-dim); font-size:.95rem;}
+  .analogy b{color:var(--teal);}
+
+  /* CÓDIGO */
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; overflow-x:auto; font-size:.84rem; line-height:1.55; color:#D6D9E0; margin:10px 0;}
+  .kw{color:#E8A33D;} .tp{color:#4FB0AE;} .cm{color:#6A7086;} .num{color:#E06C75;} .str{color:#E8A33D;} .an{color:#B5541A; font-weight:700;} .tv{color:#B5541A; font-weight:700;}
+  pre.out{background:#12151E; border:1px dashed #3C4459; border-radius:8px; padding:12px 16px; font-size:.82rem; color:var(--teal); margin:6px 0 14px; white-space:pre-wrap;}
+
+  /* Comparativa lado a lado */
+  .code-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:680px){.code-grid{grid-template-columns:1fr;}}
+  .code-panel{border-radius:10px; overflow:hidden; border:1px solid #2E3549;}
+  .code-panel .lbl{padding:7px 14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;}
+  .code-panel.a .lbl{background:rgba(79,176,174,.15); color:var(--teal);}
+  .code-panel.b .lbl{background:rgba(224,108,117,.15); color:var(--rose);}
+  .code-panel pre{margin:0; background:#12151E; padding:14px 16px; overflow-x:auto; font-size:.82rem; line-height:1.55; color:#D6D9E0;}
+
+  /* Grids de 2 columnas */
+  .traits,.uses{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px;}
+  @media (max-width:600px){.traits,.uses{grid-template-columns:1fr;}}
+  .traits .box,.uses .box{background:var(--ink-2); border-radius:8px; padding:16px 18px; border:1px solid #2E3549;}
+  .traits .box h3{margin:0 0 6px; font-size:1rem; color:var(--teal);}
+  .uses .box h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .traits .box p,.uses .box p{margin:0; font-size:.9rem; color:var(--text-dim);}
+
+  /* Tabla comparativa */
+  table.cmp{width:100%; border-collapse:collapse; margin-top:12px; font-size:.86rem;}
+  table.cmp th,table.cmp td{border:1px solid #2E3549; padding:9px 11px; text-align:left; vertical-align:top;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td code,table.cmp td b{color:#fff;}
+
+  /* Errores frecuentes y avisos */
+  .pitfall{display:flex; gap:12px; margin:14px 0; align-items:flex-start;}
+  .pitfall .icon{color:var(--rose); font-size:1.2rem; line-height:1.4;}
+  .pitfall .body b{color:#fff;}
+  .warn{display:flex; gap:10px; background:rgba(224,108,117,.08); border:1px solid rgba(224,108,117,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .warn .icon{color:var(--rose);}
+  .tip{display:flex; gap:10px; background:rgba(79,176,174,.08); border:1px solid rgba(79,176,174,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .tip .icon{color:var(--teal);}
+  .key-point{background:var(--ink-2); border-left:3px solid var(--rose); border-radius:0 8px 8px 0; padding:12px 16px; margin-top:14px; font-size:.88rem; color:var(--text-dim);}
+  .key-point b{color:#fff;}
+
+  /* Checklist Pareto */
+  .checklist{list-style:none; padding:0; margin:18px 0;}
+  .checklist li{display:flex; gap:10px; padding:10px 0; border-bottom:1px dashed #2E3549; font-size:.95rem;}
+  .checklist li::before{content:"\2192"; color:var(--amber); font-weight:700;}
+
+  /* Active recall */
+  .quiz-item{background:var(--ink-2); border:1px solid #2E3549; border-radius:8px; padding:16px 18px; margin-bottom:12px;}
+  .quiz-item .q{font-weight:600; color:#fff; cursor:pointer;}
+  .quiz-item .a{display:none; margin-top:10px; color:var(--text-dim); font-size:.92rem; border-top:1px dashed #3C4459; padding-top:10px;}
+  .quiz-item.open .a{display:block;}
+
+  .footer-note{color:var(--text-dim); font-size:.85rem; text-align:center; padding:48px 24px 0; border-top:1px solid #2E3549; margin-top:50px;}
+  .footer-note .name{color:#fff; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; margin-top:6px; display:block;}
+
+  /* SIGNATURE: banco de pruebas de ciclos */
+  .sig{max-width:960px; margin:30px auto 0; padding:0 24px;}
+  .sig-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:12px; padding:20px 22px 22px;}
+  .sig-title{font-family:'Fraunces',serif; font-size:1.2rem; color:#fff; font-weight:600;}
+  .sig-sub{color:var(--text-dim); font-size:.9rem; margin:6px 0 0;}
+  .sig-sub b{color:#fff; font-weight:600;}
+  .sig-controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; margin-top:16px; padding:14px; background:#1B1F2B; border:1px solid #2E3549; border-radius:8px;}
+  .sig-controls button{background:var(--amber); border:1px solid var(--amber); color:#1B1F2B; font-family:'JetBrains Mono',monospace; font-size:.8rem; font-weight:700; padding:8px 15px; border-radius:6px; cursor:pointer; transition:background .15s, border-color .15s, color .15s;}
+  .sig-controls button:hover{background:#F3B657;}
+  .sig-controls button.ghost{background:transparent; color:var(--text-dim); border-color:#3C4459; font-weight:400;}
+  .sig-controls button.ghost:hover{color:#fff; border-color:var(--teal); background:transparent;}
+  .sig-pos{font-family:'JetBrains Mono',monospace; font-size:.74rem; color:var(--text-dim);}
+  .sig-field{display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--text-dim);}
+  .sig-field input[type=text]{width:170px; background:#12151E; border:1px solid #3C4459; color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.84rem; padding:7px 9px; border-radius:6px;}
+  .sig-field input:focus{outline:none; border-color:var(--amber);}
+  .sig-grid{display:grid; grid-template-columns:1.2fr 1fr; gap:16px; margin-top:16px;}
+  @media (max-width:760px){.sig-grid{grid-template-columns:1fr;}}
+  .sig-code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 10px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:.78rem; line-height:1.7; color:#D6D9E0;}
+  .sim-panel{display:none;}
+  .sim-panel.active{display:block;}
+  .sim-panel .cl{display:block; white-space:pre-wrap; overflow-wrap:anywhere; padding:0 8px; border-left:3px solid transparent; border-radius:0 4px 4px 0; transition:background .2s, border-color .2s, opacity .2s;}
+  .sim-panel .cl.hit{border-left-color:var(--teal); background:rgba(79,176,174,.12);}
+  .sim-panel .cl.dim{opacity:.3;}
+  .ev{display:inline-block; margin-left:8px; font-size:.66rem; padding:1px 7px; border-radius:10px; border:1px solid #3C4459; color:var(--text-dim); opacity:.28; vertical-align:middle; transition:.2s;}
+  .ev.on{opacity:1;}
+  .ev.t{background:rgba(79,176,174,.18); border-color:rgba(79,176,174,.55); color:var(--teal);}
+  .ev.f{background:rgba(224,108,117,.16); border-color:rgba(224,108,117,.55); color:var(--rose);}
+  .ev.info{background:rgba(232,163,61,.16); border-color:rgba(232,163,61,.55); color:var(--amber);}
+  .var-strip{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+  .var{display:flex; align-items:baseline; gap:6px; background:#12151E; border:1px solid #2E3549; border-radius:6px; padding:6px 10px; font-family:'JetBrains Mono',monospace; font-size:.78rem;}
+  .var i{color:var(--text-dim); font-style:normal;}
+  .var b{color:var(--amber); font-weight:700;}
+  .var.flash{animation:varflash .6s ease;}
+  @keyframes varflash{0%{background:rgba(232,163,61,.4); border-color:var(--amber); transform:translateY(-2px);}100%{background:#12151E; border-color:#2E3549; transform:none;}}
+  .sim-console{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:12px 14px; margin:0; min-height:130px; max-height:230px; overflow-y:auto; font-family:'JetBrains Mono',monospace; font-size:.77rem; line-height:1.7; color:#D6D9E0; white-space:pre-wrap;}
+  .sim-console .dim{color:#6A7086;}
+  .sim-console .ok{color:var(--teal);}
+  .sim-console .bad{color:var(--rose);}
+  .sig-explain{background:#1B1F2B; border-left:3px solid var(--amber); border-radius:0 6px 6px 0; padding:11px 14px; font-size:.85rem; color:var(--text-dim); min-height:78px; margin-top:12px;}
+  .sig-explain b{color:var(--amber);}
+  .sig-alert{display:none; margin-top:10px; background:rgba(224,108,117,.1); border:1px solid rgba(224,108,117,.45); border-radius:8px; padding:10px 13px; font-size:.85rem; color:#EEB2B7;}
+  .sig-alert.show{display:block;}
+  .sig-alert b{color:#fff;}
+  .sig-legend{display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--text-dim);}
+  .sig-legend span{display:flex; align-items:center; gap:6px;}
+  .lg{width:11px; height:11px; border-radius:3px; display:inline-block;}
+
+  /* diagrama de actividad */
+  .diagram{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px; margin-top:16px;}
+  .diagram svg{width:100%; height:auto; display:block;}
+  .diagram .cap{margin-top:10px; font-size:.82rem; color:var(--text-dim); text-align:center;}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="../index.html">&#8592; Volver al índice · Unidad 0</a>
+  <a href="instrucciones-control-condicionales-java.html">Ver también: condicionales &#8594;</a>
+</nav>
+
+<div class="hero">
+  <div class="badge">Unidad 0 · Fundamentos de programación</div>
+  <h1>Instrucciones de control: repetición</h1>
+  <p>La instrucción <code>while</code> y sus dos grandes familias —<b>repetición controlada por contador</b> y <b>por centinela</b>—: anatomía de un ciclo, seudocódigo, ciclos anidados, operadores <code>+=</code>, <code>++</code> y <code>--</code>, los ocho tipos primitivos y el error más caro de todos: el ciclo infinito.</p>
+  <div class="src">Base bibliográfica: <b>Deitel — Cómo programar en Java, 7ma edición</b> · Cap. 4, secc. 4.7-4.16 (pp. 121-163)</div>
+</div>
+<div class="sig">
+  <div class="sig-zone">
+    <div class="sig-title">Banco de pruebas de ciclos · avanza la ejecución una instrucción a la vez</div>
+    <p class="sig-sub">Elige un ciclo y pulsa <b>Paso</b> para ejecutar la siguiente instrucción, o <b>Iteración</b> para completar la vuelta actual. Las líneas iluminadas son las que se ejecutan, las variables destellan cuando cambian y la consola acumula la salida real del programa.</p>
+
+    <div class="tab-picker" id="simTabs">
+      <button class="tab-btn active" data-tab="contador" onclick="pickLoop('contador')">ciclo con contador</button>
+      <button class="tab-btn" data-tab="centinela" onclick="pickLoop('centinela')">ciclo con centinela</button>
+      <button class="tab-btn" data-tab="anidado" onclick="pickLoop('anidado')">if...else anidado</button>
+      <button class="tab-btn" data-tab="infinito" onclick="pickLoop('infinito')">ciclo infinito</button>
+    </div>
+
+    <div class="sig-controls">
+      <button onclick="stepLoop()">&#9654; Paso</button>
+      <button onclick="stepIteration()">&#187; Iteración</button>
+      <button class="ghost" onclick="resetLoop()">&#8634; Reiniciar</button>
+      <label class="sig-field" id="fldData">datos <input type="text" id="inData" value="97, 88, 72" spellcheck="false" onchange="resetLoop()"></label>
+      <span class="sig-pos" id="simPos">listo</span>
+    </div>
+
+    <div class="sig-grid">
+      <div class="sig-code" id="sigCode">
+<div class="sim-panel active" data-mode="contador">
+<div class="cl" data-id="c1"><span class="tp">int</span> total = <span class="num">0</span>;</div>
+<div class="cl" data-id="c2"><span class="tp">int</span> contadorCalif = <span class="num">1</span>;</div>
+<div class="cl" data-id="c3"><span class="kw">while</span> ( contadorCalif &lt;= <span class="num">10</span> )<span class="ev" data-ev="kc"></span></div>
+<div class="cl" data-id="c4">{</div>
+<div class="cl" data-id="c5">    System.out.print( <span class="str">"Escriba la calificación: "</span> );</div>
+<div class="cl" data-id="c6">    calificacion = entrada.nextInt();</div>
+<div class="cl" data-id="c7">    total = total + calificacion;</div>
+<div class="cl" data-id="c8">    contadorCalif = contadorCalif + <span class="num">1</span>;</div>
+<div class="cl" data-id="c9">}</div>
+<div class="cl" data-id="c10">promedio = total / <span class="num">10</span>;   <span class="cm">// división entera: trunca</span></div>
+<div class="cl" data-id="c11">System.out.printf( <span class="str">"El total de las 10 calificaciones es %d\n"</span>, total );</div>
+<div class="cl" data-id="c12">System.out.printf( <span class="str">"El promedio de la clase es %d\n"</span>, promedio );</div>
+</div>
+
+<div class="sim-panel" data-mode="centinela">
+<div class="cl" data-id="s1"><span class="tp">int</span> total = <span class="num">0</span>;</div>
+<div class="cl" data-id="s2"><span class="tp">int</span> contadorCalif = <span class="num">0</span>;</div>
+<div class="cl" data-id="s3">System.out.print( <span class="str">"Escriba calificación o -1 para terminar: "</span> );</div>
+<div class="cl" data-id="s4">calificacion = entrada.nextInt();</div>
+<div class="cl" data-id="s5"><span class="kw">while</span> ( calificacion != <span class="num">-1</span> )<span class="ev" data-ev="kc"></span></div>
+<div class="cl" data-id="s6">{</div>
+<div class="cl" data-id="s7">    total = total + calificacion;</div>
+<div class="cl" data-id="s8">    contadorCalif = contadorCalif + <span class="num">1</span>;</div>
+<div class="cl" data-id="s9">    System.out.print( <span class="str">"Escriba calificación o -1 para terminar: "</span> );</div>
+<div class="cl" data-id="s10">    calificacion = entrada.nextInt();</div>
+<div class="cl" data-id="s11">}</div>
+<div class="cl" data-id="s12"><span class="kw">if</span> ( contadorCalif != <span class="num">0</span> )<span class="ev" data-ev="ki"></span></div>
+<div class="cl" data-id="s13">{</div>
+<div class="cl" data-id="s14">    promedio = (<span class="tp">double</span>) total / contadorCalif;</div>
+<div class="cl" data-id="s15">    System.out.printf( <span class="str">"El total de las %d calificaciones introducidas es %d\n"</span>, contadorCalif, total );</div>
+<div class="cl" data-id="s16">    System.out.printf( <span class="str">"El promedio de la clase es %.2f\n"</span>, promedio );</div>
+<div class="cl" data-id="s17">}</div>
+<div class="cl" data-id="s18"><span class="kw">else</span></div>
+<div class="cl" data-id="s19">    System.out.println( <span class="str">"No se introdujeron calificaciones"</span> );</div>
+</div>
+
+<div class="sim-panel" data-mode="anidado">
+<div class="cl" data-id="a1"><span class="tp">int</span> aprobados = <span class="num">0</span>;</div>
+<div class="cl" data-id="a2"><span class="tp">int</span> reprobados = <span class="num">0</span>;</div>
+<div class="cl" data-id="a3"><span class="tp">int</span> contadorEstudiantes = <span class="num">1</span>;</div>
+<div class="cl" data-id="a4"><span class="kw">while</span> ( contadorEstudiantes &lt;= <span class="num">10</span> )<span class="ev" data-ev="kc"></span></div>
+<div class="cl" data-id="a5">{</div>
+<div class="cl" data-id="a6">    System.out.print( <span class="str">"Escriba el resultado (1 = aprobado, 2 = reprobado): "</span> );</div>
+<div class="cl" data-id="a7">    resultado = entrada.nextInt();</div>
+<div class="cl" data-id="a8">    <span class="kw">if</span> ( resultado == <span class="num">1</span> )<span class="ev" data-ev="ki"></span></div>
+<div class="cl" data-id="a9">        aprobados = aprobados + <span class="num">1</span>;</div>
+<div class="cl" data-id="a10">    <span class="kw">else</span></div>
+<div class="cl" data-id="a11">        reprobados = reprobados + <span class="num">1</span>;</div>
+<div class="cl" data-id="a12">    contadorEstudiantes = contadorEstudiantes + <span class="num">1</span>;</div>
+<div class="cl" data-id="a13">}</div>
+<div class="cl" data-id="a14">System.out.printf( <span class="str">"Aprobados: %d\n"</span>, aprobados );</div>
+<div class="cl" data-id="a15">System.out.printf( <span class="str">"Reprobados: %d\n"</span>, reprobados );</div>
+<div class="cl" data-id="a16"><span class="kw">if</span> ( aprobados &gt; <span class="num">8</span> )<span class="ev" data-ev="kf"></span></div>
+<div class="cl" data-id="a17">    System.out.println( <span class="str">"Aumentar colegiatura"</span> );</div>
+</div>
+
+<div class="sim-panel" data-mode="infinito">
+<div class="cl" data-id="i1"><span class="tp">int</span> total = <span class="num">0</span>;</div>
+<div class="cl" data-id="i2"><span class="tp">int</span> contadorCalif = <span class="num">0</span>;</div>
+<div class="cl" data-id="i3">calificacion = entrada.nextInt();   <span class="cm">// se lee UNA vez</span></div>
+<div class="cl" data-id="i4"><span class="kw">while</span> ( calificacion != <span class="num">-1</span> )<span class="ev" data-ev="kc"></span></div>
+<div class="cl" data-id="i5">    total = total + calificacion;   <span class="cm">// sin { } esto es TODO el cuerpo</span></div>
+<div class="cl" data-id="i6">contadorCalif = contadorCalif + <span class="num">1</span>;   <span class="cm">// queda fuera del ciclo</span></div>
+<div class="cl" data-id="i7">System.out.print( <span class="str">"Escriba calificación o -1 para terminar: "</span> );</div>
+<div class="cl" data-id="i8">calificacion = entrada.nextInt();   <span class="cm">// nunca corre dentro del ciclo</span></div>
+</div>
+      </div>
+
+      <div>
+        <div class="var-strip" id="varStrip"></div>
+        <pre class="sim-console" id="simConsole">Pulsa "Paso" para arrancar la traza.</pre>
+        <div class="sig-explain" id="simExplain">Cada <b>chip</b> junto a una condición muestra su resultado: <b>true</b> (verde) o <b>false</b> (rojo).</div>
+        <div class="sig-alert" id="simAlert"></div>
+      </div>
+    </div>
+
+    <div class="sig-legend">
+      <span><i class="lg" style="background:rgba(79,176,174,.6)"></i> línea que se ejecuta</span>
+      <span><i class="lg" style="background:#3C4459"></i> línea que no corre ahora</span>
+      <span><i class="lg" style="background:var(--amber)"></i> condición evaluada</span>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <a href="#s01">concepto while</a>
+  <a href="#s02">anatomía del ciclo</a>
+  <a href="#s03">contador</a>
+  <a href="#s04">centinela</a>
+  <a href="#s05">anidamiento</a>
+  <a href="#s06">asignación compuesta</a>
+  <a href="#s07">++ y --</a>
+  <a href="#s08">tipos primitivos</a>
+  <a href="#s09">GUI y gráficos</a>
+  <a href="#s10">atributos de clase</a>
+  <a href="#s11">función práctica</a>
+  <a href="#s12">errores frecuentes</a>
+  <a href="#s13">pareto</a>
+  <a href="#s14">quiz</a>
+</div>
+
+<div class="wrap">
+<section id="s01">
+  <div class="eyebrow-sm">01 · Concepto</div>
+  <h2>La instrucción while: repetir mientras la condición sea verdadera</h2>
+
+  <p>Una <b>instrucción de repetición</b> (ciclo o <i>loop</i>) le permite al programa <b>repetir una acción mientras cierta condición sea verdadera</b>. Es la tercera estructura de control de la programación estructurada —la que la página de condicionales dejó pendiente.</p>
+
+  <div class="analogy">
+    <b>Analogía (Feynman):</b> la lista de compras del libro. <i>"Mientras existan más artículos en mi lista, compro el siguiente artículo y lo quito de la lista."</i> La condición puede ser verdadera o falsa; mientras lo sea, la acción se repite. Cuando la lista queda vacía (condición falsa), sales de la tienda y sigues con el resto del día: ese "resto del día" es la primera instrucción <b>después</b> del ciclo.
+  </div>
+
+  <p>La instrucción (o instrucciones) que se repite se llama <b>cuerpo</b> del ciclo. Cada ejecución completa del cuerpo se llama <b>iteración</b>. Java evalúa la condición <b>antes</b> de cada iteración, por eso a <code>while</code> se le llama repetición <i>controlada por la condición</i> y puede ejecutar <b>cero o más</b> veces.</p>
+
+  <h3 class="sub">Primer ejemplo: la primera potencia de 3 mayor que 100</h3>
+
+<pre class="code"><span class="tp">int</span> producto = <span class="num">3</span>;
+
+<span class="kw">while</span> ( producto &lt;= <span class="num">100</span> )
+    producto = <span class="num">3</span> * producto;</pre>
+
+  <p>Arrancando con <code>producto = 3</code>, cada iteración la multiplica por 3: <b>9</b>, <b>27</b>, <b>81</b>, <b>243</b>. Al volver <code>producto = 243</code>, la condición <code>producto &lt;= 100</code> es falsa, el ciclo termina y la ejecución continúa con la siguiente instrucción. Resultado: <b>243</b>.</p>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Seudocódigo:</b> <code>Mientras existan más artículos en mi lista de compras &#8195;Comprar el siguiente artículo y quitarlo de mi lista</code>. En seudocódigo no se usan llaves: la sangría basta para indicar el cuerpo. En Java, la llave de apertura <code>{</code> es la que delimita el cuerpo.</span></div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Detalle del libro (p. 122):</b> el texto menciona una vez la condición <code>producto &lt;= 1000</code>, pero el código y el resultado 243 corresponden a <code>producto &lt;= 100</code>. Con 1000 seguiría hasta 729. Corrige la nota al margen de tu libro.</span></div>
+
+  <p class="muted">Tres palabras clave nuevas: <code>while</code> (repetición), <code>do</code> y <code>for</code> — las últimas dos llegan en el capítulo 5. En esta página todo se resuelve con <code>while</code>, que es la base de las otras dos.</p>
+</section>
+
+<section id="s02">
+  <div class="eyebrow-sm">02 · Anatomía</div>
+  <h2>Las tres fases de todo ciclo (y su diagrama de actividad)</h2>
+
+  <p>Todo programa con ciclos se divide lógicamente en <b>tres fases</b>. Nombrarlas es la manera más rápida de detectar un ciclo roto:</p>
+
+  <div class="traits">
+    <div class="box"><h3>1 · Inicialización</h3><p>Se preparan las variables <b>antes</b> de tocar el ciclo: totales en <b>0</b>, contadores en <b>0</b> o <b>1</b>, y la primera lectura de datos cuando el ciclo es por centinela.</p></div>
+    <div class="box"><h3>2 · Procesamiento</h3><p>El cuerpo del <code>while</code>: leer, sumar, contar y —lo fundamental— <b>cambiar algo</b> para que la condición acabe siendo falsa.</p></div>
+    <div class="box"><h3>3 · Terminación</h3><p>Lo que ocurre <b>después</b> del ciclo: calcular el promedio, imprimir el reporte, avisar que no hubo datos.</p></div>
+    <div class="box"><h3>El contrato del ciclo</h3><p>Condición entre <code>( )</code> de tipo <code>boolean</code> + cuerpo con llaves + una acción que <b>acerque a la condición a ser falsa</b>. Si falta la tercera, hay ciclo infinito.</p></div>
+  </div>
+
+  <div class="diagram">
+    <svg viewBox="0 0 720 265" role="img" aria-label="Diagrama de actividad de UML de una instrucción while">
+      <defs>
+        <marker id="fl" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+          <path d="M0,0 L0,6.4 L7.5,3.2 z" fill="#7A8296"/>
+        </marker>
+      </defs>
+      <circle cx="30" cy="150" r="9" fill="#E8A33D"/>
+      <line x1="41" y1="150" x2="66" y2="150" stroke="#7A8296" stroke-width="1.6" marker-end="url(#fl)"/>
+      <polygon points="70,150 110,112 150,150 110,188" fill="none" stroke="#E8A33D" stroke-width="1.8"/>
+      <text x="110" y="206" fill="#9AA1B4" font-family="JetBrains Mono, monospace" font-size="11" text-anchor="middle">fusión</text>
+      <line x1="152" y1="150" x2="250" y2="150" stroke="#7A8296" stroke-width="1.6" marker-end="url(#fl)"/>
+      <polygon points="255,150 315,92 375,150 315,208" fill="none" stroke="#E8A33D" stroke-width="1.8"/>
+      <text x="315" y="146" fill="#E4E7ED" font-family="JetBrains Mono, monospace" font-size="12" text-anchor="middle">producto</text>
+      <text x="315" y="164" fill="#E4E7ED" font-family="JetBrains Mono, monospace" font-size="12" text-anchor="middle">&lt;= 100</text>
+      <text x="315" y="228" fill="#9AA1B4" font-family="JetBrains Mono, monospace" font-size="11" text-anchor="middle">decisión</text>
+      <path d="M315,90 L315,50 L424,50" fill="none" stroke="#7A8296" stroke-width="1.6" marker-end="url(#fl)"/>
+      <text x="328" y="80" fill="#4FB0AE" font-family="JetBrains Mono, monospace" font-size="11">[producto &lt;= 100]</text>
+      <rect x="430" y="28" width="238" height="44" rx="6" fill="#242A3B" stroke="#2E3549"/>
+      <text x="549" y="55" fill="#E4E7ED" font-family="JetBrains Mono, monospace" font-size="13" text-anchor="middle">producto = 3 * producto</text>
+      <path d="M549,74 L549,243 L110,243 L110,192" fill="none" stroke="#7A8296" stroke-width="1.6" marker-end="url(#fl)"/>
+      <path d="M377,150 L660,150" fill="none" stroke="#7A8296" stroke-width="1.6" marker-end="url(#fl)"/>
+      <text x="470" y="141" fill="#E06C75" font-family="JetBrains Mono, monospace" font-size="11">[producto &gt; 100]</text>
+      <circle cx="690" cy="150" r="11" fill="none" stroke="#E8A33D" stroke-width="2"/>
+      <circle cx="690" cy="150" r="5" fill="#E8A33D"/>
+    </svg>
+    <div class="cap">Diagrama de actividad UML del <code>while</code> (fig. 4.4): la <b>fusión</b> junta el flujo que entra desde el inicio y el que regresa desde el cuerpo; la <b>decisión</b> es la que se evalúa al comienzo de cada iteración y tiene dos flechas de salida con condición de guardia.</div>
+  </div>
+
+  <div class="key-point"><b>Decisión vs. fusión:</b> los dos son rombos, pero se distinguen por las flechas. Un símbolo de <b>decisión</b> tiene 1 entrada y 2 o más salidas (cada salida con su guardia). Un símbolo de <b>fusión</b> tiene 2 o más entradas y <b>1 sola salida</b>, y ninguna de sus flechas lleva guardia.</div>
+</section>
+
+<section id="s03">
+  <div class="eyebrow-sm">03 · Repetición controlada por contador</div>
+  <h2>Saber de antemano cuántas vueltas faltan</h2>
+
+  <p>La <b>repetición controlada por contador</b> (o <i>repetición definida</i>) usa una <b>variable contador</b> que se incrementa en cada iteración; el ciclo termina cuando el contador excede el número de vueltas. En este ejemplo se sabe de entrada: <b>10 estudiantes</b>.</p>
+
+<pre class="code"><span class="cm">/* Seudocódigo — fig. 4.5 */</span>
+
+Asignar a total el valor de cero
+Asignar al contador de calificaciones el valor de uno
+
+Mientras que el contador de calificaciones sea menor o igual a diez
+    Pedir al usuario que introducir la siguiente calificación
+    Obtener como entrada la siguiente calificación
+    Sumar la calificación al total
+    Sumar uno al contador de calificaciones
+
+Asignar al promedio de la clase el total dividido entre diez
+Imprimir el promedio de la clase</pre>
+
+  <p>Dos términos del libro: un <b>total</b> es una variable que <b>acumula la suma</b> de varios valores; un <b>contador</b> es una variable que <b>cuenta</b>. Los totales se inicializan en <code>0</code>; los contadores, en <code>0</code> o <code>1</code> según cómo se usen.</p>
+
+  <p class="muted">La implementación completa es la clase <code>LibroCalificaciones</code> del capítulo 3, con un método nuevo. Este es el corazón del método <code>determinarPromedioClase()</code> (fig. 4.6):</p>
+
+<pre class="code"><span class="an">import</span> java.util.Scanner;   <span class="cm">// el programa usa la clase Scanner</span>
+
+<span class="kw">public</span> <span class="tp">void</span> determinarPromedioClase()
+{
+    Scanner entrada = <span class="kw">new</span> Scanner( System.in );
+
+    <span class="tp">int</span> total;          <span class="cm">// suma de las calificaciones</span>
+    <span class="tp">int</span> contadorCalif;  <span class="cm">// número de la siguiente calificación</span>
+    <span class="tp">int</span> calificacion;   <span class="cm">// valor escrito por el usuario</span>
+    <span class="tp">int</span> promedio;       <span class="cm">// promedio de las calificaciones</span>
+
+    <span class="cm">// fase de inicialización</span>
+    total = <span class="num">0</span>;
+    contadorCalif = <span class="num">1</span>;
+
+    <span class="cm">// fase de procesamiento</span>
+    <span class="kw">while</span> ( contadorCalif &lt;= <span class="num">10</span> )   <span class="cm">// itera 10 veces</span>
+    {
+        System.out.print( <span class="str">"Escriba la calificación: "</span> );
+        calificacion = entrada.nextInt();      <span class="cm">// lee la calificación</span>
+        total = total + calificacion;          <span class="cm">// la suma al total</span>
+        contadorCalif = contadorCalif + <span class="num">1</span>;   <span class="cm">// avanza el contador</span>
+    }
+
+    <span class="cm">// fase de terminación</span>
+    promedio = total / <span class="num">10</span>;   <span class="cm">// ¡división entera!</span>
+
+    System.out.printf( <span class="str">"\nEl total de las 10 calificaciones es %d\n"</span>, total );
+    System.out.printf( <span class="str">"El promedio de la clase es %d\n"</span>, promedio );
+}</pre>
+
+  <pre class="out">Escriba la calificación: 67
+Escriba la calificación: 78
+Escriba la calificación: 89
+Escriba la calificación: 67
+Escriba la calificación: 87
+Escriba la calificación: 98
+Escriba la calificación: 93
+Escriba la calificación: 85
+Escriba la calificación: 82
+Escriba la calificación: 100
+El total de las 10 calificaciones es 846
+El promedio de la clase es 84</pre>
+
+  <div class="key-point"><b>El total es 846 y el promedio… 84.</b> 846 / 10 = 84.6, pero <code>total</code> y <code>10</code> son <code>int</code>: Java hace <b>división entera</b> y <b>trunca</b> la parte fraccionaria (no redondea). <code>7 / 4</code> da <code>1</code>, no <code>2</code> (Error común 4.5). La sección 04 muestra cómo obtener el 84.6 real con <code>(double)</code>.</div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Error común 4.4:</b> leer una variable local antes de inicializarla es <b>error de compilación</b> en Java. <code>total</code> y <code>contadorCalif</code> se asignan justo antes del ciclo; <code>calificacion</code> y <code>promedio</code> no necesitan inicializarse porque reciben valor en la fase de procesamiento y de terminación.</span></div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Tip para prevenir errores 4.1:</b> inicializa <b>cada</b> contador y total, ya sea en su declaración o en una asignación, antes de usarlo. ¿Olvidaste incrementar el contador? La traza de la pestaña <b>ciclo con contador</b> de arriba se colgaría justo en la línea <code>contadorCalif = contadorCalif + 1</code>: es el primer lugar donde mirar.</span></div>
+</section>
+<section id="s04">
+  <div class="eyebrow-sm">04 · Repetición controlada por un centinela</div>
+  <h2>Cuando no sabes cuántas vueltas habrá</h2>
+
+  <p>¿Y si el problema dice "para un <b>número arbitrario</b> de estudiantes"? El programa no sabe de antemano cuántas calificaciones vendrán. La solución es un <b>valor centinela</b> (también llamado valor de señal, de prueba o de bandera): un valor especial que el usuario teclea para indicar <b>"ya no hay más datos"</b>. Como el número de repeticiones no se conoce de entrada, a esto se le llama <b>repetición indefinida</b>.</p>
+
+  <div class="analogy">
+    <b>El centinela debe ser un valor imposible en los datos:</b> las calificaciones son enteros de 0 a 100, así que <b>-1</b> sirve perfectamente. Si eligieras 0 como centinela y alguien saca 0, el programa creería que ya terminaste: ese es el Error común 4.6.
+  </div>
+
+  <h3 class="sub">Del problema al código: refinamiento de arriba a abajo</h3>
+  <p>El libro construye este algoritmo con <b>refinamiento paso a paso</b>: primero la <i>cima</i> (una sola frase), luego tareas más pequeñas, hasta tener seudocódigo traducible a Java. Fíjate en que <b>la primera lectura va FUERA del ciclo</b>, para poder evaluarla antes de entrar:</p>
+
+<pre class="code"><span class="cm">/* Cima */</span>
+Determinar el promedio de la clase para el examen
+
+<span class="cm">/* Primer refinamiento (solo secuencia) */</span>
+Inicializar variables
+Introducir, sumar y contar las calificaciones del examen
+Calcular e imprimir el promedio de la clase
+
+<span class="cm">/* Segundo refinamiento — fig. 4.8 */</span>
+Inicializar total en cero
+Inicializar contador en cero
+
+Pedir al usuario que introducir la primera calificación
+Recibir como entrada la primera calificación (puede ser el centinela)
+
+Mientras el usuario no haya introducido aún el centinela
+    Sumar esta calificación al total actual
+    Sumar uno al contador de calificaciones
+    Pedir al usuario que introducir la siguiente calificación
+    Recibir como entrada la siguiente calificación (puede ser el centinela)
+
+Si el contador no es igual a cero
+    Asignar al promedio el total dividido entre el contador
+    Imprimir el promedio
+De lo contrario
+    Imprimir "No se introdujeron calificaciones"</pre>
+
+  <p class="muted">La traducción a Java de ese seudocódigo es el método <code>determinarPromedioClase()</code> de la fig. 4.9 — esta es la versión que usa el banco de pruebas de arriba (pestaña <b>ciclo con centinela</b>):</p>
+
+<pre class="code"><span class="an">import</span> java.util.Scanner;
+
+<span class="kw">public</span> <span class="tp">void</span> determinarPromedioClase()
+{
+    Scanner entrada = <span class="kw">new</span> Scanner( System.in );
+
+    <span class="tp">int</span> total;
+    <span class="tp">int</span> contadorCalif;
+    <span class="tp">int</span> calificacion;
+    <span class="tp">double</span> promedio;   <span class="cm">// ahora sí: puede tener decimales</span>
+
+    <span class="cm">// fase de inicialización</span>
+    total = <span class="num">0</span>;
+    contadorCalif = <span class="num">0</span>;
+
+    <span class="cm">// fase de procesamiento</span>
+    System.out.print( <span class="str">"Escriba calificación o -1 para terminar: "</span> );
+    calificacion = entrada.nextInt();   <span class="cm">// ¡fuera del ciclo!</span>
+
+    <span class="kw">while</span> ( calificacion != <span class="num">-1</span> )   <span class="cm">// itera hasta el centinela</span>
+    {
+        total = total + calificacion;
+        contadorCalif = contadorCalif + <span class="num">1</span>;
+
+        System.out.print( <span class="str">"Escriba calificación o -1 para terminar: "</span> );
+        calificacion = entrada.nextInt();
+    }
+
+    <span class="cm">// fase de terminación</span>
+    <span class="kw">if</span> ( contadorCalif != <span class="num">0</span> )   <span class="cm">// evita la división entre cero</span>
+    {
+        promedio = (<span class="tp">double</span>) total / contadorCalif;
+
+        System.out.printf( <span class="str">"\nEl total de las %d calificaciones introducidas es %d\n"</span>,
+            contadorCalif, total );
+        System.out.printf( <span class="str">"El promedio de la clase es %.2f\n"</span>, promedio );
+    }
+    <span class="kw">else</span>
+        System.out.println( <span class="str">"No se introdujeron calificaciones"</span> );
+}</pre>
+
+  <pre class="out">Escriba calificación o -1 para terminar: 97
+Escriba calificación o -1 para terminar: 88
+Escriba calificación o -1 para terminar: 72
+Escriba calificación o -1 para terminar: -1
+
+El total de las 3 calificaciones introducidas es 257
+El promedio de la clase es 85.67</pre>
+
+  <div class="key-point"><b>La conversión explícita <code>(double)</code>:</b> <code>total</code> y <code>contadorCalif</code> son enteros, así que sin el cast Java calcularía <code>257 / 3 = 85</code> y <i>después</i> lo convertiría a <code>85.0</code>. Al aplicar <code>(double)</code> a <code>total</code>, Java convierte <b>toda</b> la expresión a punto flotante (y promueve el otro operando) → <code>85.6666…</code>. Luego <code>%.2f</code> de <code>printf</code> redondea a <b>85.67</b>. El valor guardado en <code>total</code> sigue siendo entero: el cast crea una copia temporal.</div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Buena práctica 4.6:</b> el indicador debe <b>recordarle al usuario el centinela</b>: <code>"Escriba calificación o -1 para terminar: "</code>. Un programa que no dice cuándo parar obliga al usuario a adivinar.</span></div>
+
+  <h3 class="sub">Contador vs. centinela: la comparación que sale en el examen</h3>
+
+  <table class="cmp">
+    <thead>
+      <tr><th>Criterio</th><th>Controlada por contador</th><th>Controlada por centinela</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>¿Se sabe el nº de vueltas?</td><td><b>Sí</b> (repetición <i>definida</i>)</td><td><b>No</b> (repetición <i>indefinida</i>)</td></tr>
+      <tr><td>Condición típica</td><td><code>contador &lt;= 10</code></td><td><code>calificacion != -1</code></td></tr>
+      <tr><td>Dónde se lee el dato</td><td><b>Dentro</b> del cuerpo, en cada iteración</td><td><b>Antes</b> del ciclo y <b>al final</b> de cada iteración</td></tr>
+      <tr><td>Riesgo clásico</td><td>Olvidar incrementar el contador → ciclo infinito</td><td>Centinela = valor válido, o dato leído <i>después</i> de la condición → suma basura</td></tr>
+      <tr><td>Ejemplo del libro</td><td>Promedio de <b>10</b> estudiantes (fig. 4.6)</td><td>Promedio de <b>n</b> estudiantes (fig. 4.9)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>El ciclo del centinela <b>apila</b> estructuras: un <code>while</code> seguido de un <code>if...else</code> en secuencia. El <code>if</code> no está anidado dentro del ciclo: corre <b>una sola vez</b>, cuando el ciclo ya terminó. Y protege la división entre cero: si el usuario tecleó -1 de inmediato, <code>contadorCalif</code> vale 0.</span></div>
+</section>
+
+<section id="s05">
+  <div class="eyebrow-sm">05 · Instrucciones anidadas</div>
+  <h2>Un if...else dentro de un while</h2>
+
+  <p>Las instrucciones de control se conectan de <b>dos</b> maneras: <b>apilándose</b> (una tras otra, como en la sección 04) o <b>anidándose</b> (una dentro de otra). Este ejemplo —resultados de un examen— usa las dos a la vez: un <code>if...else</code> <b>dentro</b> de un <code>while</code>, y después un <code>if</code> simple <b>después</b> del ciclo.</p>
+
+  <div class="traits">
+    <div class="box"><h3>Apilamiento</h3><p>El punto de salida de una estructura se une al punto de entrada de la siguiente. Se ejecutan, en ese orden, las que hagan falta.</p></div>
+    <div class="box"><h3>Anidamiento</h3><p>Una estructura de control vive <b>dentro</b> del cuerpo de otra. El <code>if</code> interior se evalúa <b>una vez por cada iteración</b> del <code>while</code> exterior.</p></div>
+  </div>
+
+  <p class="muted">Seudocódigo de la fig. 4.11 y su conversión a la clase <code>Analisis</code> (fig. 4.12):</p>
+
+<pre class="code"><span class="cm">/* Seudocódigo */</span>
+Inicializar aprobados en cero
+Inicializar reprobados en cero
+Inicializar contador de estudiantes en uno
+
+Mientras el contador de estudiantes sea menor o igual a diez
+    Pedir al usuario que introducir el siguiente resultado del examen
+    Recibir como entrada el siguiente resultado del examen
+    Si el estudiante aprobó
+        Sumar uno a aprobados
+    De lo contrario
+        Sumar uno a reprobados
+    Sumar uno al contador de estudiantes
+
+Imprimir el número de aprobados
+Imprimir el número de reprobados
+Si más de ocho estudiantes aprobaron
+    Imprimir "Aumentar colegiatura"</pre>
+
+<pre class="code"><span class="an">import</span> java.util.Scanner;
+
+<span class="kw">public class</span> <span class="tp">Analisis</span>
+{
+    <span class="kw">public</span> <span class="tp">void</span> procesarResultadosExamen()
+    {
+        Scanner entrada = <span class="kw">new</span> Scanner( System.in );
+
+        <span class="cm">// inicialización incluida en la declaración</span>
+        <span class="tp">int</span> aprobados = <span class="num">0</span>;
+        <span class="tp">int</span> reprobados = <span class="num">0</span>;
+        <span class="tp">int</span> contadorEstudiantes = <span class="num">1</span>;
+        <span class="tp">int</span> resultado;
+
+        <span class="kw">while</span> ( contadorEstudiantes &lt;= <span class="num">10</span> )
+        {
+            System.out.print( <span class="str">"Escriba el resultado (1 = aprobado, 2 = reprobado): "</span> );
+            resultado = entrada.nextInt();
+
+            <span class="cm">// if...else anidado en while</span>
+            <span class="kw">if</span> ( resultado == <span class="num">1</span> )
+                aprobados = aprobados + <span class="num">1</span>;
+            <span class="kw">else</span>
+                reprobados = reprobados + <span class="num">1</span>;
+
+            contadorEstudiantes = contadorEstudiantes + <span class="num">1</span>;
+        }
+
+        <span class="cm">// fase de terminación</span>
+        System.out.printf( <span class="str">"Aprobados: %d\nReprobados: %d\n"</span>, aprobados, reprobados );
+
+        <span class="kw">if</span> ( aprobados &gt; <span class="num">8</span> )
+            System.out.println( <span class="str">"Aumentar colegiatura"</span> );
+    }
+}</pre>
+
+  <pre class="out">Corrida 1: 2,1,1,1,1,1,1,1,1,1
+Aprobados: 9
+Reprobados: 1
+Aumentar colegiatura
+
+Corrida 2: 1,2,1,2,1,2,2,1,1,1
+Aprobados: 6
+Reprobados: 4</pre>
+
+  <div class="key-point"><b>Lee la salida con lógica:</b> en la corrida 1 hay 9 aprobados, que es <b>mayor que 8</b> → se imprime "Aumentar colegiatura". En la corrida 2, con 6, el <code>if</code> final es falso y <b>no imprime nada más</b>: el programa termina sin avisar. Prueba ambas en la pestaña <b>if...else anidado</b>.</div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>El contador debe crecer dentro del ciclo.</b> Si olvidaras <code>contadorEstudiantes = contadorEstudiantes + 1</code>, la condición <code>&lt;= 10</code> sería eternamente verdadera. Observa que en la pestaña del banco de pruebas esa línea es la <b>última</b> del cuerpo: es lo que garantiza que el ciclo avance.</span></div>
+</section>
+
+<section id="s06">
+  <div class="eyebrow-sm">06 · Azúcar sintáctico</div>
+  <h2>Operadores de asignación compuestos (+=, -=, *=, /=, %=)</h2>
+
+  <p>Toda instrucción de la forma <code>variable = variable operador expresión;</code> puede abreviarse. Si <code>operador</code> es uno de <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> o <code>%</code>, escribes <b><code>variable operador= expresión;</code></b>.</p>
+
+<pre class="code"><span class="cm">// larga</span>
+total = total + calificacion;
+
+<span class="cm">// corta (idéntica)</span>
+total += calificacion;</pre>
+
+  <table class="cmp">
+    <thead>
+      <tr><th>Operador</th><th>Ejemplo</th><th>Equivale a</th><th>Asigna</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>+=</code></td><td><code>c += 7</code></td><td><code>c = c + 7</code></td><td><b>10</b> a <code>c</code></td></tr>
+      <tr><td><code>-=</code></td><td><code>d -= 4</code></td><td><code>d = d - 4</code></td><td><b>1</b> a <code>d</code></td></tr>
+      <tr><td><code>*=</code></td><td><code>e *= 5</code></td><td><code>e = e * 5</code></td><td><b>20</b> a <code>e</code></td></tr>
+      <tr><td><code>/=</code></td><td><code>f /= 3</code></td><td><code>f = f / 3</code></td><td><b>2</b> a <code>f</code></td></tr>
+      <tr><td><code>%=</code></td><td><code>g %= 9</code></td><td><code>g = g % 9</code></td><td><b>3</b> a <code>g</code></td></tr>
+    </tbody>
+  </table>
+  <p class="muted">Suponiendo <code>int c = 3, d = 5, e = 4, f = 6, g = 12;</code> (fig. 4.14). Nota que <code>f /= 3</code> es <b>división entera</b>: 6 / 3 = 2 exacto; con 7 / 3 daría 2, no 2.33.</p>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>Los compuestos funcionan con <b>cualquier</b> operador binario, no solo con aritméticos: en capítulos posteriores verás <code>&amp;=</code>, <code>|=</code>, <code>&gt;&gt;=</code>, etc. Regla general: <b>si la variable aparece dos veces</b> (una a la izquierda del <code>=</code> y otra dentro de la expresión), casi siempre cabe en un operador compuesto.</span></div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span>Cuidado con la <b>asignación dentro de una condición</b>: <code>while ( (calificacion = entrada.nextInt()) != -1 )</code> es válido en Java y se ve en código avanzado, pero mezcla leer y comparar en una sola línea. En este curso escribe las dos instrucciones por separado: se lee mucho mejor.</span></div>
+</section>
+<section id="s07">
+  <div class="eyebrow-sm">07 · ++ y --</div>
+  <h2>Los operadores de incremento y decremento</h2>
+
+  <p>Para sumar o restar <b>1</b> a una variable numérica, Java tiene dos operadores <b>unarios</b> (de un solo operando): <code>++</code> y <code>--</code>. Donde escribirías <code>c = c + 1</code> o <code>c += 1</code>, escribes <code>c++</code>.</p>
+
+  <table class="cmp">
+    <thead>
+      <tr><th>Operador</th><th>Se llama</th><th>Ejemplo</th><th>Qué hace</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>++</code></td><td>Preincremento</td><td><code>++a</code></td><td>Incrementa <code>a</code> en 1 y <b>después</b> usa el nuevo valor en la expresión.</td></tr>
+      <tr><td><code>++</code></td><td>Postincremento</td><td><code>a++</code></td><td>Usa <b>primero</b> el valor actual de <code>a</code> en la expresión y <b>después</b> lo incrementa.</td></tr>
+      <tr><td><code>--</code></td><td>Predecremento</td><td><code>--b</code></td><td>Decrementa <code>b</code> en 1 y después usa el nuevo valor.</td></tr>
+      <tr><td><code>--</code></td><td>Postdecremento</td><td><code>b--</code></td><td>Usa primero el valor actual y después decrementa.</td></tr>
+    </tbody>
+  </table>
+
+  <p class="muted">La clase <code>Incremento</code> (fig. 4.16) muestra la diferencia — un ejemplo "mecánico" de una sola clase, todo dentro de <code>main</code>:</p>
+
+<pre class="code"><span class="kw">public class</span> <span class="tp">Incremento</span>
+{
+    <span class="kw">public static void</span> main( <span class="tp">String</span> args[] )
+    {
+        <span class="tp">int</span> c;
+
+        <span class="cm">// demuestra el operador de postincremento</span>
+        c = <span class="num">5</span>;
+        System.out.println( c );          <span class="cm">// imprime 5</span>
+        System.out.println( c++ );        <span class="cm">// imprime 5, DESPUÉS incrementa</span>
+        System.out.println( c );          <span class="cm">// imprime 6</span>
+
+        System.out.println();             <span class="cm">// omite una línea</span>
+
+        <span class="cm">// demuestra el operador de preincremento</span>
+        c = <span class="num">5</span>;
+        System.out.println( c );          <span class="cm">// imprime 5</span>
+        System.out.println( ++c );        <span class="cm">// incrementa y DESPUÉS imprime 6</span>
+        System.out.println( c );          <span class="cm">// imprime 6</span>
+    }
+}</pre>
+
+  <pre class="out">5
+5
+6
+
+5
+6
+6</pre>
+
+  <div class="key-point"><b>¿Cuándo importa la diferencia?</b> Si la instrucción es <code>c++;</code> o <code>++c;</code> <b>por sí sola</b>, ambas hacen exactamente lo mismo: sumar 1 a <code>c</code>. Solo cambian cuando la variable aparece dentro de una <b>expresión más grande</b> —como <code>System.out.println( c++ )</code>, donde el valor que se imprime es el anterior.</div>
+
+  <h3 class="sub">Las tres formas de "sumar uno" (ya las conoces)</h3>
+<pre class="code">aprobados = aprobados + <span class="num">1</span>;   <span class="cm">// forma completa</span>
+aprobados += <span class="num">1</span>;              <span class="cm">// asignación compuesta</span>
+++aprobados;                  <span class="cm">// preincremento</span>
+aprobados++;                  <span class="cm">// postincremento</span>
+<span class="cm">// las cuatro hacen lo mismo aquí</span></pre>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Error común 4.9:</b> <code>++(x + 1)</code> es <b>error de sintaxis</b>: el operando de <code>++</code> debe ser una <b>variable</b> a la que se le pueda asignar un valor, no una expresión. Del mismo modo, <code>++c;</code> sin espacios: los operadores unarios van pegados a su operando (Buena práctica 4.7) — <code>+ +c</code> no tiene sentido.</span></div>
+
+  <h3 class="sub">Precedencia y asociatividad (fig. 4.17)</h3>
+  <p class="muted">De arriba a abajo, de <b>mayor a menor</b> precedencia:</p>
+  <table class="cmp">
+    <thead>
+      <tr><th>Operadores</th><th>Asociatividad</th><th>Tipo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>++</code> &nbsp;<code>--</code> &nbsp;(postfijo)</td><td>derecha a izquierda</td><td>postfijo unario</td></tr>
+      <tr><td><code>++</code> &nbsp;<code>--</code> &nbsp;<code>+</code> &nbsp;<code>-</code> &nbsp;<code>(tipo)</code></td><td>derecha a izquierda</td><td>prefijo unario / conversión</td></tr>
+      <tr><td><code>*</code> &nbsp;<code>/</code> &nbsp;<code>%</code></td><td>izquierda a derecha</td><td>multiplicativo</td></tr>
+      <tr><td><code>+</code> &nbsp;<code>-</code></td><td>izquierda a derecha</td><td>aditivo</td></tr>
+      <tr><td><code>&lt;</code> &nbsp;<code>&lt;=</code> &nbsp;<code>&gt;</code> &nbsp;<code>&gt;=</code></td><td>izquierda a derecha</td><td>relacional</td></tr>
+      <tr><td><code>==</code> &nbsp;<code>!=</code></td><td>izquierda a derecha</td><td>igualdad</td></tr>
+      <tr><td><code>?:</code></td><td>derecha a izquierda</td><td>condicional</td></tr>
+      <tr><td><code>=</code> &nbsp;<code>+=</code> &nbsp;<code>-=</code> &nbsp;<code>*=</code> &nbsp;<code>/=</code> &nbsp;<code>%=</code></td><td>derecha a izquierda</td><td>asignación</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>Observa que <b>todo lo que es asignación se asocia de derecha a izquierda</b> y tiene la precedencia <b>más baja</b> de la tabla: por eso <code>total += calificacion</code> espera a que toda la expresión de la derecha esté lista. Y el operador de conversión <code>(double)</code> está en el mismo nivel que <code>++</code>: unary, muy alto.</span></div>
+</section>
+
+<section id="s08">
+  <div class="eyebrow-sm">08 · Marco teórico</div>
+  <h2>Los ocho tipos primitivos de Java</h2>
+
+  <p>Java es un lenguaje <b>fuertemente tipado</b>: <b>toda</b> variable tiene un tipo declarado. A diferencia de C/C++, donde el tamaño de <code>int</code> cambiaba de una computadora a otra, en Java los tipos primitivos tienen <b>tamaño fijo</b> en todas las plataformas: <code>int</code> siempre son 32 bits (4 bytes). Esa es la <b>Tip de portabilidad 4.1</b>.</p>
+
+  <table class="cmp">
+    <thead>
+      <tr><th>Tipo</th><th>Tamaño</th><th>Rango</th><th>Valor por defecto (campos)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>boolean</code></td><td>—</td><td><code>true</code> / <code>false</code></td><td><code>false</code></td></tr>
+      <tr><td><code>byte</code></td><td>8 bits</td><td>-128 a 127</td><td><code>0</code></td></tr>
+      <tr><td><code>short</code></td><td>16 bits</td><td>-32 768 a 32 767</td><td><code>0</code></td></tr>
+      <tr><td><code>int</code></td><td>32 bits</td><td>-2 147 483 648 a 2 147 483 647</td><td><code>0</code></td></tr>
+      <tr><td><code>long</code></td><td>64 bits</td><td>-9 223 372 036 854 775 808 a 9 223 372 036 854 775 807</td><td><code>0</code></td></tr>
+      <tr><td><code>char</code></td><td>16 bits</td><td>Unicode <code>'\u0000'</code> a <code>'\uFFFF'</code> (0 a 65 535)</td><td><code>'\u0000'</code></td></tr>
+      <tr><td><code>float</code></td><td>32 bits</td><td>aprox. 6.7 dígitos decimales (IEEE 754)</td><td><code>0.0f</code></td></tr>
+      <tr><td><code>double</code></td><td>64 bits</td><td>aprox. 15.9 dígitos decimales (IEEE 754)</td><td><code>0.0d</code></td></tr>
+    </tbody>
+  </table>
+  <p class="muted">Los literales de texto usan <b>Unicode</b> y los de punto flotante, el estándar <b>IEEE 754</b> — ambos reconocidos internacionalmente, otra razón de la portabilidad.</p>
+
+  <div class="key-point"><b>Campos vs. variables locales:</b> los <b>campos</b> de una clase (declarados fuera de un método) <b>sí</b> reciben valor por defecto: <code>0</code>, <code>false</code>, o <code>null</code> en tipos de referencia. Las <b>variables locales</b> (dentro de un método) <b>no</b>: Java exige inicializarlas antes de leerlas (Error común 4.4 de esta misma página).</div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>Ya usaste cuatro de los ocho en esta página: <code>int</code> (totales y contadores), <code>double</code> (promedios), <code>boolean</code> (todas las condiciones de los <code>while</code> e <code>if</code>) y <code>char</code> (el <code>'A'</code> de las letras de calificación). <code>long</code> y <code>byte</code> llegan cuando los números se ponen grandes o pequeños de más.</span></div>
+</section>
+
+<section id="s09">
+  <div class="eyebrow-sm">09 · Ejemplo práctico (opcional)</div>
+  <h2>GUI y gráficos: dibujar con ciclos</h2>
+
+  <p class="muted">Sección 4.14 del libro. Para dibujar en Java hay que conocer el <b>sistema de coordenadas</b>: la esquina <b>superior izquierda</b> de un componente es <code>(0, 0)</code>; el eje <b>x</b> crece hacia la derecha, el eje <b>y</b> hacia <b>abajo</b>, y las unidades son <b>píxeles</b>.</p>
+
+  <p>La clase <code>PanelDibujo</code> dibuja dos líneas que cruzan el panel; <code>PruebaPanelDibujo</code> la muestra en una ventana:</p>
+
+<pre class="code"><span class="an">import</span> java.awt.Graphics;
+<span class="an">import</span> javax.swing.JPanel;
+
+<span class="kw">public class</span> <span class="tp">PanelDibujo</span> <span class="kw">extends</span> JPanel
+{
+    <span class="cm">// dibuja una x desde las esquinas del panel</span>
+    <span class="kw">public</span> <span class="tp">void</span> paintComponent( Graphics g )
+    {
+        <span class="cm">// asegura que el panel se muestre correctamente</span>
+        <span class="kw">super</span>.paintComponent( g );
+
+        <span class="tp">int</span> anchura = getWidth();   <span class="cm">// anchura total</span>
+        <span class="tp">int</span> altura = getHeight();   <span class="cm">// altura total</span>
+
+        <span class="cm">// de la esquina superior izquierda a la inferior derecha</span>
+        g.drawLine( <span class="num">0</span>, <span class="num">0</span>, anchura, altura );
+
+        <span class="cm">// de la esquina inferior izquierda a la superior derecha</span>
+        g.drawLine( <span class="num">0</span>, altura, anchura, <span class="num">0</span> );
+    }
+}</pre>
+
+<pre class="code"><span class="an">import</span> javax.swing.JFrame;
+
+<span class="kw">public class</span> <span class="tp">PruebaPanelDibujo</span>
+{
+    <span class="kw">public static void</span> main( <span class="tp">String</span> args[] )
+    {
+        PanelDibujo panel = <span class="kw">new</span> PanelDibujo();
+        <span class="tp">JFrame</span> ventana = <span class="kw">new</span> <span class="tp">JFrame</span>( <span class="str">"Primer ejemplo de dibujo"</span> );
+
+        ventana.setDefaultCloseOperation( <span class="tp">JFrame</span>.EXIT_ON_CLOSE );
+        ventana.add( panel );          <span class="cm">// agrega el panel a la ventana</span>
+        ventana.setSize( <span class="num">300</span>, <span class="num">300</span> );  <span class="cm">// anchura x altura en píxeles</span>
+        ventana.setVisible( <span class="kw">true</span> );
+    }
+}</pre>
+
+  <div class="traits">
+    <div class="box"><h3>extends = herencia</h3><p><code>PanelDibujo extends JPanel</code> significa que nuestra clase <b>hereda</b> todo lo que ya hace un <code>JPanel</code> (y le agrega el dibujo). <code>JPanel</code> es la <b>superclase</b>; <code>PanelDibujo</code>, la <b>subclase</b>. El capítulo 9 lo estudia a fondo.</p></div>
+    <div class="box"><h3>paintComponent</h3><p>El sistema lo llama <b>automáticamente</b>: al mostrar el panel, al descubrirlo otra vez tras taparlo y al cambiar el tamaño de la ventana. Por eso las líneas se redibujan solas al redimensionar. Su primera instrucción es <b>siempre</b> <code>super.paintComponent( g );</code>.</p></div>
+  </div>
+
+  <div class="analogy">
+    <b>Aquí es donde los ciclos cobran sentido visual:</b> los ejercicios 4.1 y 4.2 de la sección piden crear diseños de líneas dividiendo la anchura y la altura en <b>15 pasos</b> y repitiendo <code>g.drawLine(...)</code> con un <code>while</code> que avanza un paso en x y un paso en y en cada iteración. Sin ciclos tendrías que escribir 15 líneas a mano — y si el usuario redimensiona la ventana, a mano otra vez.
+  </div>
+</section>
+<section id="s10">
+  <div class="eyebrow-sm">10 · Ejemplo práctico (opcional)</div>
+  <h2>Identificar los atributos de una clase (caso ATM)</h2>
+
+  <p class="muted">Sección 4.15 del libro. En el capítulo 3 se identificaron las <b>clases</b> del sistema ATM listando los sustantivos del documento de requerimientos. Ahora toca el paso siguiente: encontrar sus <b>atributos</b> (los datos, que en Java se implementan como <b>campos</b>).</p>
+
+  <div class="traits">
+    <div class="box"><h3>El método</h3><p>Relee el documento de requerimientos y extrae <b>cada palabra o frase descriptiva</b> que hable de una característica de una clase. En UML se escribe el tipo con mayúscula inicial: <code>Boolean</code> equivale a <code>boolean</code> en Java.</p></div>
+    <div class="box"><h3>La pregunta de control</h3><p><b>¿Qué dato necesita este objeto para hacer su trabajo o para saber en qué estado está?</b> Si la respuesta cambia de objeto a objeto, el atributo va en esa clase.</p></div>
+  </div>
+
+  <table class="cmp">
+    <thead>
+      <tr><th>Clase</th><th>Palabras/frases del documento</th><th>Atributo propuesto</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>ATM</code></td><td>"el usuario es autenticado"</td><td><code>usuarioAutenticado</code> : <code>boolean</code></td></tr>
+      <tr><td><code>Cuenta</code></td><td>"número de cuenta", "NIP", "saldo"</td><td><code>numeroCuenta</code>, <code>nip</code>, <code>saldoDisponible</code>, <code>saldoTotal</code></td></tr>
+      <tr><td><code>Retiro</code> / <code>Deposito</code></td><td>"número de cuenta", "monto"</td><td><code>numeroCuenta</code>, <code>monto</code></td></tr>
+      <tr><td><code>SolicitudSaldo</code></td><td>"número de cuenta"</td><td><code>numeroCuenta</code> (no necesita monto)</td></tr>
+      <tr><td><code>DispensadorEfectivo</code></td><td>"empieza cada día cargado con 500 billetes de $20"</td><td>conteo de billetes / capacidad</td></tr>
+      <tr><td><code>Pantalla</code>, <code>Teclado</code>, <code>BaseDatosBanco</code>…</td><td>[sin palabras descriptivas]</td><td>por ahora, ninguno</td></tr>
+    </tbody>
+  </table>
+
+  <div class="key-point"><b>Un buen ejemplo de "dos atributos para un mismo concepto":</b> una cuenta necesita <code>saldoDisponible</code> (lo que se puede retirar ya) y <code>saldoTotal</code> (lo depositado, incluidos cheques aún sin verificar). Si depositas $50 en una cuenta vacía, <code>saldoTotal</code> pasa a 50 y <code>saldoDisponible</code> sigue en 0 hasta que el banco confirme el sobre. Los atributos modelan el <b>estado</b> real del objeto, no solo "un número que hay".</div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>Esta etapa se rellena <b>en capas</b>: el capítulo 5 verá cómo esos atributos representan el estado y el capítulo 6 cómo se determinan las <b>operaciones</b> (los métodos). No intentes diseñar la clase completa de una vez.</span></div>
+</section>
+
+<section id="s11">
+  <div class="eyebrow-sm">11 · Función práctica</div>
+  <h2>Dónde viven los ciclos en un programa real</h2>
+
+  <div class="uses">
+    <div class="box"><h3>Leer una cantidad desconocida de datos</h3><p>Calificaciones hasta que el usuario diga basta, líneas de un archivo, registros de una base: casi todo lo que "no sabes cuántos son" es un ciclo con <b>centinela</b>.</p></div>
+    <div class="box"><h3>Recorrer y acumular</h3><p>Sumas, promedios, contadores de aprobados/reprobados, ventas del mes, intentos de acceso: <b>total</b> y <b>contador</b> son las dos variables que casi siempre acompañan al ciclo.</p></div>
+    <div class="box"><h3>Validar hasta que la entrada sea buena</h3><p>Pedir la edad hasta que esté en rango, el NIP hasta que coincida: <code>while (datoInválido) { pedir otra vez; }</code>.</p></div>
+    <div class="box"><h3>Menús que no terminan</h3><p>Un menú de consola que se repite hasta que el usuario elige "Salir" es un ciclo con centinela envolviendo toda la interfaz.</p></div>
+    <div class="box"><h3>Búsquedas</h3><p>Recorrer una lista hasta encontrar el elemento o agotar los candidatos; ahí <code>break</code> (visto en la página de condicionales) es el compañero natural del ciclo.</p></div>
+    <div class="box"><h3>Gráficos y animación</h3><p>Dibujar 15 líneas, mover un personaje, recalcular una ventana: los ciclos convierten "repetir N veces" en 4 líneas de código (sección 09).</p></div>
+  </div>
+
+  <div class="analogy">
+    <b>Idea para llevarse:</b> un ciclo es una <b>tarea que se repite hasta que algo cambia</b>. Cuando tu método tenga tres o cuatro instrucciones idénticas seguidas (copiar y pegar), tienes un ciclo esperando escribirse — y casi siempre su nombre es <code>while</code> con un contador o un centinela.
+  </div>
+</section>
+
+<section id="s12">
+  <div class="eyebrow-sm">12 · Errores frecuentes</div>
+  <h2>Los tropiezos típicos de este tema</h2>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>El ciclo infinito (Error común 4.3).</b> Si en el cuerpo del <code>while</code> no hay ninguna acción que haga que la condición se torne falsa <b>alguna vez</b>, el ciclo nunca termina: el programa se "cuelga". Prueba la pestaña <b>ciclo infinito</b> de arriba y observa cómo <code>total</code> crece sin control mientras la condición sigue siendo <code>true</code>.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>Omitir las llaves del cuerpo (Error común 4.7).</b> Sin <code>{ }</code>, el cuerpo del <code>while</code> es <b>solo la instrucción siguiente</b>. En el ejemplo del centinela, si quitas las llaves, el ciclo se queda con <code>total = total + calificacion;</code> y las otras tres líneas —incluida la que <b>relee</b> el dato— quedan fuera: <code>calificacion</code> nunca cambia y el ciclo es infinito. El compilador no dice nada: es un <b>error lógico</b>.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>Un centinela que también es dato válido (Error común 4.6).</b> Si eliges <code>0</code> como centinela y alguien saca 0 en el examen, el programa creerá que ya terminaste y dejará de procesar. Elige siempre un valor <b>imposible</b> en los datos permitidos: <code>-1</code> para calificaciones de 0 a 100.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>Suponer que la división entera redondea (Error común 4.5).</b> <code>7 / 4</code> es <code>1</code> en Java, no <code>2</code>: se <b>trunca</b>. Por eso el promedio de 846 / 10 salió 84 y no 84.6. La solución es la conversión explícita <code>(double) total / contador</code> + el especificador <code>%.2f</code>.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>Leer una variable local sin inicializar (Error común 4.4).</b> Es <b>error de compilación</b> en Java. Inicializa totales en <code>0</code> y contadores en <code>0</code> o <code>1</code> — en la declaración o justo antes del ciclo (Tip 4.1).</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b><code>++(x + 1)</code> y los espacios en los unarios (Error común 4.9).</b> <code>++</code> y <code>--</code> necesitan una <b>variable</b> como operando, y van <b>pegados</b> a ella: <code>c++</code>, nunca <code>c ++</code> ni <code>++ (x + 1)</code>.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>Olvidar el <code>if</code> de protección de la división.</b> <code>promedio = total / contador;</code> con <code>contador = 0</code> (el usuario entró directo con el centinela) lanza <b>ArithmeticException</b> en tiempo de ejecución. El <code>if (contador != 0)</code> de la sección 04 no es decorativo: es lo que evita el choque.</div>
+  </div>
+</section>
+<section id="s13">
+  <div class="eyebrow-sm">13 · Principio de Pareto</div>
+  <h2>El 20% que produce el 80% de los resultados</h2>
+
+  <p>Si solo pudieras repasar cinco cosas antes del examen, serían estas:</p>
+
+  <div class="code-grid">
+    <div class="code-panel a">
+      <div class="lbl">1 · La forma de todo ciclo while</div>
+<pre><span class="cm">// fase de inicialización</span>
+total = <span class="num">0</span>; contador = ...;
+
+<span class="kw">while</span> ( condicion booleana )
+{
+    <span class="cm">// algo DEBE cambiar</span>
+    <span class="cm">// para que la condición</span>
+    <span class="cm">// acabe siendo false</span>
+}
+
+<span class="cm">// fase de terminación</span></pre>
+    </div>
+    <div class="code-panel a">
+      <div class="lbl">2 · Las dos familias</div>
+<pre><span class="cm">// contador (definida):</span>
+<span class="kw">while</span> ( contador &lt;= <span class="num">10</span> ) { ... }
+
+<span class="cm">// centinela (indefinida):</span>
+lectura = entrada.nextInt();  <span class="cm">// ¡antes!</span>
+<span class="kw">while</span> ( lectura != <span class="num">-1</span> )
+{
+   ...; lectura = entrada.nextInt(); <span class="cm">// ¡y al final!</span>
+}</pre>
+    </div>
+    <div class="code-panel a">
+      <div class="lbl">3 · Inicializar siempre</div>
+<pre>total = <span class="num">0</span>;            <span class="cm">// totales → 0</span>
+contador = <span class="num">1</span>;         <span class="cm">// contadores → 0 o 1</span>
+
+<span class="cm">// leer SIN inicializar =</span>
+<span class="cm">// error de compilación</span>
+<span class="cm">// (Error común 4.4)</span></pre>
+    </div>
+    <div class="code-panel a">
+      <div class="lbl">4 · Abreviaturas</div>
+<pre>total += calificacion;   <span class="cm">// = total = total + ...</span>
+contador++;             <span class="cm">// pre: ++contador;</span>
+
+<span class="cm">// c++ en una expresión</span>
+<span class="cm">// usa ANTES el valor viejo</span>
+System.out.println(c++);</pre>
+    </div>
+  </div>
+
+  <div class="key-point"><b>5 · El promedio correcto:</b> <code>(double) total / contadorCalif</code> + <code>printf("%.2f", promedio)</code>. Sin el cast es división entera (trunca); sin el <code>if (contador != 0)</code> hay <code>ArithmeticException</code>. Estas tres piezas —cast, formato y protección— van juntas en todo cálculo de promedio.</div>
+
+  <ul class="checklist">
+    <li><b>while</b> evalúa <b>antes</b> de cada iteración → puede correr <b>0 veces</b>; el cuerpo va <b>siempre</b> entre llaves.</li>
+    <li><b>Contador</b> = sabes cuántas vueltas; <b>centinela</b> = no sabes: la primera lectura va <b>fuera</b> del ciclo y se repite <b>al final</b> de cada iteración.</li>
+    <li>Todo ciclo tiene tres fases: <b>inicialización</b>, <b>procesamiento</b>, <b>terminación</b> — y una acción que garantice que termina.</li>
+    <li><code>total += x</code>, <code>c++</code> y <code>++c</code> equivalen a <code>total = total + x</code> y <code>c = c + 1</code>; dentro de una expresión, <b>pre</b> y <b>post</b> no son lo mismo.</li>
+    <li>Los <b>8 tipos primitivos</b> tienen tamaño fijo (portabilidad): <code>int</code> 32 bits, <code>double</code> 64 bits, <code>char</code> 16 bits, <code>boolean</code> <code>true</code>/<code>false</code>.</li>
+  </ul>
+</section>
+
+<section id="s14">
+  <div class="eyebrow-sm">14 · Active recall</div>
+  <h2>Pon a prueba lo aprendido</h2>
+
+  <p class="muted">Responde <b>en voz alta antes de abrir</b> cada respuesta. Si dudaste, vuelve a la sección indicada.</p>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">1. Con <code>producto = 3</code>, ¿qué valores toma la variable antes de que <code>while (producto &lt;= 100)</code> termine?</div>
+    <div class="a"><p><b>3 → 9 → 27 → 81 → 243.</b> Cada iteración triplica el valor: 3·3 = 9, 9·3 = 27, 27·3 = 81, 81·3 = 243. Con 243 la condición <code>&lt;= 100</code> es falsa, el ciclo termina y <code>producto</code> se queda en <b>243</b> (sección 01).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">2. En el ciclo con contador, ¿por qué <code>contadorCalif</code> se inicializa en 1 y no en 0?</div>
+    <div class="a"><p>Porque cuenta <b>"cuál es la calificación que se está pidiendo ahora"</b>: la primera que se pide es la número 1. El ciclo corre <b>mientras</b> <code>contadorCalif &lt;= 10</code>, es decir, 10 veces (1, 2, …, 10). Si empezara en 0 y la condición siguiera siendo <code>&lt;= 10</code>, pediría 11 calificaciones. Los totales sí van en <b>0</b> (sección 03).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">3. Con las entradas <code>97, 88, 72, -1</code>, ¿qué imprime la versión con centinela y por qué -1 no aparece en la suma?</div>
+    <div class="a"><p><b>Total 257, promedio 85.67.</b> El valor se lee <b>al final</b> de cada iteración y <b>antes</b> de reevaluar la condición: al teclear -1, <code>while (calificacion != -1)</code> resulta falsa y el cuerpo <b>no se ejecuta</b>, así que -1 nunca llega a <code>total = total + calificacion</code>. 97 + 88 + 72 = 257; 257 / 3 = 85.666… → <code>%.2f</code> → <b>85.67</b> (sección 04).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">4. ¿Qué imprime <code>promedio = total / contadorCalif</code> con total = 846 y contador = 10, y qué cambia con <code>(double) total / contadorCalif</code>?</div>
+    <div class="a"><p><b>84</b> (división entera, trunca el .6 — Error común 4.5). Con <code>(double)</code> se crea una copia de punto flotante de <code>total</code>, Java promueve el otro operando y el resultado es <b>84.6</b>; con <code>printf("%.2f", …)</code> se imprime <b>84.60</b> (secciones 03 y 04).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">5. ¿Por qué el ciclo de la pestaña "ciclo infinito" nunca termina, aunque el usuario teclea -1 después?</div>
+    <div class="a"><p>Porque <b>sin llaves el cuerpo es solo</b> <code>total = total + calificacion;</code>. Las líneas que incrementan el contador, piden y <b>releen</b> el dato quedaron <b>fuera</b> del ciclo: <code>calificacion</code> conserva su primer valor (97), la condición <code>!= -1</code> sigue siendo verdadera y el ciclo se repite para siempre (Error común 4.7 + 4.3 — sección 12).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">6. Con <code>int c = 5;</code>, ¿qué imprime <code>System.out.println( c++ );</code> y qué imprime <code>System.out.println( ++c );</code> si antes se reinicia <code>c = 5</code>?</div>
+    <div class="a"><p><code>c++</code> → imprime <b>5</b> y <i>después</i> deja <code>c = 6</code>. <code>++c</code> → primero deja <code>c = 6</code> e imprime <b>6</b>. Por eso la clase <code>Incremento</code> produce <code>5, 5, 6</code> y luego <code>5, 6, 6</code>. Como instrucción suelta, ambas hacen lo mismo: solo cambian dentro de una expresión más grande (sección 07).</p></div>
+  </div>
+</section>
+
+<p class="footer-note">
+  Página elaborada con base en las secciones 4.7 a 4.16 (pp. 121-163) de <i>Cómo programar en Java</i>, 7ma edición, de P. J. Deitel y H. M. Deitel.
+  <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+</p>
+</div>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var loopMode = 'contador';
+var frames = [];
+var fi = -1;
+
+var VAR_ORDER = {
+  contador: ['total','contadorCalif','calificacion','promedio'],
+  centinela: ['total','contadorCalif','calificacion','promedio'],
+  anidado: ['aprobados','reprobados','contadorEstudiantes','resultado'],
+  infinito: ['total','contadorCalif','calificacion']
+};
+
+var DEFAULTS = {
+  centinela: '97, 88, 72',
+  anidado: '2, 1, 1, 1, 1, 1, 1, 1, 1, 1',
+  infinito: '97, 88, 72'
+};
+
+var HINTS = {
+  centinela: 'Escribe las calificaciones separadas por comas; el -1 se agrega solo al final.',
+  anidado: 'Escribe exactamente 10 resultados: 1 = aprobado, 2 = reprobado.',
+  infinito: 'El primer valor es el que se queda "pegado" en el ciclo.'
+};
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function o(t,k){ return {t:t, k:k||'ok'}; }
+
+function parseList(str){
+  var parts = String(str).split(/[^0-9\-]+/);
+  var out = [];
+  for(var i=0;i<parts.length;i++){
+    if(parts[i] === '' || parts[i] === '-') continue;
+    var n = parseInt(parts[i], 10);
+    if(!isNaN(n)) out.push(n);
+  }
+  return out;
+}
+function round2(n){ return Math.round(n*100)/100; }
+function showNum(n){
+  if(typeof n !== 'number') return n;
+  if(Math.abs(n - Math.round(n)) < 1e-9) return String(Math.round(n));
+  return String(round2(n));
+}
+
+/* ---------------- construcción de las trazas ---------------- */
+
+function buildContador(){
+  var g = [67,78,89,67,87,98,93,85,82,100];
+  var f = [], total = 0, i = 1;
+
+  f.push({K:'init', L:{c1:1,c2:1}, V:{total:0, contadorCalif:1},
+    X:'<b>Fase de inicialización:</b> los acumuladores se preparan ANTES del ciclo — <b>total = 0</b> y <b>contadorCalif = 1</b> (la calificación que se va a pedir es la número 1).'});
+
+  while(i <= 10){
+    var val = g[i-1];
+    f.push({K:'iter', L:{c3:1}, C:{id:'kc',k:'t',t:i+' &lt;= 10'}, V:{total:total, contadorCalif:i},
+      X:'Iteración <b>'+i+'</b> de 10: la condición <b>'+i+' &lt;= 10</b> es <b>true</b>, así que se entra al cuerpo del ciclo.'});
+    f.push({K:'body', L:{c5:1,c6:1}, V:{total:total, contadorCalif:i, calificacion:val},
+      O:[o('Escriba la calificación: '+val,'dim')],
+      X:'Se pide y se lee la calificación <b>'+val+'</b> y se guarda en <b>calificacion</b>.'});
+    var nt = total + val;
+    f.push({K:'body', L:{c7:1}, V:{total:nt, contadorCalif:i, calificacion:val},
+      X:'total = total + calificacion → <b>'+total+' + '+val+' = '+nt+'</b>. El total <b>acumula</b> cada valor leído.'});
+    total = nt;
+    f.push({K:'body', L:{c8:1}, V:{total:total, contadorCalif:i+1, calificacion:val},
+      X:'contadorCalif = contadorCalif + 1 → <b>'+(i+1)+'</b>. Esta línea es la que garantiza que el ciclo avance.'});
+    i++;
+  }
+
+  f.push({K:'condEnd', L:{c3:1}, C:{id:'kc',k:'f',t:'11 &lt;= 10'}, V:{total:total, contadorCalif:11},
+    X:'Ahora <b>11 &lt;= 10</b> es <b>false</b>: el ciclo termina y el control pasa a la primera instrucción después del <code>while</code>.'});
+
+  var prom = Math.floor(total/10);
+  f.push({K:'end', L:{c10:1}, V:{total:total, contadorCalif:11, promedio:prom},
+    X:'<b>Fase de terminación:</b> promedio = total / 10 → '+total+' / 10. Los dos son <code>int</code>, así que Java <b>trunca</b> y deja <b>'+prom+'</b>.'});
+  f.push({K:'end', L:{c11:1}, O:[o('El total de las 10 calificaciones es '+total,'dim')],
+    X:'Se imprime el total acumulado durante las 10 iteraciones: <b>'+total+'</b>.'});
+  f.push({K:'end', L:{c12:1}, O:[o('El promedio de la clase es '+prom,'dim')],
+    X:'Promedio impreso: <b>'+prom+'</b> en vez de '+(total/10)+'. La sección 04 muestra cómo conseguir el decimal con <code>(double)</code>.'});
+  return f;
+}
+
+function buildCentinela(){
+  var vals = parseList($('inData').value);
+  if(!vals.length) vals = [97,88,72];
+  vals = vals.concat([-1]);
+
+  var f = [], total = 0, cnt = 0, k = 0;
+
+  f.push({K:'init', L:{s1:1,s2:1}, V:{total:0, contadorCalif:0},
+    X:'<b>Fase de inicialización:</b> total = 0 y contadorCalif = 0, porque todavía no se ha introducido ninguna calificación.'});
+  f.push({K:'init', L:{s3:1,s4:1}, V:{total:0, contadorCalif:0, calificacion:vals[0]},
+    O:[o('Escriba calificación o -1 para terminar: '+vals[0],'dim')],
+    X:'<b>La primera lectura va FUERA del ciclo.</b> Sin este valor no se podría evaluar la condición del <code>while</code> ni una sola vez.'});
+
+  while(k < vals.length && vals[k] !== -1){
+    var g = vals[k];
+    f.push({K:'iter', L:{s5:1}, C:{id:'kc',k:'t',t:g+' != -1'}, V:{total:total, contadorCalif:cnt, calificacion:g},
+      X:'La condición <b>'+g+' != -1</b> es <b>true</b>: el valor NO es el centinela, así que se procesa.'});
+    var nt = total + g;
+    f.push({K:'body', L:{s7:1}, V:{total:nt, contadorCalif:cnt, calificacion:g},
+      X:'total = total + calificacion → <b>'+total+' + '+g+' = '+nt+'</b>.'});
+    total = nt; cnt++;
+    f.push({K:'body', L:{s8:1}, V:{total:total, contadorCalif:cnt, calificacion:g},
+      X:'contadorCalif = contadorCalif + 1 → <b>'+cnt+'</b>. Solo cuenta valores <b>válidos</b>: el centinela nunca llega aquí.'});
+    k++;
+    var next = (k < vals.length) ? vals[k] : -1;
+    f.push({K:'body', L:{s9:1,s10:1}, V:{total:total, contadorCalif:cnt, calificacion:next},
+      O:[o('Escriba calificación o -1 para terminar: '+next,'dim')],
+      X:'<b>Al final del cuerpo</b> se lee el siguiente valor ('+next+') y el ciclo regresa a evaluar la condición con él.'});
+  }
+
+  f.push({K:'condEnd', L:{s5:1}, C:{id:'kc',k:'f',t:vals[k]+' != -1'}, V:{total:total, contadorCalif:cnt, calificacion:vals[k]},
+    X:'<b>-1 != -1</b> es <b>false</b>: el usuario puso fin a la entrada. El cuerpo <b>no se ejecuta</b>, por eso el -1 nunca se suma al total.'});
+
+  f.push({K:'end', L:{s12:1}, C:{id:'ki', k:(cnt!==0?'t':'f'), t:'contadorCalif != 0'}, V:{total:total, contadorCalif:cnt},
+    X: (cnt!==0)
+      ? 'Se introdujo(n) <b>'+cnt+'</b> calificación(es) → condición <b>true</b>: se calcula el promedio.'
+      : 'No se introdujo ninguna calificación (se tecleó -1 de inmediato) → condición <b>false</b>: se ejecuta el <code>else</code> y, de paso, se <b>evita la división entre cero</b>.'});
+
+  if(cnt !== 0){
+    var prom = round2(total/cnt);
+    f.push({K:'end', L:{s14:1}, V:{total:total, contadorCalif:cnt, promedio:prom},
+      X:'promedio = (<b>double</b>) total / contadorCalif → la conversión explícita vuelve de punto flotante a toda la expresión: <b>'+total+' / '+cnt+' = '+(total/cnt)+'</b>.'});
+    f.push({K:'end', L:{s15:1,s16:1}, V:{promedio:prom},
+      O:[o('El total de las '+cnt+' calificaciones introducidas es '+total,'dim'),
+         o('El promedio de la clase es '+prom.toFixed(2),'dim')],
+      X:'<code>%.2f</code> muestra dos decimales y <b>redondea</b>: <b>'+prom.toFixed(2)+'</b>. El -1 no aparece ni en el total ni en el contador.'});
+  } else {
+    f.push({K:'end', L:{s18:1,s19:1}, V:{total:0, contadorCalif:0},
+      O:[o('No se introdujeron calificaciones','dim')],
+      X:'Se ejecuta el <b>else</b>: el ciclo no corrió ni una vez — recuerda que <code>while</code> puede iterar <b>cero</b> veces.'});
+  }
+  return f;
+}
+
+function buildAnidado(){
+  var vals = parseList($('inData').value);
+  if(!vals.length) vals = [2,1,1,1,1,1,1,1,1,1];
+  while(vals.length < 10) vals.push(1);
+  vals = vals.slice(0,10);
+
+  var f = [], aprob = 0, reprob = 0, est = 1;
+
+  f.push({K:'init', L:{a1:1,a2:1,a3:1}, V:{aprobados:0, reprobados:0, contadorEstudiantes:1},
+    X:'<b>Fase de inicialización:</b> aprobados y reprobados en 0; el contador empieza en 1. Aquí la inicialización va dentro de la declaración.'});
+
+  while(est <= 10){
+    var r = vals[est-1];
+    var ok = (r === 1);
+    f.push({K:'iter', L:{a4:1}, C:{id:'kc',k:'t',t:est+' &lt;= 10'}, V:{aprobados:aprob, reprobados:reprob, contadorEstudiantes:est},
+      X:'Iteración <b>'+est+'</b> de 10: <b>'+est+' &lt;= 10</b> es <b>true</b>.'});
+    f.push({K:'body', L:{a6:1,a7:1}, V:{aprobados:aprob, reprobados:reprob, contadorEstudiantes:est, resultado:r},
+      O:[o('Escriba el resultado (1 = aprobado, 2 = reprobado): '+r,'dim')],
+      X:'Se lee el resultado del estudiante <b>'+est+'</b>: <b>'+r+'</b>.'});
+    f.push({K:'body', L:{a8:1}, C:{id:'ki',k:(ok?'t':'f'),t:'resultado == 1'},
+      V:{aprobados:aprob, reprobados:reprob, contadorEstudiantes:est, resultado:r},
+      X:'El <code>if</code> interior se evalúa <b>una vez por iteración</b>: <b>resultado == 1</b> es <b>'+(ok?'true':'false')+'</b>.'});
+    if(ok){
+      aprob++;
+      f.push({K:'body', L:{a9:1}, V:{aprobados:aprob, reprobados:reprob, contadorEstudiantes:est, resultado:r},
+        X:'Rama verdadera: aprobados = aprobados + 1 → <b>'+aprob+'</b>.'});
+    } else {
+      reprob++;
+      f.push({K:'body', L:{a10:1,a11:1}, V:{aprobados:aprob, reprobados:reprob, contadorEstudiantes:est, resultado:r},
+        X:'Rama falsa: se va al <code>else</code> y reprobados = reprobados + 1 → <b>'+reprob+'</b>.'});
+    }
+    est++;
+    f.push({K:'body', L:{a12:1}, V:{aprobados:aprob, reprobados:reprob, contadorEstudiantes:est, resultado:r},
+      X:'contadorEstudiantes = contadorEstudiantes + 1 → <b>'+est+'</b>. Última línea del cuerpo: es lo que hace avanzar el ciclo.'});
+  }
+
+  f.push({K:'condEnd', L:{a4:1}, C:{id:'kc',k:'f',t:'11 &lt;= 10'}, V:{aprobados:aprob, reprobados:reprob, contadorEstudiantes:11},
+    X:'<b>11 &lt;= 10</b> es <b>false</b>: se procesaron los 10 estudiantes y el ciclo termina.'});
+  f.push({K:'end', L:{a14:1,a15:1}, V:{aprobados:aprob, reprobados:reprob, contadorEstudiantes:11},
+    O:[o('Aprobados: '+aprob,'dim'), o('Reprobados: '+reprob,'dim')],
+    X:'<b>Fase de terminación:</b> se imprimen los acumuladores: <b>'+aprob+'</b> aprobados y <b>'+reprob+'</b> reprobados.'});
+  f.push({K:'end', L:{a16:1}, C:{id:'kf',k:(aprob>8?'t':'f'),t:'aprobados > 8'}, V:{aprobados:aprob, reprobados:reprob},
+    X:'El <code>if</code> final (ya <b>fuera</b> del ciclo, se ejecuta una sola vez): <b>'+aprob+' > 8</b> es <b>'+(aprob>8?'true':'false')+'</b>.'});
+  if(aprob > 8){
+    f.push({K:'end', L:{a17:1}, V:{aprobados:aprob},
+      O:[o('Aumentar colegiatura','dim')],
+      X:'Condición verdadera: se imprime <b>"Aumentar colegiatura"</b>.'});
+  } else {
+    f.push({K:'end', L:{}, D:{a17:1}, V:{aprobados:aprob},
+      X:'Condición falsa: la instrucción del <code>if</code> <b>no se ejecuta</b> y el programa termina sin imprimir nada más. Prueba con 9 aprobados (1 en primera posición) para verlo al revés.'});
+  }
+  return f;
+}
+
+function buildInfinito(){
+  var vals = parseList($('inData').value);
+  if(!vals.length) vals = [97,88,72];
+  var g = vals[0];
+  var f = [], total = 0;
+
+  f.push({K:'init', L:{i1:1,i2:1}, V:{total:0, contadorCalif:0},
+    X:'<b>Fase de inicialización:</b> total y contadorCalif en 0.'});
+  f.push({K:'init', L:{i3:1}, V:{total:0, contadorCalif:0, calificacion:g},
+    O:[o('Escriba calificación o -1 para terminar: '+g,'dim')],
+    X:'Se lee el valor <b>una sola vez</b>, antes del ciclo: <b>'+g+'</b>.'});
+
+  if(g === -1){
+    f.push({K:'condEnd', L:{i4:1}, C:{id:'kc',k:'f',t:'-1 != -1'}, V:{total:0, contadorCalif:0, calificacion:-1},
+      X:'Con -1 la condición es falsa desde el primer momento y el ciclo no entra. Cambia el dato para ver qué sale mal…'});
+    f.push({K:'end', L:{i6:1,i7:1,i8:1}, V:{total:0, contadorCalif:1, calificacion:-1},
+      X:'Al salir del ciclo sí se ejecutan las tres líneas siguientes: incrementar, pedir y leer. Todo normal.'});
+    return f;
+  }
+
+  var dim = {i6:1, i7:1, i8:1};
+  for(var n=1; n<=8; n++){
+    var alerta = (n >= 3)
+      ? '<b>Ciclo infinito</b> (Errores comunes 4.3 y 4.7): nada del cuerpo modifica <b>calificacion</b>, así que <code>calificacion != -1</code> nunca se volverá falsa.'
+      : null;
+    f.push({K:'iter', L:{i4:1}, C:{id:'kc',k:'t',t:g+' != -1'}, D:dim,
+      V:{total:total, contadorCalif:0, calificacion:g},
+      O:[o('vuelta '+n+': total = '+total+' · la condición sigue en true','bad')],
+      A:alerta,
+      X:'Vuelta <b>'+n+'</b>: <b>'+g+' != -1</b> es <b>true</b> otra vez, y nada en el código la va a cambiar.'});
+    total += g;
+    f.push({K:'body', L:{i5:1}, D:dim, V:{total:total, contadorCalif:0, calificacion:g},
+      X:'total = total + calificacion → <b>'+(total-g)+' + '+g+' = '+total+'</b>. Es la <b>única</b> instrucción del cuerpo: no pide datos ni cambia la condición.'});
+  }
+  f.push({K:'end', L:{i4:1}, C:{id:'kc',k:'t',t:g+' != -1'}, D:dim,
+    V:{total:total, contadorCalif:0, calificacion:g},
+    A:'<b>El programa nunca terminaría.</b> Las líneas 6-8 quedaron <b>fuera</b> del ciclo, así que <code>calificacion</code> se queda en '+g+' para siempre y <code>total</code> crece sin límite. Solo una interrupción del usuario lo detendría.',
+    X:'Con las llaves correctas, el cuerpo incluiría la relectura del dato y el ciclo se detendría al llegar el -1. Compara con la pestaña <b>ciclo con centinela</b>.'});
+  return f;
+}
+
+/* ---------------- render y controles ---------------- */
+
+function render(){
+  var panel = document.querySelector('.sim-panel.active');
+  if(!panel) return;
+
+  panel.querySelectorAll('.cl').forEach(function(l){ l.classList.remove('hit','dim'); });
+  panel.querySelectorAll('.ev').forEach(function(e){ e.className = 'ev'; e.textContent = ''; });
+
+  var f = (fi >= 0 && fi < frames.length) ? frames[fi] : null;
+
+  if(f){
+    Object.keys(f.L || {}).forEach(function(id){
+      var l = panel.querySelector('.cl[data-id="'+id+'"]');
+      if(l) l.classList.add('hit');
+    });
+    Object.keys(f.D || {}).forEach(function(id){
+      var l = panel.querySelector('.cl[data-id="'+id+'"]');
+      if(l) l.classList.add('dim');
+    });
+    if(f.C){
+      var e = panel.querySelector('.ev[data-ev="'+f.C.id+'"]');
+      if(e){ e.className = 'ev on ' + f.C.k; e.innerHTML = f.C.t; }
+    }
+  }
+
+  /* consola: se reconstruye con toda la salida acumulada hasta el paso actual */
+  var buf = [];
+  for(var i=0; i<=fi && i<frames.length; i++){
+    (frames[i].O || []).forEach(function(item){ buf.push(item); });
+  }
+  var cons = $('simConsole');
+  if(!buf.length){
+    cons.textContent = (fi < 0) ? 'Pulsa "Paso" para arrancar la traza.' : '(el programa aún no imprime nada)';
+  } else {
+    cons.innerHTML = buf.map(function(item){
+      return '<span class="'+(item.k || 'dim')+'">' + esc(item.t) + '</span>';
+    }).join('\n');
+    cons.scrollTop = cons.scrollHeight;
+  }
+
+  /* variables */
+  var order = VAR_ORDER[loopMode] || [];
+  var cur = {}, prev = {};
+  for(var a=0; a<=fi && a<frames.length; a++){
+    var V = frames[a].V || {};
+    Object.keys(V).forEach(function(k){ cur[k] = V[k]; });
+  }
+  for(var b=0; b<fi && b<frames.length; b++){
+    var W = frames[b].V || {};
+    Object.keys(W).forEach(function(k){ prev[k] = W[k]; });
+  }
+  $('varStrip').innerHTML = order.map(function(name){
+    var has = Object.prototype.hasOwnProperty.call(cur, name);
+    var changed = has && (!Object.prototype.hasOwnProperty.call(prev, name) || prev[name] !== cur[name]);
+    return '<span class="var' + (changed ? ' flash' : '') + '"><i>' + name + '</i><b>'
+      + (has ? esc(showNum(cur[name])) : '…') + '</b></span>';
+  }).join('');
+
+  $('simExplain').innerHTML = f ? f.X
+    : 'Pulsa <b>Paso</b> para ejecutar la siguiente instrucción o <b>Iteración</b> para completar la vuelta actual.';
+
+  var al = $('simAlert');
+  if(f && f.A){ al.innerHTML = f.A; al.classList.add('show'); }
+  else { al.classList.remove('show'); al.innerHTML = ''; }
+
+  $('simPos').textContent = (fi < 0) ? 'listo'
+    : (fi >= frames.length-1) ? 'fin · ' + frames.length + ' pasos'
+    : 'paso ' + (fi+1) + ' / ' + frames.length;
+}
+
+function stepLoop(){
+  if(!frames.length) return;
+  if(fi < frames.length - 1){ fi++; render(); }
+}
+
+function stepIteration(){
+  if(!frames.length || fi >= frames.length - 1) return;
+  var bordes = ['iter','condEnd','end'];
+  do { fi++; }
+  while(fi < frames.length - 1 && bordes.indexOf(frames[fi].K) < 0);
+  render();
+}
+
+function resetLoop(){
+  frames = build(loopMode);
+  fi = -1;
+  render();
+}
+
+function build(mode){
+  if(mode === 'centinela') return buildCentinela();
+  if(mode === 'anidado') return buildAnidado();
+  if(mode === 'infinito') return buildInfinito();
+  return buildContador();
+}
+
+function pickLoop(mode){
+  loopMode = mode;
+  document.querySelectorAll('#simTabs .tab-btn').forEach(function(b){
+    b.classList.toggle('active', b.dataset.tab === mode);
+  });
+  document.querySelectorAll('.sim-panel').forEach(function(p){
+    p.classList.toggle('active', p.dataset.mode === mode);
+  });
+
+  var fld = $('fldData');
+  if(mode === 'contador'){
+    fld.style.display = 'none';
+  } else {
+    fld.style.display = 'flex';
+    if(DEFAULTS[mode]) $('inData').value = DEFAULTS[mode];
+  }
+  resetLoop();
+  $('simExplain').innerHTML = (mode !== 'contador' && HINTS[mode])
+    ? '<b>Entrada:</b> ' + HINTS[mode] + ' Pulsa <b>Paso</b> para arrancar.'
+    : 'Pulsa <b>Paso</b> para ejecutar la siguiente instrucción o <b>Iteración</b> para completar la vuelta actual.';
+}
+
+pickLoop('contador');
+</script>
+</body>
+</html>
