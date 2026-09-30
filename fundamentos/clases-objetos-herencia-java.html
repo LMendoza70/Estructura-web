@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clases y objetos a fondo + herencia en Java (Capítulos 8 y 9)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1F2B; --ink-2:#242A3B; --card:#F5F1E8; --card-line:#DED6C2;
+    --text:#E4E7ED; --text-dim:#9AA1B4; --amber:#E8A33D; --teal:#4FB0AE; --rose:#E06C75;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink); color:var(--text); font-family:'Inter',sans-serif; line-height:1.6;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
+  code,pre,.mono{font-family:'JetBrains Mono',monospace;}
+  p code,li code,.quiz-item code,.pitfall code,.key-point code,.tip code,.warn code,.traits code,.uses code,.analogy code{background:rgba(232,163,61,.12); border:1px solid rgba(232,163,61,.28); color:var(--amber); padding:.5px 5px; border-radius:4px; font-size:.86em;}
+  .wrap{max-width:900px; margin:0 auto; padding:0 24px 90px;}
+
+  /* HERO */
+  .hero{padding:56px 24px 30px; text-align:center; border-bottom:1px solid #2E3549;}
+  .hero .badge{color:var(--amber); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem; font-weight:700; margin-bottom:10px;}
+  .hero h1{font-size:1.95rem; margin:0 0 10px; color:#fff;}
+  .hero p{color:var(--text-dim); max-width:680px; margin:0 auto; font-size:.98rem;}
+  .hero .src{margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; color:var(--text-dim);}
+  .hero .src b{color:var(--teal); font-weight:500;}
+
+  /* navegación de regreso */
+  .top-nav{max-width:900px; margin:0 auto; padding:20px 24px 0;}
+  .top-nav a{display:inline-block; color:var(--teal); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:.82rem; border:1px solid #2E3549; padding:7px 13px; border-radius:6px; background:var(--ink-2); transition:border-color .15s, color .15s; margin:0 6px 6px 0;}
+  .top-nav a:hover{border-color:var(--teal); color:var(--amber);}
+
+  /* NAV de saltos rápidos */
+  .nav{max-width:960px; margin:22px auto 0; padding:0 24px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .nav a{text-decoration:none; color:var(--text); background:var(--ink-2); border:1px solid #2E3549; padding:6px 13px; border-radius:16px; font-size:.76rem; font-family:'JetBrains Mono',monospace;}
+  .nav a:hover{border-color:var(--amber); color:var(--amber);}
+
+  /* PESTAÑAS */
+  .tab-picker{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:18px 0;}
+  .tab-btn{background:transparent; border:1px solid #3C4459; color:var(--text); padding:8px 16px; border-radius:20px; font-family:'JetBrains Mono',monospace; font-size:.8rem; cursor:pointer;}
+  .tab-btn.active{background:var(--amber); color:var(--ink); border-color:var(--amber); font-weight:700;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* SECCIONES */
+  section{padding:42px 0; border-bottom:1px solid #2E3549;}
+  section:last-child{border-bottom:none;}
+  .eyebrow-sm{color:var(--amber); text-transform:uppercase; font-size:.72rem; letter-spacing:.12em; font-weight:600;}
+  h2{font-size:1.45rem; margin:6px 0 14px; color:#fff;}
+  h3.sub{font-size:1.05rem; color:#fff; margin:24px 0 6px;}
+  p{font-size:.96rem; color:var(--text);}
+  .muted{color:var(--text-dim); font-size:.92rem;}
+
+  /* Banner de parte */
+  .part{max-width:900px; margin:34px auto 0; padding:14px 18px; background:linear-gradient(90deg, rgba(232,163,61,.12), rgba(232,163,61,.02)); border:1px solid rgba(232,163,61,.35); border-radius:10px;}
+  .part.teal{background:linear-gradient(90deg, rgba(79,176,174,.12), rgba(79,176,174,.02)); border-color:rgba(79,176,174,.35);}
+  .part .t{font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--amber); font-weight:700;}
+  .part.teal .t{color:var(--teal);}
+  .part h2{font-size:1.25rem; margin:4px 0 4px;}
+  .part p{margin:0; font-size:.88rem; color:var(--text-dim);}
+
+  /* ANALOGÍA */
+  .analogy{background:var(--ink-2); border-left:3px solid var(--teal); padding:16px 20px; border-radius:0 8px 8px 0; margin:16px 0; color:var(--text-dim); font-size:.95rem;}
+  .analogy b{color:var(--teal);}
+
+  /* CÓDIGO */
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; overflow-x:auto; font-size:.84rem; line-height:1.55; color:#D6D9E0; margin:10px 0;}
+  .kw{color:#E8A33D;} .tp{color:#4FB0AE;} .cm{color:#6A7086;} .num{color:#E06C75;} .str{color:#E8A33D;} .an{color:#B5541A; font-weight:700;} .tv{color:#B5541A; font-weight:700;}
+  pre.out{background:#12151E; border:1px dashed #3C4459; border-radius:8px; padding:12px 16px; font-size:.82rem; color:var(--teal); margin:6px 0 14px; white-space:pre-wrap; font-family:'JetBrains Mono',monospace; line-height:1.6;}
+  pre.out b{color:var(--amber);}
+  .cap{font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; margin:16px 0 0;}
+
+  /* Comparativa lado a lado */
+  .code-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:680px){.code-grid{grid-template-columns:1fr;}}
+  .code-panel{border-radius:10px; overflow:hidden; border:1px solid #2E3549;}
+  .code-panel .lbl{padding:7px 14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;}
+  .code-panel.a .lbl{background:rgba(79,176,174,.15); color:var(--teal);}
+  .code-panel.b .lbl{background:rgba(224,108,117,.15); color:var(--rose);}
+  .code-panel pre{margin:0; background:#12151E; padding:14px 16px; overflow-x:auto; font-size:.82rem; line-height:1.55; color:#D6D9E0;}
+
+  /* Grids de 2 columnas */
+  .traits,.uses{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px;}
+  @media (max-width:600px){.traits,.uses{grid-template-columns:1fr;}}
+  .traits .box,.uses .box{background:var(--ink-2); border-radius:8px; padding:16px 18px; border:1px solid #2E3549;}
+  .traits .box h3{margin:0 0 6px; font-size:1rem; color:var(--teal);}
+  .uses .box h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .traits .box p,.uses .box p{margin:0; font-size:.9rem; color:var(--text-dim);}
+
+  /* Tabla comparativa */
+  table.cmp{width:100%; border-collapse:collapse; margin-top:12px; font-size:.86rem;}
+  table.cmp th,table.cmp td{border:1px solid #2E3549; padding:9px 11px; text-align:left; vertical-align:top;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td code,table.cmp td b{color:#fff;}
+
+  /* Errores frecuentes y avisos */
+  .pitfall{display:flex; gap:12px; margin:14px 0; align-items:flex-start;}
+  .pitfall .icon{color:var(--rose); font-size:1.2rem; line-height:1.4;}
+  .pitfall .body{font-size:.94rem;}
+  .pitfall .body b{color:#fff;}
+  .pitfall .body .tag{display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--rose); border:1px solid rgba(224,108,117,.45); background:rgba(224,108,117,.1); border-radius:10px; padding:1px 8px; margin-right:7px; text-transform:uppercase; letter-spacing:.06em;}
+  .warn{display:flex; gap:10px; background:rgba(224,108,117,.08); border:1px solid rgba(224,108,117,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .warn .icon{color:var(--rose);}
+  .tip{display:flex; gap:10px; background:rgba(79,176,174,.08); border:1px solid rgba(79,176,174,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .tip .icon{color:var(--teal);}
+  .key-point{background:var(--ink-2); border-left:3px solid var(--rose); border-radius:0 8px 8px 0; padding:12px 16px; margin-top:14px; font-size:.88rem; color:var(--text-dim);}
+  .key-point b{color:#fff;}
+
+  /* Checklist Pareto */
+  .checklist{list-style:none; padding:0; margin:18px 0;}
+  .checklist li{display:flex; gap:10px; padding:10px 0; border-bottom:1px dashed #2E3549; font-size:.95rem;}
+  .checklist li::before{content:"\2192"; color:var(--amber); font-weight:700;}
+
+  /* Active recall */
+  .quiz-item{background:var(--ink-2); border:1px solid #2E3549; border-radius:8px; padding:16px 18px; margin-bottom:12px;}
+  .quiz-item .q{font-weight:600; color:#fff; cursor:pointer;}
+  .quiz-item .q::before{content:"+ "; color:var(--amber); font-family:'JetBrains Mono',monospace;}
+  .quiz-item.open .q::before{content:"\2212 ";}
+  .quiz-item .a{display:none; margin-top:10px; color:var(--text-dim); font-size:.92rem; border-top:1px dashed #3C4459; padding-top:10px;}
+  .quiz-item.open .a{display:block;}
+  .quiz-item .a b{color:#fff;}
+
+  /* Bloque tipo árbol */
+  .tree{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:#D6D9E0; white-space:pre; overflow-x:auto; margin:10px 0;}
+  .tree .r{color:var(--amber);} .tree .s{color:var(--teal);}
+
+  ul.bullets{padding-left:20px; margin:12px 0;}
+  ul.bullets li{margin-bottom:6px; font-size:.92rem; color:var(--text-dim);}
+  ul.bullets li b{color:#fff;}
+
+  .footer-note{color:var(--text-dim); font-size:.85rem; text-align:center; padding:48px 24px 0; border-top:1px solid #2E3549; margin-top:50px;}
+  .footer-note .name{color:#fff; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; margin-top:6px; display:block;}
+
+  /* ============ SIGNATURE: taller de herencia ============ */
+  .sig{max-width:960px; margin:30px auto 0; padding:0 24px;}
+  .sig-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:12px; padding:20px 22px 22px;}
+  .sig-title{font-family:'Fraunces',serif; font-size:1.2rem; color:#fff; font-weight:600;}
+  .sig-sub{color:var(--text-dim); font-size:.9rem; margin:6px 0 0;}
+  .sig-sub b{color:#fff;}
+  .sig-top{display:grid; grid-template-columns:250px 1fr; gap:16px; margin-top:16px;}
+  @media (max-width:760px){.sig-top{grid-template-columns:1fr;}}
+  .sig-tree{display:flex; flex-direction:column; align-items:stretch;}
+  .class-node{background:#12151E; border:1px solid #3C4459; border-radius:8px; padding:9px 12px; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--text); text-align:left; transition:border-color .15s, background .15s;}
+  .class-node:hover{border-color:var(--teal);}
+  .class-node.sel{border-color:var(--amber); background:rgba(232,163,61,.1); color:#fff; box-shadow:0 0 0 1px rgba(232,163,61,.35);}
+  .class-node .kind{display:block; font-size:.64rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.09em; margin-bottom:2px;}
+  .tree-arrow{text-align:center; color:var(--teal); font-family:'JetBrains Mono',monospace; font-size:.68rem; line-height:1.2; padding:4px 0; letter-spacing:.05em;}
+  .sig-ficha{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; font-size:.85rem; color:var(--text-dim); min-height:184px;}
+  .sig-ficha h4{margin:0 0 8px; font-family:'JetBrains Mono',monospace; font-size:.85rem; color:var(--amber);}
+  .sig-ficha .row{margin-bottom:7px; line-height:1.5;}
+  .sig-ficha .row span{display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.66rem; text-transform:uppercase; letter-spacing:.07em; border-radius:8px; padding:1px 7px; margin-right:6px; border:1px solid #3C4459; color:var(--text-dim);}
+  .sig-ficha .row.ok span{color:var(--teal); border-color:rgba(79,176,174,.5);}
+  .sig-ficha .row.no span{color:var(--rose); border-color:rgba(224,108,117,.5);}
+  .sig-ficha .row.ok b{color:#fff;}
+  .sig-ficha .row.no b{color:var(--rose); text-decoration:line-through;}
+  .sig-ficha code{font-size:.78rem; color:var(--amber);}
+
+  .sig-controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; margin-top:16px; padding:14px; background:#1B1F2B; border:1px solid #2E3549; border-radius:8px;}
+  .sig-controls button{background:var(--amber); border:1px solid var(--amber); color:#1B1F2B; font-family:'JetBrains Mono',monospace; font-size:.8rem; font-weight:700; padding:8px 15px; border-radius:6px; cursor:pointer; transition:background .15s;}
+  .sig-controls button:hover{background:#F3B657;}
+  .sig-controls button.ghost{background:transparent; color:var(--text-dim); border-color:#3C4459; font-weight:400;}
+  .sig-controls button.ghost:hover{color:#fff; border-color:var(--teal); background:transparent;}
+  .sig-pos{font-family:'JetBrains Mono',monospace; font-size:.74rem; color:var(--text-dim);}
+
+  .sig-mem{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:14px; padding:12px 14px; background:#1B1F2B; border:1px solid #2E3549; border-radius:8px; min-height:56px;}
+  .sig-mem .mlabel{font-family:'JetBrains Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); width:100%;}
+  .chip{display:inline-flex; flex-direction:column; background:#12151E; border:1px solid var(--amber); border-radius:6px; padding:5px 9px; font-family:'JetBrains Mono',monospace; font-size:.72rem; animation:chipin .35s ease;}
+  .chip i{font-style:normal; color:var(--text-dim); font-size:.66rem;}
+  .chip b{color:var(--amber); font-weight:700;}
+  .chip.sub{border-color:var(--teal);}
+  .chip.sub b{color:var(--teal);}
+  @keyframes chipin{0%{opacity:0; transform:translateY(-7px);}100%{opacity:1; transform:none;}}
+  .sig-mem .empty{font-size:.8rem; color:#6A7086;}
+
+  .sig-grid{display:grid; grid-template-columns:1.25fr 1fr; gap:16px; margin-top:16px;}
+  @media (max-width:760px){.sig-grid{grid-template-columns:1fr;}}
+  .sig-code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:13px 8px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:.75rem; line-height:1.7; color:#D6D9E0;}
+  .sig-code .cl{display:block; white-space:pre-wrap; overflow-wrap:anywhere; padding:0 8px; border-left:3px solid transparent; border-radius:0 4px 4px 0; transition:background .25s, border-color .25s, opacity .25s; opacity:.42;}
+  .sig-code .cl.hit{border-left-color:var(--amber); background:rgba(232,163,61,.13); opacity:1;}
+  .sig-code .cl.done{border-left-color:rgba(79,176,174,.5); background:rgba(79,176,174,.07); opacity:.8;}
+  .sig-console{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:12px 14px; margin:0; min-height:172px; max-height:250px; overflow-y:auto; font-family:'JetBrains Mono',monospace; font-size:.73rem; line-height:1.65; color:#D6D9E0; white-space:pre-wrap;}
+  .sig-console .hdr{color:var(--amber);}
+  .sig-console .dim{color:#6A7086;}
+  .sig-explain{background:#1B1F2B; border-left:3px solid var(--amber); border-radius:0 6px 6px 0; padding:11px 14px; font-size:.85rem; color:var(--text-dim); min-height:84px; margin-top:12px;}
+  .sig-explain b{color:var(--amber);}
+  .sig-legend{display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--text-dim);}
+  .sig-legend span{display:flex; align-items:center; gap:6px;}
+  .lg{width:11px; height:11px; border-radius:3px; display:inline-block;}
+
+  /* ============ Mapa de acceso interactivo ============ */
+  .matrix{background:var(--ink-2); border:1px solid #2E3549; border-radius:12px; padding:18px 20px; margin-top:18px;}
+  .matrix .mtitle{font-family:'Fraunces',serif; font-size:1.05rem; color:#fff; font-weight:600;}
+  .matrix .msub{font-size:.86rem; color:var(--text-dim); margin:4px 0 10px;}
+  .mx-lbl{width:100%; font-family:'JetBrains Mono',monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--text-dim); margin-top:12px;}
+  .mx-row{display:flex; flex-wrap:wrap; gap:8px;}
+  .mx-btn{background:transparent; border:1px solid #3C4459; color:var(--text); padding:7px 14px; border-radius:16px; font-family:'JetBrains Mono',monospace; font-size:.78rem; cursor:pointer; transition:.15s;}
+  .mx-btn:hover{border-color:var(--teal); color:var(--teal);}
+  .mx-btn.active{background:var(--amber); border-color:var(--amber); color:var(--ink); font-weight:700;}
+  .mx-btn.active:hover{color:var(--ink);}
+  .mx-result{margin-top:16px; border-radius:8px; padding:14px 16px; border:1px solid #3C4459; background:#12151E; transition:.2s;}
+  .mx-result.ok{border-color:rgba(79,176,174,.55); background:rgba(79,176,174,.07);}
+  .mx-result.no{border-color:rgba(224,108,117,.55); background:rgba(224,108,117,.07);}
+  .mx-verdict{font-size:1.05rem; font-weight:700; font-family:'JetBrains Mono',monospace;}
+  .mx-result.ok .mx-verdict{color:var(--teal);}
+  .mx-result.no .mx-verdict{color:var(--rose);}
+  .mx-why{font-size:.88rem; color:var(--text-dim); margin-top:6px;}
+  .mx-why b{color:#fff;}
+  .mx-why code{font-size:.84em; color:var(--amber);}
+  .mx-src{font-family:'JetBrains Mono',monospace; font-size:.7rem; color:#6A7086; margin-top:9px;}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="../index.html">&#8592; Volver al índice · Unidad 0</a>
+  <a href="instrucciones-control-condicionales-java.html">Ver también: condicionales</a>
+  <a href="instrucciones-control-repetitivas-java.html">Ver también: ciclos</a>
+</nav>
+
+<div class="hero">
+  <div class="badge">Unidad 0 · Fundamentos de programación</div>
+  <h1>Clases y objetos a fondo + herencia</h1>
+  <p>Lo que la página básica de <i>elementos del programa</i> esbozó, aquí se abre por dentro: <b>interfaz pública y datos privados</b>, constructores sobrecargados, <code>this</code>, composición, <code>enum</code>, miembros <code>static</code> y <code>final</code>, paquetes… y luego el gran salto: <b>herencia</b> con <code>extends</code>, <code>super</code>, <code>protected</code>, la cadena de constructores hasta <code>Object</code> y las reglas de la buena ingeniería.</p>
+  <div class="src">Base bibliográfica: <b>Deitel — Cómo programar en Java, 7ma edición</b> · Cap. 8 «Clases y objetos: un análisis más detallado» (pp. 325-377) y Cap. 9 «Programación orientada a objetos: herencia» (pp. 378-416)</div>
+</div>
+
+<div class="sig">
+  <div class="sig-zone">
+    <div class="sig-title">Taller de herencia · construye el objeto paso a paso</div>
+    <p class="sig-sub">Haz clic en una <b>clase</b> de la jerarquía para ver su ficha (qué declara, qué hereda y qué <i>no puede ver</i>). Después pulsa <b>Paso</b> para ejecutar <code>new EmpleadoBaseMasComision5( ... )</code>: la memoria se llena de arriba abajo, las líneas de código se iluminan y la consola muestra la salida real —incluida la trampa de la línea <code>sueldo base: 0.00</code>.</p>
+
+    <div class="sig-top">
+      <div class="sig-tree">
+        <button class="class-node" data-cls="object" onclick="pickClass('object')"><span class="kind">clase raíz · java.lang</span>Object()</button>
+        <div class="tree-arrow">&#9660; la extiende</div>
+        <button class="class-node" data-cls="sup" onclick="pickClass('sup')"><span class="kind">superclase (fig. 9.15)</span>EmpleadoPorComision4</button>
+        <div class="tree-arrow">&#9660; extends</div>
+        <button class="class-node sel" data-cls="sub" onclick="pickClass('sub')"><span class="kind">subclase (fig. 9.16)</span>EmpleadoBaseMasComision5</button>
+      </div>
+      <div class="sig-ficha" id="sigFicha"></div>
+    </div>
+
+    <div class="sig-controls">
+      <button class="ghost" onclick="stepBack()">&#9664; Atr&aacute;s</button>
+      <button onclick="stepFwd()">Paso &#9654;</button>
+      <button class="ghost" onclick="stepReset()">&#8635; Reiniciar</button>
+      <span class="sig-pos" id="sigPos">paso 0 / 7</span>
+    </div>
+
+    <div class="sig-mem" id="sigMem">
+      <span class="mlabel">Memoria del objeto (los cuadros aparecen cuando cada constructor los inicializa)</span>
+      <span class="empty" id="sigEmpty">a&uacute;n no has creado el objeto &#8594; pulsa <b>Paso</b></span>
+    </div>
+
+    <div class="sig-grid">
+      <div class="sig-code" id="sigCode">
+<span class="cl" id="c0"><span class="cm">// new EmpleadoBaseMasComision5( "Lisa", "Jones", "555-55-5555", 2000, .06, 800 )</span></span><span class="cl" id="c1"><span class="kw">public</span> EmpleadoBaseMasComision5( <span class="tp">String</span> nombre, <span class="tp">String</span> apellido,</span><span class="cl" id="c2">      <span class="tp">String</span> nss, <span class="tp">double</span> ventas, <span class="tp">double</span> tarifa, <span class="tp">double</span> salario )</span><span class="cl" id="c3">{</span><span class="cl" id="c4">   <span class="kw">super</span>( nombre, apellido, nss, ventas, tarifa );  <span class="cm">// 1&ordm; instrucci&oacute;n</span></span><span class="cl" id="c5">   establecerSalarioBase( salario );</span><span class="cl" id="c6">   System.out.printf( <span class="str">"\nConstructor de EmpleadoBaseMasComision5:\n%s\n"</span>, <span class="kw">this</span> );</span><span class="cl" id="c7">} <span class="cm">// fin del constructor de la subclase</span></span><span class="cl" id="c8"> </span><span class="cl" id="c9"><span class="cm">// ---------- EmpleadoPorComision4 (superclase) ----------</span></span><span class="cl" id="c10"><span class="kw">public</span> EmpleadoPorComision4( <span class="tp">String</span> nombre, <span class="tp">String</span> apellido,</span><span class="cl" id="c11">      <span class="tp">String</span> nss, <span class="tp">double</span> ventas, <span class="tp">double</span> tarifa )</span><span class="cl" id="c12">{</span><span class="cl" id="c13">   <span class="cm">// llamada impl&eacute;cita a Object() &#8212; cuerpo vac&iacute;o, regresa ya</span></span><span class="cl" id="c14">   primerNombre = nombre;   <span class="cm">// ... y los otros 4 campos private</span></span><span class="cl" id="c15">   establecerVentasBrutas( ventas );</span><span class="cl" id="c16">   establecerTarifaComision( tarifa );</span><span class="cl" id="c17">   System.out.printf( <span class="str">"\nConstructor de EmpleadoPorComision4:\n%s\n"</span>, <span class="kw">this</span> );</span><span class="cl" id="c18">}</span>
+      </div>
+      <pre class="sig-console" id="sigConsole"></pre>
+    </div>
+
+    <div class="sig-explain" id="sigExplain">Objeto a crear: <b>empleado2</b>. Todav&iacute;a no hay nada en memoria. Pulsa <b>Paso &#9654;</b> para entrar al constructor de la subclase.</div>
+
+    <div class="sig-legend">
+      <span><i class="lg" style="background:var(--amber)"></i> miembros que inicializa la superclase</span>
+      <span><i class="lg" style="background:var(--teal)"></i> miembros que inicializa la subclase</span>
+      <span><i class="lg" style="background:#6A7086"></i> l&iacute;nea a&uacute;n no ejecutada</span>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <a href="#s01">01 concepto (cap. 8)</a>
+  <a href="#s02">02 componentes</a>
+  <a href="#s03">03 mapa de acceso</a>
+  <a href="#s04">04 funci&oacute;n pr&aacute;ctica</a>
+  <a href="#s05">05 errores cap. 8</a>
+  <a href="#s06">06 herencia</a>
+  <a href="#s07">07 anatom&iacute;a herencia</a>
+  <a href="#s08">08 herencia en c&oacute;digo</a>
+  <a href="#s09">09 errores cap. 9</a>
+  <a href="#s10">10 pareto</a>
+  <a href="#s11">11 recall</a>
+</div>
+
+<div class="wrap">
+
+<div class="part">
+  <div class="t">Parte I &middot; Cap&iacute;tulo 8 &middot; pp. 325-377</div>
+  <h2>Clases y objetos: un an&aacute;lisis m&aacute;s detallado</h2>
+  <p>Ya sabes declarar una clase y usarla. Aqu&iacute; vemos c&oacute;mo se dise&ntilde;a <i>bien</i>: qu&eacute; se esconde, qu&eacute; se expone, qui&eacute;n valida los datos y c&oacute;mo se organizan las clases para reutilizarlas.</p>
+</div>
+
+<section id="s01">
+  <div class="eyebrow-sm">01 &middot; Concepto</div>
+  <h2>La clase por dentro: interfaz p&uacute;blica, datos privados y estado consistente</h2>
+
+  <p>En la p&aacute;gina de <i>elementos del programa</i> vimos que una clase es el <b>plano</b> y el objeto la <b>caseta construida</b>. El cap&iacute;tulo 8 hace la pregunta del dise&ntilde;ador: <b>&iquest;qu&eacute; ve por fuera el que usa mi clase, y qu&eacute; se queda por dentro?</b></p>
+
+  <div class="analogy">
+    <b>Analog&iacute;a (Feynman):</b> imagina una tienda con mostrador. El cliente solo llega hasta el <b>mostrador</b>: pide, paga y recibe (esos son los m&eacute;todos <code>public</code>, la <b>interfaz p&uacute;blica</b>). La bodega, con las etiquetas y las existencias, est&aacute; <b>cerrada con llave</b> (los campos <code>private</code>). Si la bodega quedara abierta, cualquiera podr&iacute;a cambiar el precio de un producto y el inventario quedar&iacute;a <i>inconsistente</i>. El cajero (el m&eacute;todo <code>establecer</code>) es quien <b>valida</b> lo que entra: si le pasas un precio negativo, lo rechaza. <i>Todo lo que el cliente necesita est&aacute; en el mostrador; nada de lo que el cliente no debe tocar, fuera de la bodega.</i>
+  </div>
+
+  <p>Dos conceptos que el libro distingue con cuidado (p. 328): un dato <b>correcto</b> es el que est&aacute; dentro del rango permitido; un dato <b>consistente</b> es el que el objeto mantiene sin romper sus reglas. Puedes tener un reloj <i>consistente</i> pero <i>incorrecto</i>: si al intentar poner 99:99:99 lo deja en 00:00:00, el objeto sigue consistente (no se rompi&oacute; nada), aunque el dato recibido era incorrecto. La clase decide qu&eacute; hacer con lo inv&aacute;lido <b>en el momento de recibirlo</b>, no cuando ya est&aacute; guardado.</p>
+
+  <p class="cap">Lo que marca el libro en este cap&iacute;tulo</p>
+  <ul class="bullets">
+    <li><b>Encapsulamiento y ocultamiento de informaci&oacute;n:</b> los miembros <code>private</code> no son accesibles para los clientes; el cliente solo usa los <b>servicios <code>public</code></b> (la interfaz p&uacute;blica).</li>
+    <li><b>Abstracci&oacute;n de datos (ADT):</b> un tipo abstracto = <b>representaci&oacute;n de los datos</b> + <b>operaciones</b> permitidas sobre ellos. En Java los ADT se implementan con <b>clases</b>: el cliente no sabe si la pila va con arreglos o con listas enlazadas, solo que tiene <code>apilar</code> y <code>desapilar</code>.</li>
+    <li><b>La referencia <code>this</code>:</b> cada objeto tiene una referencia a s&iacute; mismo; sirve para desambiguar cuando un par&aacute;metro se llama igual que un campo.</li>
+    <li><b>Miembros <code>static</code>:</b> una sola copia compartida por todos los objetos (o existente sin objetos). <b>Variables <code>final</code>:</b> constantes que no se pueden modificar.</li>
+    <li><b><code>enum</code> con constructor, campos y m&eacute;todos:</b> el tipo de las constantes con nombre, ahora visto a fondo.</li>
+    <li><b>Reutilizaci&oacute;n, encapsulamiento y paquetes:</b> c&oacute;mo empacar una clase para que otros la importen y la reutilicen.</li>
+    <li><b>Composici&oacute;n:</b> una clase con <i>referencias</i> a objetos de otras clases (relaci&oacute;n <b>&laquo;tiene un&raquo;</b>), que el cap&iacute;tulo 9 comparar&aacute; con la herencia.</li>
+  </ul>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Dato curioso del libro (8.10):</b> al revisar <b>6500 archivos</b> de c&oacute;digo fuente de la API de Java encontraron <b>menos de 50</b> declaraciones de <code>finalize</code>. Conclusi&oacute;n del propio Deitel: <i>&laquo;la mayor&iacute;a de los programadores no deben usarlo&raquo;</i>.</span></div>
+
+  <p class="muted">Al final de esta primera parte ver&aacute;s un <b>mapa de acceso interactivo</b> (secci&oacute;n 03): elige modificador y lugar donde te encuentras, y el mapa te dice si compila o no. Es la tabla que el libro reparte en las secciones 8.3, 8.17 y 9.3 &mdash;aqu&iacute; est&aacute; junta.</p>
+</section>
+
+<section id="s02">
+  <div class="eyebrow-sm">02 &middot; Componentes (Cap. 8)</div>
+  <h2>Las piezas de las que se compone una clase bien hecha</h2>
+
+  <div class="traits">
+    <div class="box"><h3>Campos <code>private</code></h3><p>El estado del objeto, oculto. Un m&eacute;todo que no es de la clase <b>no puede accederlos</b> &rarr; error de compilaci&oacute;n (Error com&uacute;n 8.1). S&oacute;lo se tocan por dentro, o por los m&eacute;todos <code>public</code> que la clase ofrece.</p></div>
+    <div class="box"><h3>Constructores sobrecargados</h3><p>V&aacute;rias formas de crear el objeto. El compilador los distingue por su <b>firma</b> (n&uacute;mero, tipos y orden de par&aacute;metros). <code>this( ... )</code> delega en otro constructor y <b>s&oacute;lo puede ser la primera instrucci&oacute;n</b>.</p></div>
+    <div class="box"><h3>Predeterminado vs. sin argumentos</h3><p>Si <b>no escribes ning&uacute;n constructor</b>, el compilador crea el <b>predeterminado</b> (0, <code>false</code>, <code>null</code>). Si escribes al menos uno, <b>ya no lo crea</b>: entonces debes declarar t&uacute; el <b>sin argumentos</b> si quieres poder hacer <code>new Tiempo2()</code>.</p></div>
+    <div class="box"><h3><code>establecer</code> y <code>obtener</code></h3><p>Los <b>mutadores</b> validan y guardan; los de consulta (o de acceso) deciden qu&eacute; formato devuelven. Un m&eacute;todo <b>predicado</b> (<code>estaVacio()</code>) responde verdadero/falso. No hace falta uno por cada campo: &laquo;s&oacute;lo cuando tenga sentido&raquo; (Obs. 8.8).</p></div>
+    <div class="box"><h3><code>toString()</code></h3><p>Toda clase lo hereda de <code>Object</code>. Devuelve el <code>String</code> del objeto y se invoca <b>impl&iacute;ticamente</b> al imprimir con <code>%s</code> o con <code>System.out.println( objeto )</code>.</p></div>
+    <div class="box"><h3>Composici&oacute;n (&laquo;tiene un&raquo;)</h3><p>La clase guarda <b>referencias</b> a objetos de otras clases: <code>Empleado</code> <i>tiene</i> dos <code>Fecha</code>. El <code>toString()</code> de uno puede anidar el <code>toString()</code> de los otros.</p></div>
+    <div class="box"><h3>Tipo <code>enum</code></h3><p>Constantes con nombre que <b>son objetos</b>: impl&iacute;camente <code>final</code> y <code>static</code>, con constructor y campos privados. <b><code>new</code> produce error</b>; las constantes se declaran <b>antes</b> que constructores, campos y m&eacute;todos; el compilador genera <code>values()</code>.</p></div>
+    <div class="box"><h3>Miembros <code>static</code></h3><p>Informaci&oacute;n <b>a nivel de clase</b>, una sola copia compartida. Un m&eacute;todo <code>static</code> <b>no puede</b> ver miembros de instancia ni usar <code>this</code>. <code>System.gc()</code> pide recolectar basura &laquo;como mejor esfuerzo&raquo;.</p></div>
+    <div class="box"><h3>Variables <code>final</code></h3><p>Constantes: se inicializan <b>al declararse</b> o en <b>cada uno</b> de los constructores. Si faltan en alguno &rarr; error de compilaci&oacute;n. Modificarla despu&eacute;s tambi&eacute;n. Aplica el <b>principio del menor privilegio</b>.</p></div>
+    <div class="box"><h3>Paquetes y acceso de paquete</h3><p>Una sola declaraci&oacute;n <code>package</code>, al principio del archivo; nombre = dominio invertido (<code>com.deitel...</code>); se compila con <code>javac -d .</code>. Los campos <b>sin modificador</b> tienen <b>acceso a nivel de paquete</b>.</p></div>
+  </div>
+
+  <div class="key-point"><b>Idea rectora del cap&iacute;tulo 8:</b> cada mecanismo anterior existe para responder a la misma pregunta &mdash; <i>&iquest;qu&eacute; necesita saber el cliente y qu&eacute; es asunto interno de la clase?</i> Campos privados ocultan; <code>establecer</code>/ <code>obtener</code> exponen lo justo; <code>final</code> y <code>static</code> restringen qu&eacute; se puede tocar y cu&aacute;ntas copias existen; los paquetes deciden qui&eacute;n m&aacute;s puede mirar dentro.</div>
+</section>
+
+<section id="s03">
+  <div class="eyebrow-sm">03 &middot; Mapa de acceso (8.3, 8.17 y 9.3 en una sola tabla)</div>
+  <h2>&iquest;Qui&eacute;n puede tocar qu&eacute;? Elige y compru&eacute;balo</h2>
+  <p class="muted">El libro reparte las reglas de acceso en varias secciones y una tabla por cap&iacute;tulo. Aqu&iacute; est&aacute;n juntas: elige el <b>modificador</b> de un miembro y el <b>lugar</b> desde donde lo intentas usar.</p>
+
+  <div class="matrix" id="mxSet">
+    <div class="mtitle">Mapa de acceso interactivo</div>
+    <div class="msub">Est&aacute;s en una clase que <b>no</b> es la que declara el miembro &mdash; s&oacute;lo importa el contexto desde el que lo usas.</div>
+
+    <div class="mx-lbl">1 &middot; Modificador del miembro que quieres usar</div>
+    <div class="mx-row">
+      <button class="mx-btn active" data-k="mod" data-v="public" onclick="mxPick('mod','public')">public</button>
+      <button class="mx-btn" data-k="mod" data-v="protected" onclick="mxPick('mod','protected')">protected</button>
+      <button class="mx-btn" data-k="mod" data-v="package" onclick="mxPick('mod','package')">(sin modificador)</button>
+      <button class="mx-btn" data-k="mod" data-v="private" onclick="mxPick('mod','private')">private</button>
+    </div>
+
+    <div class="mx-lbl">2 &middot; &iquest;D&oacute;nde est&aacute; la clase que lo usa?</div>
+    <div class="mx-row">
+      <button class="mx-btn active" data-k="ctx" data-v="clase" onclick="mxPick('ctx','clase')">misma clase</button>
+      <button class="mx-btn" data-k="ctx" data-v="paq" onclick="mxPick('ctx','paq')">otra clase del mismo paquete</button>
+      <button class="mx-btn" data-k="ctx" data-v="sub" onclick="mxPick('ctx','sub')">subclase en otro paquete</button>
+      <button class="mx-btn" data-k="ctx" data-v="fuera" onclick="mxPick('ctx','fuera')">fuera del paquete (ni subclase)</button>
+    </div>
+
+    <div class="mx-result ok" id="mxResult">
+      <div class="mx-verdict" id="mxVerdict">&#10004; COMPILA</div>
+      <div class="mx-why" id="mxWhy"></div>
+      <div class="mx-src" id="mxSrc"></div>
+    </div>
+  </div>
+
+  <div class="tip"><span class="icon">&#128161;</span><span><b>Regla de bolsillo:</b> piensa en 4 c&iacute;rculos conc&eacute;ntricos &mdash; <b>clase &rarr; paquete &rarr; subclases &rarr; mundo</b>. Cada modificador <i>abre</i> un c&iacute;rculo m&aacute;s: <code>private</code> &rarr; s&oacute;lo el primero; sin modificador &rarr; dos; <code>protected</code> &rarr; tres (clase, paquete y subclases); <code>public</code> &rarr; los cuatro. La matriz anterior es ese mapa, hecha clic por clic.</span></div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Nada de acceso gratis desde la subclase (secc. 9.3):</b> los miembros <code>private</code> de la superclase <b>no se heredan</b>; la subclase s&oacute;lo puede tocarlos por los m&eacute;todos no <code>private</code> que la superclase le deja (Obs. 9.1). Esa restricci&oacute;n es deliberada: permite que la superclase cambie su implementaci&oacute;n sin romper las subclases (Obs. 9.2 y 9.7). Y cuando un m&eacute;todo sobrescrito quiere <b>reutilizar</b> el de la superclase, hay que escribir <b><code>super</code>.</b><code>m&eacute;todo(...)</code> &mdash; si se olvida el <code>super</code>, la subclase se llama a s&iacute; misma en bucle (Error com&uacute;n 9.3).</span></div>
+</section>
+<section id="s04">
+  <div class="eyebrow-sm">04 &middot; Funci&oacute;n pr&aacute;ctica (Cap. 8)</div>
+  <h2>Los temas del cap&iacute;tulo 8 con c&oacute;digo real del libro</h2>
+  <p class="muted">Cada pesta&ntilde;a es un ejemplo de Deitel con su salida exacta, con la indentaci&oacute;n bien hecha.</p>
+
+  <div class="tab-picker">
+    <button class="tab-btn active" data-g="g8" data-t="v1" onclick="pickTab('g8','v1')">1 &middot; validaci&oacute;n (Tiempo1)</button>
+    <button class="tab-btn" data-g="g8" data-t="v2" onclick="pickTab('g8','v2')">2 &middot; constructores + this</button>
+    <button class="tab-btn" data-g="g8" data-t="v3" onclick="pickTab('g8','v3')">3 &middot; composici&oacute;n</button>
+    <button class="tab-btn" data-g="g8" data-t="v4" onclick="pickTab('g8','v4')">4 &middot; enum a fondo</button>
+    <button class="tab-btn" data-g="g8" data-t="v5" onclick="pickTab('g8','v5')">5 &middot; static y final</button>
+  </div>
+
+  <!-- TAB 1 -->
+  <div class="tab-panel active" data-g="g8" data-t="v1">
+    <p>La clase <code>Tiempo1</code> mantiene la hora en formato de 24 horas y <b>valida al momento de escribir</b>: si llega un valor fuera de rango, lo reemplaza por <code>0</code>. El objeto nunca queda inconsistente, aunque el dato recibido fuera incorrecto.</p>
+    <p class="cap">Fig. 8.1 &mdash; Tiempo1.java (clase completa)</p>
+<pre class="code"><span class="cm">// Fig. 8.1: Tiempo1.java</span>
+<span class="cm">// La clase Tiempo1 mantiene la hora en formato de 24 horas.</span>
+
+<span class="kw">public class</span> <span class="tp">Tiempo1</span>
+{
+   <span class="kw">private int</span> hora;    <span class="cm">// 0 - 23</span>
+   <span class="kw">private int</span> minuto;  <span class="cm">// 0 - 59</span>
+   <span class="kw">private int</span> segundo; <span class="cm">// 0 - 59</span>
+
+   <span class="cm">// establece un nuevo valor de tiempo, usando la hora universal;</span>
+   <span class="cm">// asegura que los datos sean consistentes, al poner</span>
+   <span class="cm">// los valores invalidos a cero</span>
+   <span class="kw">public void</span> establecerTiempo( <span class="kw">int</span> h, <span class="kw">int</span> m, <span class="kw">int</span> s )
+   {
+      hora    = ( ( h &gt;= <span class="num">0</span> &amp;&amp; h &lt; <span class="num">24</span> ) ? h : <span class="num">0</span> ); <span class="cm">// valida la hora</span>
+      minuto  = ( ( m &gt;= <span class="num">0</span> &amp;&amp; m &lt; <span class="num">60</span> ) ? m : <span class="num">0</span> ); <span class="cm">// valida el minuto</span>
+      segundo = ( ( s &gt;= <span class="num">0</span> &amp;&amp; s &lt; <span class="num">60</span> ) ? s : <span class="num">0</span> ); <span class="cm">// valida el segundo</span>
+   } <span class="cm">// fin del metodo establecerTiempo</span>
+
+   <span class="cm">// convierte a objeto String en formato de hora universal (HH:MM:SS)</span>
+   <span class="kw">public</span> <span class="tp">String</span> aStringUniversal()
+   {
+      <span class="kw">return</span> <span class="tp">String</span>.format( <span class="str">"%02d:%02d:%02d"</span>, hora, minuto, segundo );
+   } <span class="cm">// fin del metodo aStringUniversal</span>
+
+   <span class="cm">// convierte a objeto String en formato de hora estandar (H:MM:SS AM o PM)</span>
+   <span class="kw">public</span> <span class="tp">String</span> toString()
+   {
+      <span class="kw">return</span> <span class="tp">String</span>.format( <span class="str">"%d:%02d:%02d %s"</span>,
+         ( ( hora == <span class="num">0</span> || hora == <span class="num">12</span> ) ? <span class="num">12</span> : hora % <span class="num">12</span> ),
+         minuto, segundo, ( hora &lt; <span class="num">12</span> ? <span class="str">"AM"</span> : <span class="str">"PM"</span> ) );
+   } <span class="cm">// fin del metodo toString</span>
+} <span class="cm">// fin de la clase Tiempo1</span></pre>
+
+    <p class="cap">Fig. 8.2 &mdash; PruebaTiempo1.java: main (extracto) y salida real</p>
+<pre class="code"><span class="tp">Tiempo1</span> tiempo = <span class="kw">new</span> <span class="tp">Tiempo1</span>();  <span class="cm">// 00:00:00 por defecto</span>
+
+System.out.print( <span class="str">"La hora universal inicial es: "</span> );
+System.out.println( tiempo.aStringUniversal() );
+System.out.print( <span class="str">"La hora estandar inicial es: "</span> );
+System.out.println( tiempo.toString() );
+
+tiempo.establecerTiempo( <span class="num">13</span>, <span class="num">27</span>, <span class="num">6</span> );  <span class="cm">// cambia el estado</span>
+System.out.print( <span class="str">"La hora universal despues de establecerTiempo es: "</span> );
+System.out.println( tiempo.aStringUniversal() );
+System.out.print( <span class="str">"La hora estandar despues de establecerTiempo es: "</span> );
+System.out.println( tiempo.toString() );
+
+tiempo.establecerTiempo( <span class="num">99</span>, <span class="num">99</span>, <span class="num">99</span> );  <span class="cm">// valores invalidos</span>
+System.out.println( <span class="str">"Despues de intentar ajustes invalidos:"</span> );
+System.out.println( <span class="str">"Hora universal: "</span> + tiempo.aStringUniversal() );
+System.out.println( <span class="str">"Hora estandar: "</span> + tiempo.toString() );</pre>
+<pre class="out">La hora universal inicial es: 00:00:00
+La hora estandar inicial es: 12:00:00 AM
+La hora universal despues de establecerTiempo es: 13:27:06
+La hora estandar despues de establecerTiempo es: 1:27:06 PM
+Despues de intentar ajustes invalidos:
+Hora universal: 00:00:00
+Hora estandar: 12:00:00 AM</pre>
+    <p class="muted"><b>Lectura:</b> los tres campos son <code>private</code>; el cliente s&oacute;lo toca <code>establecerTiempo</code>, <code>aStringUniversal</code> y <code>toString</code>. La validaci&oacute;n vive en un <b>&uacute;nico lugar</b> y se ejecuta en el momento de la escritura. <code>%02d</code> rellena con cero; cada <code>?:</code> es la decisi&oacute;n de cada campo.</p>
+  </div>
+
+  <!-- TAB 2 -->
+  <div class="tab-panel" data-g="g8" data-t="v2">
+    <p>La clase <code>Tiempo2</code> tiene <b>5 constructores sobrecargados</b>. Todos <b>delegan</b> con <code>this( ... )</code> en el de tres argumentos, quien realmente hace el trabajo: una sola fuente de verdad para la l&oacute;gica de validaci&oacute;n.</p>
+    <p class="cap">Fig. 8.5 &mdash; Tiempo2.java (los 5 constructores)</p>
+<pre class="code"><span class="kw">public class</span> <span class="tp">Tiempo2</span>
+{
+   <span class="kw">private int</span> hora;    <span class="cm">// 0 - 23</span>
+   <span class="kw">private int</span> minuto;  <span class="cm">// 0 - 59</span>
+   <span class="kw">private int</span> segundo; <span class="cm">// 0 - 59</span>
+
+   <span class="cm">// constructor sin argumentos: inicializa cada variable</span>
+   <span class="cm">// de instancia con su valor predeterminado (00:00:00)</span>
+   <span class="kw">public</span> <span class="tp">Tiempo2</span>()
+   {
+      <span class="kw">this</span>( <span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span> ); <span class="cm">// invoca al constructor con tres argumentos</span>
+   } <span class="cm">// fin del constructor de Tiempo2 sin argumentos</span>
+
+   <span class="cm">// constructor: se suministra hora; minuto y segundo con valor 0</span>
+   <span class="kw">public</span> <span class="tp">Tiempo2</span>( <span class="kw">int</span> h )
+   {
+      <span class="kw">this</span>( h, <span class="num">0</span>, <span class="num">0</span> ); <span class="cm">// invoca al constructor con tres argumentos</span>
+   } <span class="cm">// fin del constructor de Tiempo2 con un argumento</span>
+
+   <span class="cm">// constructor: se suministran hora y minuto; segundo con valor 0</span>
+   <span class="kw">public</span> <span class="tp">Tiempo2</span>( <span class="kw">int</span> h, <span class="kw">int</span> m )
+   {
+      <span class="kw">this</span>( h, m, <span class="num">0</span> ); <span class="cm">// invoca al constructor con tres argumentos</span>
+   } <span class="cm">// fin del constructor de Tiempo2 con dos argumentos</span>
+
+   <span class="cm">// constructor: se suministran hora, minuto y segundo</span>
+   <span class="kw">public</span> <span class="tp">Tiempo2</span>( <span class="kw">int</span> h, <span class="kw">int</span> m, <span class="kw">int</span> s )
+   {
+      hora    = ( ( h &gt;= <span class="num">0</span> &amp;&amp; h &lt; <span class="num">24</span> ) ? h : <span class="num">0</span> );
+      minuto  = ( ( m &gt;= <span class="num">0</span> &amp;&amp; m &lt; <span class="num">60</span> ) ? m : <span class="num">0</span> );
+      segundo = ( ( s &gt;= <span class="num">0</span> &amp;&amp; s &lt; <span class="num">60</span> ) ? s : <span class="num">0</span> );
+   } <span class="cm">// fin del constructor de Tiempo2 con tres argumentos</span>
+
+   <span class="cm">// constructor: se suministra otro objeto Tiempo2</span>
+   <span class="kw">public</span> <span class="tp">Tiempo2</span>( <span class="tp">Tiempo2</span> tiempo )
+   {
+      <span class="kw">this</span>( tiempo.hora, tiempo.minuto, tiempo.segundo );
+   } <span class="cm">// fin del constructor con un objeto Tiempo2 como argumento</span>
+
+   <span class="cm">// ... y aqui siguen: establecerTiempo(), obtenerHora(),</span>
+   <span class="cm">// aStringUniversal() y toString()</span>
+} <span class="cm">// fin de la clase Tiempo2</span></pre>
+
+    <p class="cap">Fig. 8.6 &mdash; PruebaTiempo2.java: salida (6 objetos)</p>
+<pre class="out">Se construyo con:
+t1: todos los argumentos predeterminados
+00:00:00
+12:00:00 AM
+t2: se especifico hora; minuto y segundo predeterminados
+02:00:00
+2:00:00 AM
+t3: se especificaron hora y minuto; segundo predeterminado
+21:34:00
+9:34:00 PM
+t4: se especificaron hora, minuto y segundo
+12:25:42
+12:25:42 PM
+t5: se especificaron todos los valores invalidos
+00:00:00
+12:00:00 AM
+t6: se especifico el objeto t4 de Tiempo2
+12:25:42
+12:25:42 PM</pre>
+
+    <h3 class="sub">Predeterminado &ne; sin argumentos (8.6)</h3>
+    <table class="cmp">
+      <tr><th style="width:32%">Constructor predeterminado</th><th>Constructor sin argumentos</th></tr>
+      <tr><td>Lo crea <b>el compilador</b>, y <b>s&oacute;lo si la clase no declara ning&uacute;n constructor</b>.</td><td>Lo escribes <b>t&uacute;</b>, con la firma <code>Clase()</code>.</td></tr>
+      <tr><td>Inicializa con los valores por omisi&oacute;n: <b>0</b>, <b>false</b>, <b>null</b>; adem&aacute;s <b>llama a <code>Object()</code></b> (secc. 9.4.1).</td><td>Inicializa lo que t&uacute; le pidas; si delegas con <code>this()</code>, lo que decidas en la cadena.</td></tr>
+      <tr><td>Deja de existir en cuanto declaras <b>un solo</b> constructor.</td><td>Se conserva aunque tengas 5 constructores m&aacute;s.</td></tr>
+    </table>
+
+    <div class="warn"><span class="icon">&#9888;</span><span><b><code>this( ... )</code> es una llamada a constructor, no a m&eacute;todo:</b> vale <b>s&oacute;lo como primera instrucci&oacute;n</b> del cuerpo de otro constructor; si la pones despu&eacute;s &rarr; error de sintaxis (Error com&uacute;n 8.3). Si un par&aacute;metro o variable local tiene el mismo nombre que un campo, <b>usa <code>this</code></b> para referirte al campo o quedar&aacute;s con la variable (Error com&uacute;n 8.2). Para referirte al objeto actual desde un m&eacute;todo normal, <code>tiempo.establecerTiempo()</code> equivale a <code>establecerTiempo()</code> dentro de la propia clase. Usar <code>this</code> en un m&eacute;todo <code>static</code> es error de sintaxis (Error com&uacute;n 8.8); y ojo con llamar a m&eacute;todos desde el constructor (Error com&uacute;n 8.4): el objeto a&uacute;n no est&aacute; completo.</span></div>
+  </div>
+  <!-- TAB 3 -->
+  <div class="tab-panel" data-g="g8" data-t="v3">
+    <p>Un objeto puede estar formado por <b>referencias</b> a objetos de otras clases: <code>Empleado</code> no guarda fechas, guarda <i>punteros</i> a dos objetos <code>Fecha</code>. Eso es <b>composici&oacute;n</b> (&laquo;tiene un&raquo;): la relaci&oacute;n que el cap&iacute;tulo 9 contrapone con la herencia.</p>
+    <p class="cap">Figs. 8.7-8.8 &mdash; Fecha.java y Empleado.java (extractos)</p>
+<pre class="code"><span class="kw">public class</span> <span class="tp">Fecha</span>
+{
+   <span class="kw">private int</span> mes;  <span class="cm">// 1-12</span>
+   <span class="kw">private int</span> dia;  <span class="cm">// 1-31 con base en el mes</span>
+   <span class="kw">private int</span> anio; <span class="cm">// cualquier anio</span>
+
+   <span class="cm">// constructor: llama a comprobarMes y a comprobarDia</span>
+   <span class="kw">public</span> <span class="tp">Fecha</span>( <span class="kw">int</span> elMes, <span class="kw">int</span> elDia, <span class="kw">int</span> elAnio )
+   {
+      mes  = comprobarMes( elMes ); <span class="cm">// valida el mes</span>
+      anio = elAnio;                <span class="cm">// pudo validar el anio</span>
+      dia  = comprobarDia( elDia ); <span class="cm">// valida el dia</span>
+
+      System.out.printf(
+         <span class="str">"Constructor de objeto Fecha para la fecha %s\n"</span>, <span class="kw">this</span> );
+   } <span class="cm">// fin del constructor de Fecha</span>
+
+   <span class="cm">// metodo utilitario para confirmar el valor apropiado del mes</span>
+   <span class="kw">private int</span> comprobarMes( <span class="kw">int</span> mesPrueba )
+   {
+      <span class="kw">if</span> ( mesPrueba &gt; <span class="num">0</span> &amp;&amp; mesPrueba &lt;= <span class="num">12</span> ) <span class="cm">// valida el mes</span>
+         <span class="kw">return</span> mesPrueba;
+      <span class="kw">else</span> <span class="cm">// mes es invalido</span>
+         <span class="kw">return</span> <span class="num">1</span>; <span class="cm">// indica mes invalido</span>
+   } <span class="cm">// fin del metodo comprobarMes</span>
+
+   <span class="cm">// ... aqui sigue comprobarDia( int diaPrueba ), que valida el dia</span>
+   <span class="cm">// con base en el mes y el anio actuales (incluye anos bisiestos)</span>
+
+   <span class="kw">public</span> <span class="tp">String</span> toString()
+   {
+      <span class="kw">return</span> <span class="tp">String</span>.format( <span class="str">"%d/%d/%d"</span>, mes, dia, anio );
+   }
+} <span class="cm">// fin de la clase Fecha</span>
+
+<span class="cm">// ----------------------------------------------</span>
+
+<span class="kw">public class</span> <span class="tp">Empleado</span>
+{
+   <span class="kw">private</span> <span class="tp">String</span> primerNombre;
+   <span class="kw">private</span> <span class="tp">String</span> apellidoPaterno;
+   <span class="kw">private</span> <span class="tp">Fecha</span> fechaNacimiento;     <span class="cm">// "tiene un"</span>
+   <span class="kw">private</span> <span class="tp">Fecha</span> fechaContratacion;    <span class="cm">// "tiene un"</span>
+
+   <span class="cm">// constructor para inicializar nombre, fecha de nacimiento y de contratacion</span>
+   <span class="kw">public</span> <span class="tp">Empleado</span>( <span class="tp">String</span> nombre, <span class="tp">String</span> apellido,
+      <span class="tp">Fecha</span> fechaDeNacimiento, <span class="tp">Fecha</span> fechaDeContratacion )
+   {
+      primerNombre      = nombre;
+      apellidoPaterno   = apellido;
+      fechaNacimiento   = fechaDeNacimiento;
+      fechaContratacion = fechaDeContratacion;
+   } <span class="cm">// fin del constructor de Empleado</span>
+
+   <span class="kw">public</span> <span class="tp">String</span> toString()
+   {
+      <span class="kw">return</span> <span class="tp">String</span>.format( <span class="str">"%s, %s  Contratado: %s  Cumpleanios: %s"</span>,
+         apellidoPaterno, primerNombre, fechaContratacion,
+         fechaNacimiento );
+   }
+} <span class="cm">// fin de la clase Empleado</span></pre>
+
+    <p class="cap">Figs. 8.9 &mdash; PruebaEmpleado.java: main (extracto) y salida</p>
+<pre class="code"><span class="tp">Fecha</span> nacimiento  = <span class="kw">new</span> <span class="tp">Fecha</span>( <span class="num">7</span>, <span class="num">24</span>, <span class="num">1949</span> );
+<span class="tp">Fecha</span> contratacion = <span class="kw">new</span> <span class="tp">Fecha</span>( <span class="num">3</span>, <span class="num">12</span>, <span class="num">1988</span> );
+<span class="tp">Empleado</span> empleado = <span class="kw">new</span> <span class="tp">Empleado</span>( <span class="str">"Bob"</span>, <span class="str">"Blue"</span>, nacimiento, contratacion );
+
+System.out.printf( <span class="str">"%s\n"</span>, empleado );</pre>
+<pre class="out">Constructor de objeto Fecha para la fecha 7/24/1949
+Constructor de objeto Fecha para la fecha 3/12/1988
+Blue, Bob  Contratado: 3/12/1988  Cumpleanios: 7/24/1949</pre>
+    <p class="muted"><b>Lectura:</b> primero se construyen los objetos <code>Fecha</code> (por eso sus constructores se imprimen <i>antes</i>), despu&eacute;s el <code>Empleado</code> que los referencia. El <code>toString()</code> del empleado <b>anida</b> los <code>toString()</code> de las fechas &mdash; y todo eso lo dispara <code>printf( "%s", empleado )</code> sin escribir <code>.toString()</code>.</p>
+  </div>
+
+  <!-- TAB 4 -->
+  <div class="tab-panel" data-g="g8" data-t="v4">
+    <p>El tipo <code>enum</code> visto a fondo: <b>las constantes son objetos</b> con constructor, campos privados y m&eacute;todos de consulta. S&oacute;lo que nadie puede hacer <code>new Libro()</code>.</p>
+    <ul class="bullets">
+      <li>Los tipos <code>enum</code> son impl&iacute;camente <b>final</b> (declaran constantes que no deben modificarse).</li>
+      <li>Las constantes <code>enum</code> son impl&iacute;camente <b>static</b>.</li>
+      <li>Crear un objeto de tipo <code>enum</code> con <b><code>new</code> produce error de compilaci&oacute;n</b>.</li>
+      <li>El compilador genera <code>values()</code> (arreglo con todas las constantes en orden) y <code>valueOf(String)</code>.</li>
+      <li>Sirven como etiquetas <code>case</code> de <code>switch</code> y para controlar el <code>for</code> mejorado.</li>
+    </ul>
+    <p class="cap">Fig. 8.10 &mdash; Libro.java (enum con constructor, campos y m&eacute;todos)</p>
+<pre class="code"><span class="kw">public enum</span> <span class="tp">Libro</span>
+{
+   <span class="cm">// declara constantes de tipo enum (siempre primero)</span>
+   JHTP6( <span class="str">"Java How to Program 6e"</span>, <span class="str">"2005"</span> ),
+   CHTP4( <span class="str">"C How to Program 4e"</span>, <span class="str">"2004"</span> ),
+   IW3HTP3( <span class="str">"Internet &amp; World Wide Web How to Program 3e"</span>, <span class="str">"2004"</span> ),
+   CPPHTP4( <span class="str">"C++ How to Program 4e"</span>, <span class="str">"2003"</span> ),
+   VBHTP2( <span class="str">"Visual Basic .NET How to Program 2e"</span>, <span class="str">"2002"</span> ),
+   CSHARPHTP( <span class="str">"C# How to Program"</span>, <span class="str">"2002"</span> );
+
+   <span class="cm">// variable de instancia para el titulo del libro</span>
+   <span class="kw">private final</span> <span class="tp">String</span> titulo;
+
+   <span class="cm">// variable de instancia para el anio de publicacion</span>
+   <span class="kw">private final</span> <span class="tp">String</span> anio;
+
+   <span class="cm">// constructor para inicializar constantes de tipo enum</span>
+   <span class="tp">Libro</span>( <span class="tp">String</span> elTitulo, <span class="tp">String</span> elAnio )
+   {
+      titulo = elTitulo;
+      anio   = elAnio;
+   } <span class="cm">// fin del constructor de Libro</span>
+
+   <span class="cm">// metodo de acceso para obtener el titulo de este Libro</span>
+   <span class="kw">public</span> <span class="tp">String</span> obtenerTitulo()
+   {
+      <span class="kw">return</span> titulo;
+   } <span class="cm">// fin del metodo obtenerTitulo</span>
+
+   <span class="cm">// metodo de acceso para obtener el anio de publicacion de este Libro</span>
+   <span class="kw">public</span> <span class="tp">String</span> obtenerAnio()
+   {
+      <span class="kw">return</span> anio;
+   } <span class="cm">// fin del metodo obtenerAnio</span>
+
+   <span class="cm">// devuelve la representacion String del nombre de la constante</span>
+   <span class="kw">public</span> <span class="tp">String</span> toString()
+   {
+      <span class="kw">return</span> <span class="tp">String</span>.format( <span class="str">"%-10s %-35s %s"</span>,
+         <span class="kw">this</span>.name(), obtenerTitulo(), obtenerAnio() );
+   } <span class="cm">// fin del metodo toString</span>
+} <span class="cm">// fin de la clase Libro</span></pre>
+
+    <p class="cap">Fig. 8.11 &mdash; PruebaEnum.java: salida</p>
+<pre class="out">Todos los libros:
+JHTP6      Java How to Program 6e               2005
+CHTP4      C How to Program 4e                  2004
+IW3HTP3    Internet &amp; World Wide Web How to Program 3e  2004
+CPPHTP4    C++ How to Program 4e                2003
+VBHTP2     Visual Basic .NET How to Program 2e  2002
+CSHARPHTP  C# How to Program                    2002
+
+Mostrar un rango de constantes enum:
+JHTP6      Java How to Program 6e               2005
+CHTP4      C How to Program 4e                  2004
+IW3HTP3    Internet &amp; World Wide Web How to Program 3e  2004</pre>
+    <p class="muted"><b>Lectura:</b> las constantes se declaran <b>antes</b> que constructores, campos y m&eacute;todos; cada constante lleva sus argumentos entre par&eacute;ntesis y el compilador los manda al constructor. <code>Libro.JHTP6.name()</code> devuelve <code>"JHTP6"</code> y <code>Libro.JHTP6.toString()</code> es lo que imprime <code>%s</code>.</p>
+  </div>
+
+  <!-- TAB 5 -->
+  <div class="tab-panel" data-g="g8" data-t="v5">
+    <p>Dos palabras clave que protegen dise&ntilde;os enteros: <code>static</code> (una sola copia, a nivel de clase) y <code>final</code> (no se puede cambiar).</p>
+
+    <h3 class="sub">A. Miembros <code>static</code> &mdash; una variable para todos los objetos</h3>
+    <p class="cap">Figs. 8.12-8.13 &mdash; Empleado.java (extracto) y salida de PruebaEmpleado</p>
+<pre class="code"><span class="kw">public class</span> <span class="tp">Empleado</span>
+{
+   <span class="kw">private</span> <span class="tp">String</span> primerNombre;
+   <span class="kw">private</span> <span class="tp">String</span> apellidoPaterno;
+
+   <span class="kw">private static int</span> cuenta = <span class="num">0</span>; <span class="cm">// numero de objetos Empleado creados</span>
+
+   <span class="kw">public</span> <span class="tp">Empleado</span>( <span class="tp">String</span> nombre, <span class="tp">String</span> apellido )
+   {
+      primerNombre    = nombre;
+      apellidoPaterno = apellido;
+
+      <span class="cm">// cada objeto que se crea incrementa la cuenta static</span>
+      ++cuenta;
+      System.out.printf(
+         <span class="str">"Constructor de Empleado: %s %s; cuenta = %d\n"</span>,
+         obtenerPrimerNombre(), obtenerApellidoPaterno(), cuenta );
+   }
+
+   <span class="kw">public static int</span> obtenerCuenta()
+   {
+      <span class="kw">return</span> cuenta; <span class="cm">// el m&eacute;todo static ve a la variable static</span>
+   }
+
+   <span class="cm">// ... toString() y los demas metodos</span>
+}</pre>
+<pre class="out">Empleados antes de instanciar: 0
+Constructor de Empleado: Susan Baker; cuenta = 1
+Constructor de Empleado: Bob Blue; cuenta = 2
+Empleados despues de instanciar:
+mediante e1.obtenerCuenta(): 2
+mediante e2.obtenerCuenta(): 2
+mediante Empleado.obtenerCuenta(): 2
+Empleado 1: Susan Baker
+Empleado 2: Bob Blue
+Empleados despues de System.gc(): 2
+Finalizador de Empleado: Susan Baker; cuenta = 0
+Finalizador de Empleado: Bob Blue; cuenta = 1</pre>
+    <div class="warn"><span class="icon">&#9888;</span><span><b>Un m&eacute;todo <code>static</code> no ve la instancia:</b> no puede usar el nombre de un campo de instancia ni llamar a un m&eacute;todo no <code>static</code> &laquo;por su s&oacute;lo nombre&raquo; (Error com&uacute;n 8.7), ni referirse a <code>this</code> (Error com&uacute;n 8.8). Funciones <code>static</code> t&iacute;picas: <code>System.gc()</code> (recolectar basura, &laquo;mejor esfuerzo&raquo;) y <code>finalize()</code>, que la JVM invoca antes de reclamar un objeto. Con <code>import static java.lang.Math.*;</code> (secc. 8.12) puedes llamar <code>sqrt( x )</code> en vez de <code>Math.sqrt( x )</code>.</span></div>
+
+    <h3 class="sub">B. Variables <code>final</code> &mdash; constantes de instancia</h3>
+    <p class="cap">Figs. 8.15-8.17 &mdash; Incremento.java y su error de compilaci&oacute;n</p>
+<pre class="code"><span class="kw">public class</span> <span class="tp">Incremento</span>
+{
+   <span class="kw">private int</span> total = <span class="num">0</span>;          <span class="cm">// el total de todos los incrementos</span>
+   <span class="kw">private final int</span> INCREMENTO;   <span class="cm">// constante sin inicializar</span>
+
+   <span class="cm">// el constructor inicializa la variable de instancia final INCREMENTO</span>
+   <span class="kw">public</span> <span class="tp">Incremento</span>( <span class="kw">int</span> valorIncremento )
+   {
+      INCREMENTO = valorIncremento; <span class="cm">// inicializa la constante (una sola vez)</span>
+   } <span class="cm">// fin del constructor de Incremento</span>
+
+   <span class="cm">// suma INCREMENTO al total</span>
+   <span class="kw">public void</span> sumarIncrementoATotal()
+   {
+      total += INCREMENTO;
+   } <span class="cm">// fin del metodo sumarIncrementoATotal</span>
+
+   <span class="kw">public</span> <span class="tp">String</span> toString()
+   {
+      <span class="kw">return</span> <span class="tp">String</span>.format( <span class="str">"total = %d"</span>, total );
+   }
+} <span class="cm">// fin de la clase Incremento</span></pre>
+<pre class="out">Antes de incrementar: total = 0
+Despues de incrementar 1: total = 5
+Despues de incrementar 2: total = 10
+Despues de incrementar 3: total = 15
+
+// Si se comenta la linea INCREMENTO = valorIncremento; y se recompila:
+Incremento.java:13: variable INCREMENTO might not have been initialized</pre>
+    <ul class="bullets">
+      <li>Una variable <code>final</code> se inicializa <b>al declararse</b> o en <b>cada uno</b> de los constructores; si falta en alguno &rarr; error (Error com&uacute;n 8.11).</li>
+      <li>Modificarla despu&eacute;s de inicializarla tambi&eacute;n es error (Error com&uacute;n 8.10) &mdash; y lo atrapa <b>el compilador</b>, no la ejecuci&oacute;n (Tip 8.2).</li>
+      <li>Si un campo <code>final</code> se inicializa en su declaraci&oacute;n, decl&aacute;valo tambi&eacute;n <code>static</code>: todos los objetos comparten la misma copia (Obs. 8.14).</li>
+      <li>Es el <b>principio del menor privilegio</b>: lo m&aacute;s restringido posible. Campos que s&oacute;lo se leen &rarr; <code>private final</code>.</li>
+    </ul>
+  </div>
+</section>
+<section id="s05">
+  <div class="eyebrow-sm">05 &middot; Errores frecuentes (Cap. 8)</div>
+  <h2>Los tropiezos del cap&iacute;tulo 8</h2>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.1</span><b>Entrar por la puerta de al lado:</b> un m&eacute;todo que no es miembro de la clase intenta usar un miembro <code>private</code> &rarr; <b>error de compilaci&oacute;n</b>. Los miembros privados no existen fuera de su clase.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.2</span><b>Hom&oacute;nimos envenenados:</b> el par&aacute;metro (o variable local) se llama igual que el campo y la asignaci&oacute;n <code>hora = h</code> no toca lo que crees. Usa <code>this.hora = h</code> o renombra el par&aacute;metro.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.3</span><b><code>this( ... )</code> despu&eacute;s de otra instrucci&oacute;n:</b> la delegaci&oacute;n entre constructores <b>siempre</b> va primera; de lo contrario &rarr; error de sintaxis.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.4</span><b>Usar m&eacute;todos dentro del constructor a medias:</b> el objeto a&uacute;n se est&aacute; inicializando, as&iacute; que sus variables pueden no estar en estado consistente.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.5</span><b>Olvidar el constructor sin argumentos:</b> si tu clase declara constructores pero ninguno es sin argumentos (o ninguno es <code>public</code>), <code>new Clase()</code> en el cliente no compila.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.6</span><b>Constantes <code>enum</code> despu&eacute;s de todo:</b> en la declaraci&oacute;n <code>enum</code>, las constantes <b>siempre van primero</b>; despu&eacute;s vienen constructores, campos y m&eacute;todos.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.7 y 8.8</span><b><code>static</code> queriendo ser objeto:</b> un m&eacute;todo <code>static</code> que llama a un m&eacute;todo de instancia &laquo;s&oacute;lo por su nombre&raquo; no compila, y <code>this</code> dentro de <code>static</code> es error de sintaxis.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.9</span><b><code>static import</code> ambiguo:</b> importar <code>static</code> miembros hom&oacute;nimos o de la misma firma desde dos o m&aacute;s clases produce error de compilaci&oacute;n.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.10 y 8.11</span><b>La constante que no era:</b> modificar una <code>final</code> despu&eacute;s de inicializarla no compila; dejarla sin inicializar (o inicializarla en s&oacute;lo algunos constructores) tampoco.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.12</span><b><code>import java.*;</code> no existe:</b> hay que escribir el nombre exacto del paquete (<code>java.util.*</code>, <code>java.io.*</code>&hellip;).</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 8.13</span><b>Ruta de clases (<code>-cp</code>) incompleta:</b> al especificar una ruta expl&iacute;cita se elimina el directorio actual, y entonces tus clases del directorio de trabajo dejan de cargarse. A&ntilde;ade <code>.</code> a la ruta.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">secci&oacute;n 8.16-8.17</span><b>Confundir import con paquete:</b> un archivo lleva <b>una sola</b> declaraci&oacute;n <code>package</code> al principio; el nombre del paquete debe coincidir con la estructura de carpetas. Los campos sin modificador s&oacute;lo se ven dentro del paquete.</div></div>
+
+  <div class="key-point"><b>Idea clave:</b> casi todos estos errores los atrapa <b>el compilador, no el usuario</b>. Esa es la ventaja de Java: la visibilidad, las constantes y las reglas de <code>static</code> se resuelven <i>antes</i> de que el programa corra (Tip para prevenir errores 8.2).</div>
+</section>
+<div class="part teal">
+  <div class="t">Parte II &middot; Cap&iacute;tulo 9 &middot; pp. 378-416</div>
+  <h2>Programaci&oacute;n orientada a objetos: herencia</h2>
+  <p>Una nueva clase <b>absorbe los miembros de una clase existente</b> y los mejora con nuevas capacidades: menos copiar y pegar, m&aacute;s software probado y depurado. La relaci&oacute;n se llama <b>&laquo;es un&raquo;</b>.</p>
+</div>
+
+<section id="s06">
+  <div class="eyebrow-sm">06 &middot; Concepto (Cap. 9)</div>
+  <h2>Herencia: la relaci&oacute;n &laquo;es un&raquo; y la estructura de &aacute;rbol</h2>
+
+  <div class="analogy">
+    <b>Analog&iacute;a (Feynman):</b> <i>un autom&oacute;vil <b>es un</b> veh&iacute;culo</i> &mdash; le tocan las luces, las ruedas y la revisi&oacute;n del veh&iacute;culo: eso es <b>herencia</b>. Pero <i>un autom&oacute;vil <b>tiene un</b> volante de direcci&oacute;n</i> &mdash; no es un volante, s&oacute;lo guarda una referencia a uno: eso es <b>composici&oacute;n</b> (cap. 8). <b>Si puedes completar la frase &laquo;X es un&hellip;&raquo; sin que suene raro, es herencia; si suena raro, es composici&oacute;n.</b> Un Empleado <i>tiene</i> una Fecha de nacimiento (no <i>es</i> una fecha), pero un EmpleadoBaseMasComision <i>es</i> un EmpleadoPorComision &iquest;ves la diferencia?
+  </div>
+
+  <p>La herencia crea una <b>superclase</b> (lo general) y una <b>subclase</b> (lo especializado). En C++ se les llama clase base y clase derivada. La subclase es <b>m&aacute;s espec&iacute;fica</b>: exhibe los comportamientos de su superclase <b>m&aacute;s</b> los suyos propios &mdash; por eso a la herencia se le llama a veces <b>especializaci&oacute;n</b>.</p>
+
+  <ul class="bullets">
+    <li><b>Superclase directa:</b> la de la que hereda <i>expl&iacute;citamente</i>. <b>Superclase indirecta:</b> cualquier clase por encima de ella en la jerarqu&iacute;a.</li>
+    <li><b>Todo arranca en <code>Object</code></b> (<code>java.lang</code>): toda clase en Java hereda de ella <b>directa o indirectamente</b>. Si una declaraci&oacute;n no dice <code>extends</code>, el compilador pone <code>Object</code> por ti (Obs. 9.3).</li>
+    <li><b>Herencia simple:</b> una clase, una sola superclase directa. Java <b>no</b> soporta herencia m&uacute;ltiple (a diferencia de C++); el cap&iacute;tulo 10 ver&aacute; c&oacute;mo las <b>interfaces</b> imitan sus beneficios sin sus problemas.</li>
+    <li><b>Las jerarqu&iacute;as son &aacute;rboles:</b> una clase puede ser superclase <i>y</i> subclase a la vez. Cada flecha es un &laquo;es un&raquo; y se puede seguir hasta arriba.</li>
+    <li><b>Direcci&oacute;n del &laquo;es un&raquo;:</b> los objetos de la subclase <b>s&iacute;</b> se pueden tratar como objetos de la superclase; al rev&eacute;s <b>no</b> (todos los autos son veh&iacute;culos, pero no todos los veh&iacute;culos son autos).</li>
+    <li><b>&iquest;Y si la subclase no necesita o no quiere ese m&eacute;todo?</b> Lo <b>sobrescribe</b> (redefine) con una implementaci&oacute;n propia &mdash; as&iacute; de simple, y de ah&iacute; nace todo el polimorfismo del cap&iacute;tulo 10.</li>
+  </ul>
+
+  <p class="cap">Fig. 9.1 &mdash; Ejemplos de herencia (superclase &rarr; subclases)</p>
+  <table class="cmp">
+    <tr><th style="width:30%">Superclase</th><th>Subclases</th></tr>
+    <tr><td><code>Estudiante</code></td><td>EstudianteGraduado, EstudianteNoGraduado</td></tr>
+    <tr><td><code>Figura</code></td><td>Circulo, Triangulo, Rectangulo</td></tr>
+    <tr><td><code>Prestamo</code></td><td>PrestamoAutomovil, PrestamoMejoraCasa, PrestamoHipotecario</td></tr>
+    <tr><td><code>Empleado</code></td><td>Docente, Administrativo</td></tr>
+    <tr><td><code>CuentaBancaria</code></td><td>CuentaDeCheques, CuentaDeAhorros</td></tr>
+  </table>
+
+  <p class="cap">Fig. 9.2 &mdash; Jerarqu&iacute;a de la comunidad universitaria &middot; Fig. 9.3 &mdash; Jerarqu&iacute;a de figuras</p>
+  <div class="tree"><span class="r">MiembroDeLaComunidad</span>
+├── Estudiante
+├── Exalumno
+└── <span class="s">Empleado</span>
+    ├── Administrativo
+    └── <span class="r">Docente</span>
+        ├── Administrador
+        └── Maestro
+
+<span class="r">Figura</span>
+├── <span class="s">FiguraBidimensional</span>
+│   ├── Circulo
+│   ├── Triangulo
+│   └── Rectangulo
+└── <span class="s">FiguraTridimensional</span>
+    ├── Tetraedro
+    ├── Cubo
+    └── Esfera</div>
+  <p class="muted">L&eacute;elo de abajo hacia arriba: <b>Maestro &rarr; Docente &rarr; Empleado &rarr; MiembroDeLaComunidad</b>. Cada salto es un &laquo;es un&raquo; v&aacute;lido. (En la jerarqu&iacute;a de figuras el libro usa adem&aacute;s Cuadrado dentro de Rectangulo.)</p>
+
+  <div class="key-point"><b>El objetivo de dise&ntilde;o:</b> en vez de enfocarte en los <i>casos especiales</i> (c&oacute;digo repetido en 8 archivos), te enfocas en lo <b>com&uacute;n</b> y lo pones en la superclase. Cuando algo com&uacute;n cambie, se cambia <b>una sola vez</b> (Obs. 9.5). Copiar y pegar de una clase a otra <b>esparce los errores</b> por todo el c&oacute;digo fuente (Obs. 9.4).</div>
+</section>
+<section id="s07">
+  <div class="eyebrow-sm">07 &middot; Componentes (Cap. 9)</div>
+  <h2>Anatom&iacute;a de una jerarqu&iacute;a: qu&eacute; hereda, qu&eacute; no y qu&eacute; se reescribe</h2>
+
+  <div class="traits">
+    <div class="box"><h3><code>extends</code></h3><p>La palabra clave que declara la herencia: <code>class Subclase <b>extends</b> Superclase</code>. Sin <code>extends</code>, la superclase es <code>Object</code> (secc. 9.1-9.2).</p></div>
+    <div class="box"><h3><code>super</code></h3><p>Dos usos: <b>1)</b> <code>super( ... )</code> como <i>primera instrucci&oacute;n</i> del constructor para llamar a un constructor de la superclase; <b>2)</b> <code>super.m&eacute;todo( ... )</code> para ejecutar la versi&oacute;n <b>sobrescrita</b> de la superclase desde la subclase.</p></div>
+    <div class="box"><h3>M&eacute;todos sobrescritos</h3><p>La subclase redefine un m&eacute;todo de la superclase con la <b>misma firma</b>. Nunca se puede <b>reducir</b> el acceso: <code>public</code> &rarr; <code>protected</code> o <code>private</code> = error (Error com. 9.1).</p></div>
+    <div class="box"><h3><code>protected</code></h3><p>Acceso intermedio entre <code>public</code> y <code>private</code>: miembros de la superclase, de sus subclases y de las clases del mismo paquete (tambi&eacute;n tienen acceso de paquete). Use <code>protected</code> cuando la superclase deba dar un m&eacute;todo s&oacute;lo a sus subclases y a su paquete (Obs. 9.6).</p></div>
+    <div class="box"><h3>Constructores: no se heredan</h3><p>Cada clase llama a los suyos. El de la subclase <b>siempre</b> invoca al de la superclase (expl&iacute;cito con <code>super(...)</code> o impl&iacute;citamente sin argumentos) <i>antes</i> de su propio cuerpo; el &uacute;ltimo de la cadena es <code>Object()</code> (secc. 9.5, Obs. 9.8).</p></div>
+    <div class="box"><h3>La clase <code>Object</code></h3><p>Toda clase hereda sus <b>11 m&eacute;todos</b>: <code>toString</code>, <code>equals</code>, <code>hashCode</code>, <code>clone</code>, <code>getClass</code>, <code>notify</code>/<code>wait</code>&hellip; Si sobrescribes <code>equals</code>, debes sobrescribir tambi&eacute;n <code>hashCode</code> (secc. 9.7).</p></div>
+  </div>
+
+  <p class="cap">Qu&eacute; hereda realmente una subclase (secc. 9.3 y 9.6)</p>
+  <table class="cmp">
+    <tr><th style="width:34%">Miembro de la superclase</th><th style="width:18%">&iquest;Se hereda?</th><th>Acceso desde la subclase</th></tr>
+    <tr><td><code>public</code></td><td><b>S&iacute;</b></td><td>Conserva su modificador: se llama con su nombre.</td></tr>
+    <tr><td><code>protected</code></td><td><b>S&iacute;</b></td><td>Conserva su modificador; ideal para personalizar.</td></tr>
+    <tr><td>Sin modificador (paquete)</td><td>S&iacute;, si comparten paquete</td><td>S&oacute;lo dentro del paquete.</td></tr>
+    <tr><td><code>private</code></td><td><b>No</b> (no se hereda)</td><td>S&oacute;lo por los m&eacute;todos no <code>private</code> que la superclase ofrece (Obs. 9.1).</td></tr>
+    <tr><td>Constructores</td><td><b>Nunca</b></td><td>Se invocan con <code>super( ... )</code>; no se heredan ni se sobrescriben.</td></tr>
+    <tr><td><code>static</code></td><td>S&iacute; (son de la clase)</td><td>Se usan como <code>Superclase.miembro</code>.</td></tr>
+  </table>
+
+  <div class="tip"><span class="icon">&#128161;</span><span><b>Enriquecimiento (m&aacute;s all&aacute; del libro):</b> para <b>acordarte</b> de sobrescribir correctamente, pon la anotaci&oacute;n <code>@Override</code> encima del m&eacute;todo: si cambias la firma por error, <b>no compila</b>. Java 9 adem&aacute;s deprec&oacute; <code>finalize()</code>, as&iacute; que el ciclo de vida real de un objeto lo controla el recolector, no t&uacute;.</span></div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Los miembros heredados &laquo;no se ven&raquo; en el archivo de la subclase:</b> est&aacute;n presentes, pero no aparecen escritos en su c&oacute;digo fuente &mdash; y eso confunde al que lo lee y al que documenta (secc. 9.6). Lee la jerarqu&iacute;a completa, no un solo archivo.</span></div>
+</section>
+<section id="s08">
+  <div class="eyebrow-sm">08 &middot; Funci&oacute;n pr&aacute;ctica (Cap. 9)</div>
+  <h2>La jerarqu&iacute;a de empleados, evolucionada en 5 pasos</h2>
+  <p class="muted">El libro repite <b>el mismo caso</b> cinco veces para mostrar dise&ntilde;os peores y mejores: primero sin herencia, luego con errores, luego con <code>protected</code>, luego con <code>private</code> + m&eacute;todos (el ganador) y al final la cadena de constructores.</p>
+
+  <div class="tab-picker">
+    <button class="tab-btn active" data-g="g9" data-t="w1" onclick="pickTab('g9','w1')">1 &middot; la jerarqu&iacute;a bien hecha</button>
+    <button class="tab-btn" data-g="g9" data-t="w2" onclick="pickTab('g9','w2')">2 &middot; el error de los private</button>
+    <button class="tab-btn" data-g="g9" data-t="w3" onclick="pickTab('g9','w3')">3 &middot; cadena de constructores</button>
+    <button class="tab-btn" data-g="g9" data-t="w4" onclick="pickTab('g9','w4')">4 &middot; protected vs private</button>
+    <button class="tab-btn" data-g="g9" data-t="w5" onclick="pickTab('g9','w5')">5 &middot; GUI: JLabel</button>
+  </div>
+
+  <!-- TAB W1 -->
+  <div class="tab-panel active" data-g="g9" data-t="w1">
+    <p>La versi&oacute;n final y correcta (figs. 9.12-9.14): la superclase guarda sus 5 campos <b><code>private</code></b> y ofrece m&eacute;todos; la subclase <code>extends</code>, llama a <code>super( ... )</code> en el constructor y <b>reutiliza</b> lo heredado con <code>super.ingresos()</code> y <code>super.toString()</code>.</p>
+    <p class="cap">Figs. 9.12-9.13 &mdash; EmpleadoPorComision3 y EmpleadoBaseMasComision4 (extractos)</p>
+<pre class="code"><span class="cm">// Fig. 9.12: EmpleadoPorComision3.java (superclase)</span>
+<span class="kw">public class</span> <span class="tp">EmpleadoPorComision3</span>
+{
+   <span class="kw">private</span> <span class="tp">String</span> primerNombre;
+   <span class="kw">private</span> <span class="tp">String</span> apellidoPaterno;
+   <span class="kw">private</span> <span class="tp">String</span> numeroSeguroSocial;
+   <span class="kw">private double</span> ventasBrutas;  <span class="cm">// ventas totales por semana</span>
+   <span class="kw">private double</span> tarifaComision; <span class="cm">// porcentaje de comision</span>
+
+   <span class="kw">public</span> <span class="tp">EmpleadoPorComision3</span>( <span class="tp">String</span> nombre, <span class="tp">String</span> apellido,
+      <span class="tp">String</span> nss, <span class="kw">double</span> ventas, <span class="kw">double</span> tarifa )
+   {
+      primerNombre    = nombre;
+      apellidoPaterno = apellido;
+      numeroSeguroSocial = nss;
+      establecerVentasBrutas( ventas );    <span class="cm">// valida</span>
+      establecerTarifaComision( tarifa );  <span class="cm">// valida</span>
+   }
+
+   <span class="kw">public void</span> establecerVentasBrutas( <span class="kw">double</span> ventas )
+   {
+      ventasBrutas = ( ventas &lt; <span class="num">0.0</span> ) ? <span class="num">0.0</span> : ventas;
+   }
+
+   <span class="kw">public double</span> obtenerVentasBrutas()
+   {
+      <span class="kw">return</span> ventasBrutas;
+   }
+
+   <span class="kw">public void</span> establecerTarifaComision( <span class="kw">double</span> tarifa )
+   {
+      tarifaComision = ( tarifa &gt; <span class="num">0.0</span> &amp;&amp; tarifa &lt; <span class="num">1.0</span> ) ? tarifa : <span class="num">0.0</span>;
+   }
+
+   <span class="kw">public double</span> obtenerTarifaComision()
+   {
+      <span class="kw">return</span> tarifaComision;
+   }
+
+   <span class="cm">// calcula los ingresos</span>
+   <span class="kw">public double</span> ingresos()
+   {
+      <span class="kw">return</span> obtenerTarifaComision() * obtenerVentasBrutas();
+   }
+
+   <span class="kw">public</span> <span class="tp">String</span> toString()
+   {
+      <span class="kw">return</span> <span class="tp">String</span>.format( <span class="str">"%s: %s %s\n%s: %s\n%s: %.2f\n%s: %.2f"</span>,
+         <span class="str">"empleado por comision"</span>, obtenerPrimerNombre(), obtenerApellidoPaterno(),
+         <span class="str">"numero de seguro social"</span>, obtenerNumeroSeguroSocial(),
+         <span class="str">"ventas brutas"</span>, obtenerVentasBrutas(),
+         <span class="str">"tarifa de comision"</span>, obtenerTarifaComision() );
+   }
+} <span class="cm">// fin de la clase EmpleadoPorComision3</span>
+
+<span class="cm">// ----------------------------------------------------</span>
+
+<span class="cm">// Fig. 9.13: EmpleadoBaseMasComision4.java (subclase)</span>
+<span class="kw">public class</span> <span class="tp">EmpleadoBaseMasComision4</span> <span class="kw">extends</span> <span class="tp">EmpleadoPorComision3</span>
+{
+   <span class="kw">private double</span> salarioBase; <span class="cm">// salario base semanal</span>
+
+   <span class="kw">public</span> <span class="tp">EmpleadoBaseMasComision4</span>( <span class="tp">String</span> nombre, <span class="tp">String</span> apellido,
+      <span class="tp">String</span> nss, <span class="kw">double</span> ventas, <span class="kw">double</span> tarifa, <span class="kw">double</span> salario )
+   {
+      <span class="kw">super</span>( nombre, apellido, nss, ventas, tarifa ); <span class="cm">// obligatorio primero</span>
+      establecerSalarioBase( salario );
+   }
+
+   <span class="kw">public void</span> establecerSalarioBase( <span class="kw">double</span> salario )
+   {
+      salarioBase = ( salario &gt;= <span class="num">0.0</span> ) ? salario : <span class="num">0.0</span>;
+   }
+
+   <span class="kw">public double</span> obtenerSalarioBase()
+   {
+      <span class="kw">return</span> salarioBase;
+   }
+
+   <span class="cm">// @Override   &lt;-- opcional pero recomendado (enriquecimiento)</span>
+   <span class="kw">public double</span> ingresos()
+   {
+      <span class="kw">return</span> <span class="kw">super</span>.ingresos() + obtenerSalarioBase(); <span class="cm">// reutiliza, no duplica</span>
+   }
+
+   <span class="cm">// @Override</span>
+   <span class="kw">public</span> <span class="tp">String</span> toString()
+   {
+      <span class="kw">return</span> <span class="tp">String</span>.format( <span class="str">"%s\n%s: %.2f"</span>, <span class="kw">super</span>.toString(),
+         <span class="str">"sueldo base"</span>, obtenerSalarioBase() );
+   }
+} <span class="cm">// fin de la clase EmpleadoBaseMasComision4</span></pre>
+
+    <p class="cap">Fig. 9.14 &mdash; PruebaEmpleadoBaseMasComision4: salida</p>
+<pre class="out">Informacion del empleado obtenida por los metodos establecer:
+
+El primer nombre es Bob
+El apellido es Lewis
+El numero de seguro social es 333-33-3333
+Las ventas brutas son 5000.00
+La tarifa de comision es 0.04
+El salario base es 300.00
+Informacion actualizada del empleado, obtenida por toString:
+con sueldo base empleado por comision: Bob Lewis
+numero de seguro social: 333-33-3333
+ventas brutas: 5000.00
+tarifa de comision: 0.04
+sueldo base: 1000.00</pre>
+    <p class="muted"><b>Lectura:</b> la subclase <b>no declara</b> ni una sola vez los 5 campos de la superclase; sin embargo, <code>empleado.obtenerVentasBrutas()</code> funciona porque los m&eacute;todos <code>public</code> <b>se heredan</b>. <code>super.toString()</code> arma la primera parte del texto y <code>super.ingresos()</code> calcula la comisi&oacute;n: <b>reutilizar en vez de copiar</b> (Obs. 8.5 citada en 9.4.5).</p>
+  </div>
+
+  <!-- TAB W2 -->
+  <div class="tab-panel" data-g="g9" data-t="w2">
+    <p>Antes de la versi&oacute;n buena, el libro muestra qu&eacute; pasa si la subclase intenta tocar los campos <code>private</code> de la superclase <b>directamente</b> (fig. 9.8): <b>siete errores de compilaci&oacute;n</b>.</p>
+    <p class="cap">Fig. 9.8 &mdash; EmpleadoBaseMasComision2.java (el intento fallido)</p>
+<pre class="code"><span class="kw">public class</span> <span class="tp">EmpleadoBaseMasComision2</span> <span class="kw">extends</span> <span class="tp">EmpleadoPorComision</span>
+{
+   <span class="kw">private double</span> salarioBase;
+
+   <span class="kw">public</span> <span class="tp">EmpleadoBaseMasComision2</span>( <span class="tp">String</span> nombre, <span class="tp">String</span> apellido,
+      <span class="tp">String</span> nss, <span class="kw">double</span> ventas, <span class="kw">double</span> tarifa, <span class="kw">double</span> salario )
+   {
+      <span class="kw">super</span>( nombre, apellido, nss, ventas, tarifa ); <span class="cm">// esto compila bien</span>
+      salarioBase = ( salario &gt;= <span class="num">0.0</span> ) ? salario : <span class="num">0.0</span>;
+   }
+
+   <span class="cm">// calcula los ingresos totales ...</span>
+   <span class="kw">public double</span> ingresos()
+   {
+      <span class="cm">// linea 34 - ERROR: toca campos private de la superclase</span>
+      <span class="kw">return</span> salarioBase + ( tarifaComision * ventasBrutas );
+   }
+
+   <span class="kw">public</span> <span class="tp">String</span> toString()
+   {
+      <span class="cm">// lineas 43-45 - TAMBIEN ERROR</span>
+      <span class="kw">return</span> <span class="tp">String</span>.format( <span class="str">"%s %s\n%s: %s\n..."</span>, primerNombre, apellidoPaterno,
+         <span class="str">"ventas brutas"</span>, ventasBrutas, <span class="str">"tarifa de comision"</span>, tarifaComision,
+         <span class="str">"salario base"</span>, salarioBase );
+   }
+} <span class="cm">// fin de la clase EmpleadoBaseMasComision2</span></pre>
+<pre class="out">EmpleadoBaseMasComision2.java:34: tarifaComision has private access in EmpleadoPorComision
+   return salarioBase + ( tarifaComision * ventasBrutas );
+                            ^
+EmpleadoBaseMasComision2.java:34: ventasBrutas has private access in EmpleadoPorComision
+EmpleadoBaseMasComision2.java:43: primerNombre has private access in EmpleadoPorComision
+EmpleadoBaseMasComision2.java:43: apellidoPaterno has private access in EmpleadoPorComision
+EmpleadoBaseMasComision2.java:44: numeroSeguroSocial has private access in EmpleadoPorComision
+EmpleadoBaseMasComision2.java:45: ventasBrutas has private access in EmpleadoPorComision
+EmpleadoBaseMasComision2.java:45: tarifaComision has private access in EmpleadoPorComision
+7 errores</pre>
+    <div class="key-point"><b>Por qu&eacute; el compilador tiene raz&oacute;n:</b> los miembros <code>private</code> <b>no se heredan</b> (secc. 9.3). La soluci&oacute;n del libro pasa por dos caminos &mdash; primero <code>protected</code> (fig. 9.9, m&aacute;s r&aacute;pido pero fr&aacute;gil) y despu&eacute;s <code>private</code> + m&eacute;todos <code>public</code>/<code>protected</code> heredados (fig. 9.12, el dise&ntilde;o recomendado). Ver&aacute;s ambos en la pesta&ntilde;a 4.</div>
+  </div>
+
+  <!-- TAB W3 -->
+  <div class="tab-panel" data-g="g9" data-t="w3">
+    <p>El experimento de la secci&oacute;n 9.5: cada constructor imprime un mensaje para ver el <b>orden real</b> de ejecuci&oacute;n. Este es el caso del taller del inicio de la p&aacute;gina.</p>
+    <p class="cap">Figs. 9.15-9.16 &mdash; constructores de EmpleadoPorComision4 y EmpleadoBaseMasComision5</p>
+<pre class="code"><span class="cm">// superclase: imprime al final de su constructor</span>
+<span class="kw">public</span> <span class="tp">EmpleadoPorComision4</span>( <span class="tp">String</span> nombre, <span class="tp">String</span> apellido,
+   <span class="tp">String</span> nss, <span class="kw">double</span> ventas, <span class="kw">double</span> tarifa )
+{
+   primerNombre = nombre; <span class="cm">// ... y los otros 4 campos private</span>
+   establecerVentasBrutas( ventas );
+   establecerTarifaComision( tarifa );
+   System.out.printf(
+      <span class="str">"\nConstructor de EmpleadoPorComision4:\n%s\n"</span>, <span class="kw">this</span> );
+} <span class="cm">// fin del constructor de EmpleadoPorComision4</span>
+
+<span class="cm">// subclase: super(...) es su PRIMERA instruccion</span>
+<span class="kw">public</span> <span class="tp">EmpleadoBaseMasComision5</span>( <span class="tp">String</span> nombre, <span class="tp">String</span> apellido,
+   <span class="tp">String</span> nss, <span class="kw">double</span> ventas, <span class="kw">double</span> tarifa, <span class="kw">double</span> salario )
+{
+   <span class="kw">super</span>( nombre, apellido, nss, ventas, tarifa );
+   establecerSalarioBase( salario );
+   System.out.printf(
+      <span class="str">"\nConstructor de EmpleadoBaseMasComision5:\n%s\n"</span>, <span class="kw">this</span> );
+} <span class="cm">// fin del constructor de EmpleadoBaseMasComision5</span></pre>
+
+    <p class="cap">Fig. 9.17 &mdash; PruebaConstructores: salida completa (3 objetos)</p>
+<pre class="out">Constructor de EmpleadoPorComision4:
+empleado por comision: Bob Lewis
+numero de seguro social: 333-33-3333
+ventas brutas: 5000.00
+tarifa de comision: 0.04
+
+Constructor de EmpleadoPorComision4:
+con sueldo base empleado por comision: Lisa Jones
+numero de seguro social: 555-55-5555
+ventas brutas: 2000.00
+tarifa de comision: 0.06
+<b>sueldo base: 0.00</b>
+Constructor de EmpleadoBaseMasComision5:
+con sueldo base empleado por comision: Lisa Jones
+numero de seguro social: 555-55-5555
+ventas brutas: 2000.00
+tarifa de comision: 0.06
+sueldo base: 800.00
+
+Constructor de EmpleadoPorComision4:
+con sueldo base empleado por comision: Mark Sands
+numero de seguro social: 888-88-8888
+ventas brutas: 8000.00
+tarifa de comision: 0.15
+sueldo base: 0.00
+Constructor de EmpleadoBaseMasComision5:
+con sueldo base empleado por comision: Mark Sands
+numero de seguro social: 888-88-8888
+ventas brutas: 8000.00
+tarifa de comision: 0.15
+sueldo base: 2000.00</pre>
+
+    <h3 class="sub">C&oacute;mo se lee esa salida (reglas de la secci&oacute;n 9.5)</h3>
+    <ul class="bullets">
+      <li><b>El constructor de la subclase llama primero al de la superclase</b> (<code>super(...)</code> o impl&iacute;citamente), despu&eacute;s ejecuta su propio cuerpo (secc. 9.5).</li>
+      <li>La cadena sube hasta arriba: <b>subclase &rarr; superclase &rarr; &hellip; &rarr; <code>Object()</code></b> (cuerpo vac&iacute;o, regresa ya). El &uacute;ltimo constructor llamado es siempre el de <code>Object</code>.</li>
+      <li>Se ejecutan en este orden: <b>1)</b> todos los constructores de arriba hacia abajo (hasta <code>Object</code>), <b>2)</b> los cuerpos <b>de abajo hacia arriba</b>: primero los de la superclase, al final el de la subclase.</li>
+      <li>Por eso los 5 campos de la superclase est&aacute;n listos cuando corre <code>establecerSalarioBase( salario )</code>.</li>
+    </ul>
+    <div class="warn"><span class="icon">&#9888;</span><span><b>&iquest;Por qu&eacute; aparece <code>sueldo base: 0.00</code> y luego <code>800.00</code>?</b> El constructor de la superclase imprime <code>%s</code> con <code>this</code>, y <code>toString()</code> se resuelve <b>en tiempo de ejecuci&oacute;n</b> sobre el objeto real &mdash; que ya es un <code>EmpleadoBaseMasComision5</code>. Al llegar ese <code>printf</code>, <code>salarioBase</code> <b>a&uacute;n no se ha inicializado</b>, as&iacute; que Java lo imprime con su valor predeterminado, <code>0.00</code>. El <code>printf</code> de la subclase, que corre despu&eacute;s, s&iacute; lo muestra en <code>800.00</code>. Es el primer avistamiento del <b>polimorfismo</b> (cap. 10) y la raz&oacute;n por la que <b>no conviene llamar a m&eacute;todos sobreimpresos desde un constructor</b> (Error com. 8.4).</span></div>
+  </div>
+  <!-- TAB W4 -->
+  <div class="tab-panel" data-g="g9" data-t="w4">
+    <p>El libro prueba dos <b>soluciones</b> al problema de la pesta&ntilde;a 2 y termina eligiendo una.</p>
+
+    <h3 class="sub">Soluci&oacute;n A &mdash; campos <code>protected</code> (figs. 9.9-9.11): acceso directo</h3>
+<pre class="code"><span class="cm">// Fig. 9.9: EmpleadoPorComision2.java (los campos ahora son protected)</span>
+<span class="kw">public class</span> <span class="tp">EmpleadoPorComision2</span>
+{
+   <span class="kw">protected</span> <span class="tp">String</span> primerNombre;
+   <span class="kw">protected</span> <span class="tp">String</span> apellidoPaterno;
+   <span class="kw">protected</span> <span class="tp">String</span> numeroSeguroSocial;
+   <span class="kw">protected double</span> ventasBrutas;
+   <span class="kw">protected double</span> tarifaComision;
+
+   <span class="cm">// constructor, m&eacute;todos establecer/obtener e ingresos()...</span>
+}
+
+<span class="cm">// Fig. 9.10: EmpleadoBaseMasComision3.java (ahora compila)</span>
+<span class="kw">public class</span> <span class="tp">EmpleadoBaseMasComision3</span> <span class="kw">extends</span> <span class="tp">EmpleadoPorComision2</span>
+{
+   <span class="kw">private double</span> salarioBase;
+
+   <span class="kw">public double</span> ingresos()
+   {
+      <span class="cm">// acceso DIRECTO a los campos de la superclase</span>
+      <span class="kw">return</span> tarifaComision * ventasBrutas + salarioBase;
+   }
+}</pre>
+    <p class="muted">Los miembros <code>protected</code> <b>s&iacute; son heredados</b> y pueden usarse con s&oacute;lo su nombre dentro de la subclase &mdash; ya no hay errores de compilaci&oacute;n. Pero el acceso directo acopla la subclase al campo: si la superclase cambia c&oacute;mo guarda <code>ventasBrutas</code> (por ejemplo, convirti&eacute;ndolo a centavos enteros), <b>se rompe la subclase</b>.</p>
+
+    <h3 class="sub">Soluci&oacute;n B &mdash; campos <code>private</code> + m&eacute;todos heredados (fig. 9.12): la recomendada</h3>
+<pre class="code"><span class="kw">public class</span> <span class="tp">EmpleadoPorComision3</span>   <span class="cm">// fig. 9.12</span>
+{
+   <span class="kw">private double</span> ventasBrutas;   <span class="cm">// otra vez privados</span>
+   <span class="kw">private double</span> tarifaComision;
+
+   <span class="kw">public double</span> ingresos()
+   {
+      <span class="kw">return</span> obtenerTarifaComision() * obtenerVentasBrutas();
+   }
+}
+
+<span class="kw">public class</span> <span class="tp">EmpleadoBaseMasComision4</span> <span class="kw">extends</span> <span class="tp">EmpleadoPorComision3</span>  <span class="cm">// fig. 9.13</span>
+{
+   <span class="kw">public double</span> ingresos()
+   {
+      <span class="kw">return</span> <span class="kw">super</span>.ingresos() + obtenerSalarioBase(); <span class="cm">// todo por m&eacute;todos</span>
+   }
+}</pre>
+    <table class="cmp">
+      <tr><th>&nbsp;</th><th><code>protected</code> + acceso directo</th><th><code>private</code> + m&eacute;todos</th></tr>
+      <tr><td><b>Se crea la subclase</b></td><td>M&aacute;s r&aacute;pida: escribo <code>tarifaComision * ventasBrutas</code>.</td><td>M&aacute;s larga: debo conocer los m&eacute;todos.</td></tr>
+      <tr><td><b>La superclase cambia</b></td><td>Hay que revisar todas las subclases.</td><td>S&oacute;lo cambia la superclase; las subclases siguen igual (Obs. 9.7).</td></tr>
+      <tr><td><b>Validaci&oacute;n</b></td><td>No pasa por los m&eacute;todos <code>establecer</code>: puede llegar un dato inv&aacute;lido.</td><td>Siempre pasa por los validadores (cap. 8).</td></tr>
+    </table>
+    <p class="muted"><b>Veredicto del libro (fig. 9.14):</b> las tres versiones se <b>comportan</b> igual, pero <code>EmpleadoBaseMasComision4</code> &laquo;es la mejor dise&ntilde;ada&raquo;: <b>ocultamiento de la informaci&oacute;n + herencia</b>. Usa <code>protected</code> cuando la superclase deba ofrecer un miembro s&oacute;lo a sus subclases y a su paquete (Obs. 9.6); reserva el acceso directo a lo que de verdad es parte de la misma clase.</p>
+  </div>
+
+  <!-- TAB W5 -->
+  <div class="tab-panel" data-g="g9" data-t="w5">
+    <p>Tema opcional del libro (secc. 9.8): mostrar texto e im&aacute;genes con la etiqueta <code>JLabel</code> del paquete <code>javax.swing</code>, colocada dentro de un marco <code>JFrame</code>.</p>
+    <p class="cap">Fig. 9.19 &mdash; DemoLabel.java (extracto)</p>
+<pre class="code"><span class="kw">import</span> javax.swing.*;
+<span class="kw">import</span> java.awt.*;
+
+<span class="kw">public class</span> <span class="tp">DemoLabel</span>
+{
+   <span class="kw">public static void</span> main( <span class="tp">String</span>[] argumentos )
+   {
+      <span class="cm">// crea una etiqueta con texto solamente</span>
+      <span class="tp">JLabel</span> etiquetaNorte = <span class="kw">new</span> <span class="tp">JLabel</span>( <span class="str">"Norte"</span> );
+
+      <span class="cm">// crea un icono a partir de una imagen, para colocarla en un JLabel</span>
+      <span class="tp">ImageIcon</span> etiquetaIcono = <span class="kw">new</span> <span class="tp">ImageIcon</span>( <span class="str">"GUItip.gif"</span> );
+
+      <span class="cm">// crea una etiqueta con un icono en vez de texto</span>
+      <span class="tp">JLabel</span> etiquetaCentro = <span class="kw">new</span> <span class="tp">JLabel</span>( etiquetaIcono );
+
+      <span class="cm">// crea otra etiqueta con un icono</span>
+      <span class="tp">JLabel</span> etiquetaSur = <span class="kw">new</span> <span class="tp">JLabel</span>( etiquetaIcono );
+
+      <span class="cm">// establece la etiqueta para mostrar texto (asi como un icono)</span>
+      etiquetaSur.setText( <span class="str">"Sur"</span> );
+
+      <span class="cm">// crea un marco para contener las etiquetas</span>
+      <span class="tp">JFrame</span> aplicacion = <span class="kw">new</span> <span class="tp">JFrame</span>();
+      aplicacion.setDefaultCloseOperation( <span class="tp">JFrame</span>.EXIT_ON_CLOSE );
+
+      <span class="cm">// agrega las etiquetas al marco; el segundo argumento especifica</span>
+      <span class="cm">// en que parte del marco se va a agregar la etiqueta</span>
+      aplicacion.add( etiquetaNorte, <span class="tp">BorderLayout</span>.NORTH );
+      aplicacion.add( etiquetaCentro, <span class="tp">BorderLayout</span>.CENTER );
+      aplicacion.add( etiquetaSur, <span class="tp">BorderLayout</span>.SOUTH );
+
+      aplicacion.setSize( <span class="num">300</span>, <span class="num">300</span> ); <span class="cm">// establece el tamano del marco</span>
+      aplicacion.setVisible( <span class="kw">true</span> );   <span class="cm">// muestra el marco</span>
+   } <span class="cm">// fin de main</span>
+} <span class="cm">// fin de la clase DemoLabel</span></pre>
+    <p class="muted"><b>Notas:</b> si en el constructor de <code>JLabel</code> solo das un nombre de archivo, Java busca la imagen en el mismo directorio que la clase. <code>BorderLayout</code> (paquete <code>java.awt</code>) trae las constantes <code>NORTH</code>, <code>CENTER</code> y <code>SOUTH</code> que indican d&oacute;nde se coloca cada etiqueta. Este ejemplo no depende de la herencia &mdash; est&aacute; aqu&iacute; porque as&iacute; lo trae el cap&iacute;tulo, y porque es el primer contacto con la GUI.</p>
+  </div>
+</section>
+<section id="s09">
+  <div class="eyebrow-sm">09 &middot; Errores frecuentes (Cap. 9)</div>
+  <h2>Los tres tropiezos del cap&iacute;tulo 9</h2>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 9.1</span><b>Reducir el acceso al sobrescribir:</b> un m&eacute;todo <code>public</code> de la superclase <b>no puede</b> volverse <code>protected</code> o <code>private</code> en la subclase, y uno <code>protected</code> no puede volverse <code>private</code>. Si lo haces &rarr; error de compilaci&oacute;n: quiebra la relaci&oacute;n &laquo;es un&raquo;, porque cualquier objeto de la subclase debe seguir respondiendo a esas llamadas.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 9.2</span><b><code>super( ... )</code> con argumentos que no calzan:</b> los argumentos del <code>super(...)</code> del constructor deben coincidir <b>exactamente</b> en n&uacute;mero y tipos con alguna declaraci&oacute;n de constructor de la superclase; si no &rarr; error de compilaci&oacute;n.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">error com. 9.3</span><b>Olvidar <code>super.</code> al reutilizar un m&eacute;todo sobrescrito:</b> si el m&eacute;todo de la subclase quiere que la versi&oacute;n de la superclase haga parte del trabajo y escribe <code>ingresos()</code> en lugar de <code>super.ingresos()</code>, <b>se llama a s&iacute; misma</b>: recursividad infinita en tiempo de ejecuci&oacute;n (en lugar del error de compilaci&oacute;n, mucho m&aacute;s f&aacute;cil de reparar).</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">secci&oacute;n 9.2</span><b>Invertir la jerarqu&iacute;a:</b> si te preguntas &laquo;&iquest;todo X es Y?&raquo; y la respuesta es no, la flecha va al rev&eacute;s: no todo veh&iacute;culo es autom&oacute;vil, as&iacute; que <code>Auto</code> extiende de <code>Vehiculo</code>, no al contrario.</div></div>
+
+  <div class="pitfall"><span class="icon">&#10007;</span><div class="body"><span class="tag">secci&oacute;n 9.5</span><b>Suponer que el cuerpo de la subclase corre primero:</b> lo primero que ejecuta el constructor de la subclase es <code>super( ... )</code>; su propio cuerpo cierra la cadena (Obs. 9.8). Si por eso pruebas un m&eacute;todo heredado dentro del constructor y ves valores en 0/&nbsp;null, ya sabes por qu&eacute; &mdash; y por eso conviene evitar llamar a m&eacute;todos sobrescritos desde constructores (Error com. 8.4).</div></div>
+
+  <div class="key-point"><b>Autocomprobaci&oacute;n:</b> si tu c&oacute;digo de herencia no compila, revisa en este orden &mdash; (1) &iquest;firma de <code>super(...)</code> correcta? (2) &iquest;est&aacute;s tocando un campo <code>private</code> directamente? (3) &iquest;reduciste el acceso al sobrescribir? Casi siempre es uno de esos tres.</div>
+</section>
+
+<section id="s10">
+  <div class="eyebrow-sm">10 &middot; Principio de Pareto</div>
+  <h2>El 20% de las reglas que te dan el 80% del resultado</h2>
+  <p class="muted">Si s&oacute;lo te llevas diez ideas de estas dos p&aacute;ginas, que sean estas:</p>
+  <ul class="checklist">
+    <li><b>Campos <code>private</code> + <code>establecer</code>/ <code>obtener</code> + validar al escribir.</b> El cliente nunca toca los datos; la clase garantiza que el objeto siempre est&eacute; consistente (Tiempo1, cap. 8.2-8.3).</li>
+    <li><b>Sobrecarga constructores delegando con <code>this( ... )</code></b> &mdash; siempre como primera instrucci&oacute;n, con una sola fuente de verdad (Tiempo2).</li>
+    <li><b>Predeterminado &ne; sin argumentos:</b> el primero lo inventa el compilador y desaparece si escribes un solo constructor.</li>
+    <li><b><code>static</code> = una copia para todos</b> (miembros de clase, sin <code>this</code>); <b><code>final</code> = constante</b> (se inicializa en la declaraci&oacute;n o en <b>todos</b> los constructores). Juntos: <code>static final</code> para constantes compartidas.</li>
+    <li><b><code>enum</code> con constructor y campos</b> en lugar de arreglos de <code>int</code> con la &#191;<code>case 1:</code>? Las constantes son objetos validados, con nombre y sin <code>new</code>.</li>
+    <li><b>&laquo;Es un&raquo; &rarr; <code>extends</code>; &laquo;tiene un&raquo; &rarr; composici&oacute;n.</b> Si la frase suena rara, no es herencia (cap. 9.1).</li>
+    <li><b><code>super( ... )</code> primero y <code>super.m&eacute;todo()</code> para reutilizar:</b> la cadena de constructores termina siempre en <code>Object()</code> y los cuerpos corren de abajo hacia arriba (Obs. 9.8).</li>
+    <li><b>Los campos <code>private</code> de la superclase no se heredan</b>: se usan por los m&eacute;todos heredados (Obs. 9.1). <code>protected</code> sirve para dar acceso controlado a subclases y al paquete (Obs. 9.6), pero el dise&ntilde;o final preferido es <code>private</code> + m&eacute;todos (fig. 9.14).</li>
+    <li><b>Sobrescribir sin reducir acceso y sin olvidar <code>super.</code></b> Error com&uacute;n 9.1 (compila) y error com&uacute;n 9.3 (recursi&oacute;n infinita, peor).</li>
+    <li><b>Toda clase es <code>Object</code>:</b> <code>toString()</code>, <code>equals()</code> y <code>hashCode()</code> son los m&eacute;todos que heredas gratis &mdash; y que casi siempre debes sobrescribir a conciencia (secc. 9.7).</li>
+  </ul>
+</section>
+<section id="s11">
+  <div class="eyebrow-sm">11 &middot; Active recall</div>
+  <h2>Comprueba lo que retuviste (sin mirar)</h2>
+  <p class="muted">Responde mentalmente antes de abrir cada respuesta.</p>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">1. &iquest;Qu&eacute; le pasa a un programa que hace <code>empleado.primerNombre</code> desde otra clase si <code>primerNombre</code> es <code>private</code>? &iquest;Y si la subclase lo intenta?</div>
+    <div class="a"><b>Error de compilaci&oacute;n en ambos casos</b> (Error com. 8.1). Los miembros <code>private</code> no se heredan ni se ven fuera de la clase; la subclase s&oacute;lo llega a ellos por los m&eacute;todos no <code>private</code> que la superclase le deja heredar (Obs. 9.1). Soluci&oacute;n: getters/setters <code>public</code>, o <code>protected</code> si queres dar acceso s&oacute;lo a las subclases (Obs. 9.6).</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">2. Tu clase declara dos constructores. &iquest;Qu&eacute; le pasa al compilador y a <code>new MiClase()</code>?</div>
+    <div class="a"><b>El constructor predeterminado deja de existir</b> en cuanto declaras aunque sea un constructor. Si ninguno de tus constructores es sin argumentos (o no es <code>public</code>), <code>new MiClase()</code> del cliente no compila (Error com. 8.5). Declara t&uacute; el constructor sin argumentos si lo necesitas.</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">3. En un constructor, &iquest;d&oacute;nde puede ir <code>this( ... )</code> y qu&eacute; pasa si <code>hora = h</code> no compila como esperabas?</div>
+    <div class="a"><code>this( ... )</code> <b>s&oacute;lo como primera instrucci&oacute;n</b> de otro constructor (Error com. 8.3). Y si el par&aacute;metro se llama igual que el campo, <code>hora = h</code> le asigna valor a la <b>variable local</b>: usa <code>this.hora = h</code> (Error com. 8.2).</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">4. &iquest;Qu&eacute; es <code>static final</code> y d&oacute;nde se debe inicializar?</div>
+    <div class="a">Una <b>constante compartida</b> por toda la clase: <code>static</code> porque hay una sola copia, <code>final</code> porque no cambia. Se inicializa <b>en su declaraci&oacute;n</b> (de ah&iacute; la regla de que si se inicializa ah&iacute;, debe ser tambi&eacute;n <code>static</code>; Obs. 8.14). Si la dejas sin inicializar &rarr; error de compilaci&oacute;n (Error com. 8.11).</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">5. EmpleadoBaseMasComision <i>es un</i> EmpleadoPorComision, pero Empleado <i>tiene una</i> Fecha. &iquest;Qu&eacute; relaci&oacute;n es cada una y &iquest;cu&aacute;l usa <code>extends</code>?</div>
+    <div class="a">La primera es <b>&laquo;es un&raquo; &rarr; herencia</b> (<code>extends</code>). La segunda es <b>&laquo;tiene un&raquo; &rarr; composici&oacute;n</b> (cap. 8): <code>Empleado</code> guarda referencias a dos objetos <code>Fecha</code>, sin <code>extends</code>. Truco: si la frase &laquo;X es un&hellip;&raquo; suena rara, no es herencia.</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">6. &iquest;En qu&eacute; orden se ejecutan los constructores al crear un <code>EmpleadoBaseMasComision5</code>?</div>
+    <div class="a"><b>1)</b> el de la subclase llama <b>primero</b> a <code>super( ... )</code> (o impl&iacute;citamente al sin argumentos); <b>2)</b> la cadena sube hasta <code>Object()</code>, cuyo cuerpo est&aacute; vac&iacute;o y regresa ya; <b>3)</b> los cuerpos se ejecutan <b>de abajo hacia arriba</b>: los de la superclase (inicializan lo heredado) y al final el de la subclase (Obs. 9.8). Por eso los 5 campos de la superclase est&aacute;n listos cuando corre <code>establecerSalarioBase</code>.</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">7. &iquest;Por qu&eacute; la salida de la figura 9.17 muestra <code>sueldo base: 0.00</code> en el mensaje de la superclase y despu&eacute;s <code>800.00</code>?</div>
+    <div class="a">El <code>printf( "...%s", this )</code> de la superclase invoca a <code>toString()</code> <b>en tiempo de ejecuci&oacute;n</b> y resuelve la versi&oacute;n de la subclase (polimorfismo, cap. 10). En ese instante <code>salarioBase</code> <b>a&uacute;n no se inicializ&oacute;</b>, as&iacute; que se imprime el valor predeterminado <code>0.00</code>. Cuando ya corre el cuerpo de la subclase, su propio <code>printf</code> muestra <code>800.00</code>. Lecci&oacute;n: evita llamar a m&eacute;todos sobrescritos desde un constructor (Error com. 8.4).</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">8. &iquest;Puede una subclase convertir un m&eacute;todo <code>public</code> de su superclase en <code>protected</code>? &iquest;Y qu&eacute; pasa si al reutilizar la versi&oacute;n de la superclase escribe solo <code>ingresos()</code>?</div>
+    <div class="a">No: <b>reducir el acceso al sobrescribir no compila</b> (Error com. 9.1). Y si olvida <code>super.</code>, el m&eacute;todo de la subclase <b>se llama a s&iacute; mismo</b> &rarr; recursi&oacute;n infinita en tiempo de ejecuci&oacute;n (Error com. 9.3).</div>
+  </div>
+</section>
+
+<div class="footer-note">
+  P&aacute;gina de estudio &middot; Unidad 0: fundamentos de programaci&oacute;n
+  <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+  Basado en Deitel, <i>C&oacute;mo programar en Java</i>, 7ma edici&oacute;n &middot; cap&iacute;tulos 8 y 9
+</div>
+
+</div><!-- /wrap -->
+<script>
+/* ---------------- pestañas ---------------- */
+function pickTab( g, t ) {
+  document.querySelectorAll( '.tab-btn[data-g="' + g + '"]' ).forEach( function( b ) {
+    b.classList.toggle( 'active', b.dataset.t === t );
+  } );
+  document.querySelectorAll( '.tab-panel[data-g="' + g + '"]' ).forEach( function( p ) {
+    p.classList.toggle( 'active', p.dataset.t === t );
+  } );
+}
+
+/* ---------------- mapa de acceso ---------------- */
+var mxState = { mod: 'public', ctx: 'clase' };
+
+var MX = {
+  public: {
+    clase:  [ 'ok',   'Un miembro <b>public</b> se usa sin restricciones, incluso dentro de la propia clase.', 'Secci&oacute;n 8.3 &mdash; Control del acceso a los miembros' ],
+    paq:    [ 'ok',   'Lo ven todas las clases del mismo paquete: es parte de la interfaz de la clase.', 'Secci&oacute;n 8.3' ],
+    sub:    [ 'ok',   'La subclase lo hereda y lo usa <b>conservando su modificador public</b>.', 'Secci&oacute;n 9.3 &mdash; Miembros protected' ],
+    fuera:  [ 'ok',   'Cualquier programa con una referencia a un objeto de la clase puede usarlo: eso es lo <b>p&uacute;blico</b>.', 'Secci&oacute;n 8.3' ]
+  },
+  protected: {
+    clase:  [ 'ok',   'Los miembros protected pueden ser utilizados por los miembros de la propia superclase.', 'Secci&oacute;n 9.3 &mdash; Miembros protected' ],
+    paq:    [ 'ok',   'Los miembros protected <b>tambi&eacute;n tienen acceso a nivel de paquete</b>: otras clases del mismo paquete los ven.', 'Secci&oacute;n 9.3' ],
+    sub:    [ 'ok',   'La subclase los hereda y se refiere a ellos con s&oacute;lo su nombre (o con <code>super.m&eacute;todo()</code> si los sobrescribe).', 'Secci&oacute;n 9.3 / Obs. 9.6' ],
+    fuera:  [ 'no',   'Fuera del paquete y sin ser subclase: el <b>protected</b> abre tres c&iacute;rculos &mdash; clase, paquete y subclases &mdash; y &eacute;ste es el cuarto.', 'Secci&oacute;n 9.3 / Obs. 9.6' ]
+  },
+  package: {
+    clase:  [ 'ok',   'Un miembro sin modificador funciona normalmente dentro de su propia clase.', 'Secci&oacute;n 8.17 &mdash; Acceso a paquetes' ],
+    paq:    [ 'ok',   '<b>Acceso a nivel de paquete:</b> basta con estar en el mismo paquete, sin herencia ni publicidad.', 'Secci&oacute;n 8.17' ],
+    sub:    [ 'no',   'La subclase est&aacute; en <b>otro paquete</b> y el miembro no es public ni protected: error de compilaci&oacute;n.', 'Secci&oacute;n 8.17 / 9.3' ],
+    fuera:  [ 'no',   'Otro paquete y sin herencia: no hay ning&uacute;n camino de acceso.', 'Secci&oacute;n 8.17' ]
+  },
+  private: {
+    clase:  [ 'ok',   '<b>S&oacute;lo la clase que lo declara</b> puede usarlo: as&iacute; funciona el ocultamiento de la informaci&oacute;n.', 'Error com&uacute;n 8.1 / 8.15' ],
+    paq:    [ 'no',   'Estar en el mismo paquete <b>no basta</b>: fuera de la clase, nada.', 'Error com&uacute;n 8.1' ],
+    sub:    [ 'no',   'Los miembros private de la superclase <b>no se heredan</b>; la subclase s&oacute;lo llega a ellos por los m&eacute;todos heredados.', 'Secci&oacute;n 9.3 / Obs. 9.1 / fig. 9.8' ],
+    fuera:  [ 'no',   'Cualquier intento fuera de la clase produce <b>error de compilaci&oacute;n</b> (<code>has private access</code>).', 'Error com&uacute;n 8.1 / fig. 9.8' ]
+  }
+};
+
+function mxPick( k, v ) {
+  mxState[k] = v;
+  document.querySelectorAll( '#mxSet .mx-btn[data-k="' + k + '"]' ).forEach( function( b ) {
+    b.classList.toggle( 'active', b.dataset.v === v );
+  } );
+  mxRender();
+}
+
+function mxRender() {
+  var e = MX[mxState.mod][mxState.ctx];
+  var res = document.getElementById( 'mxResult' );
+  res.classList.remove( 'ok', 'no' );
+  res.classList.add( e[0] );
+  document.getElementById( 'mxVerdict' ).innerHTML =
+    ( e[0] === 'ok' ? '&#10004; COMPILA' : '&#10008; ERROR DE COMPILACI&Oacute;N' );
+  document.getElementById( 'mxWhy' ).innerHTML = e[1];
+  document.getElementById( 'mxSrc' ).innerHTML = e[2];
+}
+mxRender();
+
+/* ---------------- taller de herencia ---------------- */
+var STEPS = [
+  { hit: [0,1,2,3], mem: [], out: [],
+    exp: '<b>Paso 1:</b> <code>new EmpleadoBaseMasComision5(...)</code> entra al constructor de la subclase con 6 argumentos. A&uacute;n no hay <b>nada</b> en memoria: Java exige que lo <b>primero</b> que haga sea delegar en la superclase.' },
+  { hit: [4], mem: [], out: [],
+    exp: '<b>Paso 2:</b> <code>super( ... )</code> va como <b>primera instrucci&oacute;n</b> y entrega los 5 primeros argumentos al constructor de la superclase (el sexto, <code>salario</code>, es asunto de la subclase). Si la pones despu&eacute;s de otra instrucci&oacute;n &rarr; Error com&uacute;n 8.3.' },
+  { hit: [9,10,11,12,13], mem: [], out: [],
+    exp: '<b>Paso 3:</b> el control salta al constructor de la superclase. Antes de su cuerpo, la cadena sube un nivel m&aacute;s: la llamada <b>impl&iacute;cita a <code>Object()</code></b> tiene cuerpo vac&iacute;o y regresa de inmediato. El &uacute;ltimo constructor llamado es siempre el de <code>Object</code> (secc. 9.5).' },
+  { hit: [14,15,16],
+    mem: [ {n:'primerNombre',v:'"Lisa"',k:'a'}, {n:'apellidoPaterno',v:'"Jones"',k:'a'},
+           {n:'numeroSeguroSocial',v:'"555-55-5555"',k:'a'}, {n:'ventasBrutas',v:'2000.00',k:'a'},
+           {n:'tarifaComision',v:'0.06',k:'a'} ],
+    out: [],
+    exp: '<b>Paso 4:</b> el cuerpo de la superclase inicializa <b>sus</b> 5 campos (cuadros amber) y valida ventas y tarifa con sus propios m&eacute;todos <code>establecer</code>. Esos datos <b>ya son parte</b> del objeto subclase, aunque la subclase jam&aacute;s los declare.' },
+  { hit: [17], mem: [],
+    out: ['Constructor de EmpleadoPorComision4:\ncon sueldo base empleado por comision: Lisa Jones\nnumero de seguro social: 555-55-5555\nventas brutas: 2000.00\ntarifa de comision: 0.06\nsueldo base: 0.00'],
+    exp: '<b>Paso 5:</b> la superclase imprime <code>%s</code> con <code>this</code>. <code>toString()</code> se resuelve en tiempo de ejecuci&oacute;n sobre el objeto real &mdash; <i>&iexcl;es una <code>EmpleadoBaseMasComision5</code>!</i> &mdash; y <code>salarioBase</code> a&uacute;n <b>vale 0.00</b> porque el cuerpo de la subclase no ha corrido. Es el polimorfismo (cap. 10) y la raz&oacute;n del Error com&uacute;n 8.4.' },
+  { hit: [18,5],
+    mem: [ {n:'salarioBase',v:'800.00',k:'s'} ],
+    out: [],
+    exp: '<b>Paso 6:</b> el constructor de la superclase termina y el control <b>vuelve a la subclase</b>, que contin&uacute;a con <code>establecerSalarioBase( 800 )</code>. Como los campos de arriba ya est&aacute;n listos, el objeto queda consistente desde aqu&iacute; en adelante.' },
+  { hit: [6,7], mem: [],
+    out: ['Constructor de EmpleadoBaseMasComision5:\ncon sueldo base empleado por comision: Lisa Jones\nnumero de seguro social: 555-55-5555\nventas brutas: 2000.00\ntarifa de comision: 0.06\nsueldo base: 800.00'],
+    exp: '<b>Paso 7:</b> la subclase imprime su mensaje con el valor correcto y su cuerpo termina. El objeto ya existe: <b>5 campos de la superclase + 1 de la subclase</b>, todos inicializados en el orden correcto. Pulsa <b>&#8635; Reiniciar</b> para verlo otra vez.' }
+];
+
+var FICHAS = {
+  object: '<h4>Object &middot; java.lang</h4>' +
+    '<div class="row ok"><span>es</span> <b>la ra&iacute;z de toda jerarqu&iacute;a en Java</b></div>' +
+    '<div class="row ok"><span>declara</span> <b>11 m&eacute;todos</b> que heredas gratis: <code>toString()</code>, <code>equals()</code>, <code>hashCode()</code>, <code>clone()</code>, <code>getClass()</code>, <code>wait()</code>/<code>notify()</code>&hellip;</div>' +
+    '<div class="row ok"><span>constructor</span> <code>Object()</code> &mdash; cuerpo vac&iacute;o, regresa ya</div>' +
+    '<div class="row no"><span>no tiene</span> <b>superclase</b>: es la cima del &aacute;rbol (secc. 9.1)</div>',
+  sup: '<h4>EmpleadoPorComision4 &middot; superclase (fig. 9.15)</h4>' +
+    '<div class="row ok"><span>declara</span> 5 campos <b>private</b> + constructor de 5 argumentos + <code>establecer/obtener</code> + <code>ingresos()</code> + <code>toString()</code></div>' +
+    '<div class="row ok"><span>hereda de Object</span> <code>equals()</code>, <code>hashCode()</code>, <code>clone()</code>&hellip; (y <b>sobrescribe</b> <code>toString()</code>)</div>' +
+    '<div class="row ok"><span>recibe</span> a <code>EmpleadoBaseMasComision5</code> mediante <code>extends</code></div>' +
+    '<div class="row no"><span>no puede ver</span> <code>salarioBase</code>: ese campo <b>no existe</b> en esta clase</div>',
+  sub: '<h4>EmpleadoBaseMasComision5 &middot; subclase (fig. 9.16)</h4>' +
+    '<div class="row ok"><span>declara</span> campo <b>private</b> <code>salarioBase</code> + constructor de 6 argumentos + <code>establecer/obtenerSalarioBase()</code></div>' +
+    '<div class="row ok"><span>sobrescribe</span> <code>ingresos()</code> (suma el salario) y <code>toString()</code></div>' +
+    '<div class="row ok"><span>hereda</span> todos los m&eacute;todos <b>public/protected</b> de la superclase</div>' +
+    '<div class="row no"><span>no puede tocar directamente</span> <code>primerNombre</code>, <code>ventasBrutas</code>&hellip; (private) &rarr; <b>error de compilaci&oacute;n</b> (fig. 9.8)</div>'
+};
+
+function pickClass( c ) {
+  document.querySelectorAll( '.class-node' ).forEach( function( n ) {
+    n.classList.toggle( 'sel', n.dataset.cls === c );
+  } );
+  document.getElementById( 'sigFicha' ).innerHTML = FICHAS[c];
+}
+
+var si = -1;
+
+function stepFwd() { if ( si < STEPS.length - 1 ) { si++; renderSig(); } }
+function stepBack() { if ( si > -1 ) { si--; renderSig(); } }
+function stepReset() { si = -1; renderSig(); }
+
+function renderSig() {
+  /* l&iacute;neas de c&oacute;digo */
+  var executed = [], current = [];
+  for ( var s = 0; s <= si; s++ ) executed = executed.concat( STEPS[s].hit );
+  if ( si >= 0 ) current = STEPS[si].hit;
+  for ( var i = 0; i <= 18; i++ ) {
+    var el = document.getElementById( 'c' + i );
+    if ( !el ) continue;
+    el.className = 'cl' + ( current.indexOf( i ) >= 0 ? ' hit' : ( executed.indexOf( i ) >= 0 ? ' done' : '' ) );
+  }
+
+  /* memoria */
+  var mem = document.getElementById( 'sigMem' );
+  mem.querySelectorAll( '.chip' ).forEach( function( ch ) { ch.remove(); } );
+  var empty = document.getElementById( 'sigEmpty' );
+  if ( empty ) empty.style.display = ( si >= 0 ? 'none' : '' );
+  for ( var m = 0; m <= si; m++ ) {
+    STEPS[m].mem.forEach( function( c ) {
+      var chip = document.createElement( 'span' );
+      chip.className = 'chip' + ( c.k === 's' ? ' sub' : '' );
+      chip.innerHTML = '<i>' + c.n + '</i><b>' + c.v + '</b>';
+      mem.appendChild( chip );
+    } );
+  }
+
+  /* consola */
+  var out = '';
+  for ( var o = 0; o <= si; o++ ) out += STEPS[o].out.join( '\n' );
+  var consoleEl = document.getElementById( 'sigConsole' );
+  consoleEl.innerHTML = '<span class="hdr">$ java PruebaConstructores</span>\n' +
+    ( out ? out : '<span class="dim">(consola vac&iacute;a: nada se ha ejecutado a&uacute;n)</span>' );
+  consoleEl.scrollTop = consoleEl.scrollHeight;
+
+  /* explicaci&oacute;n y contador */
+  document.getElementById( 'sigExplain' ).innerHTML = ( si >= 0 )
+    ? STEPS[si].exp
+    : 'Objeto a crear: <b>empleado2</b>. Todav&iacute;a no hay nada en memoria. Pulsa <b>Paso &#9654;</b> para entrar al constructor de la subclase.';
+  document.getElementById( 'sigPos' ).innerHTML = 'paso ' + ( si + 1 ) + ' / ' + STEPS.length;
+}
+
+pickClass( 'sub' );
+renderSig();
+</script>
+</body>
+</html>
