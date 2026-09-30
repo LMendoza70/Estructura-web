@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recursividad · Estructura de Datos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12181B;
+    --surface:#1B2328;
+    --surface-raised:#212B31;
+    --teal:#5EC8B8;
+    --teal-dim:rgba(94,200,184,.14);
+    --amber:#E8A659;
+    --amber-dim:rgba(232,166,89,.14);
+    --rose:#D9776C;
+    --rose-dim:rgba(217,119,108,.14);
+    --text-hi:#EDF2F0;
+    --text-mid:#A9B7B9;
+    --text-low:#6C7A7D;
+    --border:#2C363B;
+    --serif:'Fraunces', serif;
+    --sans:'Inter', sans-serif;
+    --mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+  }
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--text-hi);
+    font-family:var(--sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--teal); outline-offset:3px;}
+
+  .wrap{max-width:1060px; margin:0 auto; padding:0 28px;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:76px 0 64px;
+    border-bottom:1px solid var(--border);
+    background:
+      radial-gradient(ellipse 900px 500px at 85% -10%, rgba(94,200,184,.09), transparent 60%);
+  }
+  .hero .wrap{display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center;}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--teal);
+    letter-spacing:.02em;
+  }
+  h1.title{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:clamp(40px,6vw,64px);
+    line-height:1.05;
+    margin:14px 0 18px;
+    color:var(--text-hi);
+  }
+  h1.title em{font-style:italic; font-weight:300; color:var(--amber);}
+  .hero-lede{
+    font-size:17px;
+    color:var(--text-mid);
+    max-width:46ch;
+  }
+  .hero-lede strong{color:var(--text-hi); font-weight:600;}
+
+  /* nested call-stack diagram */
+  .stack-diagram{display:flex; align-items:center; justify-content:center; padding:20px;}
+  .frame{
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    padding:22px 22px 16px;
+    background:var(--surface);
+    position:relative;
+  }
+  .frame + .frame, .frame .frame{margin-top:0;}
+  .frame .frame{margin:6px auto 0; width:calc(100% - 8px);}
+  .frame-label{
+    display:block;
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--text-mid);
+    margin-bottom:4px;
+  }
+  .frame.base{border-color:var(--amber); background:var(--amber-dim);}
+  .frame.base .frame-label{color:var(--amber); font-weight:600;}
+  .frame.f0 .frame-label{color:var(--teal);}
+
+  /* ---------- NAV ---------- */
+  nav.toc{
+    position:sticky; top:0; z-index:20;
+    background:rgba(18,24,27,.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);
+  }
+  nav.toc ul{
+    list-style:none; margin:0; padding:0;
+    display:flex; gap:6px; max-width:1060px; margin:0 auto; padding:0 28px;
+    overflow-x:auto;
+  }
+  nav.toc a{
+    display:block;
+    padding:16px 14px;
+    font-size:14px;
+    text-decoration:none;
+    color:var(--text-mid);
+    white-space:nowrap;
+    border-bottom:2px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  nav.toc a:hover{color:var(--text-hi);}
+  nav.toc a.active{color:var(--teal); border-bottom-color:var(--teal);}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:64px 0;}
+  section + section{border-top:1px solid var(--border);}
+  .section-head{max-width:60ch; margin-bottom:36px;}
+  h2.section-title{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:32px;
+    margin:0 0 10px;
+  }
+  .section-sub{color:var(--text-mid); font-size:15.5px;}
+
+  p{color:var(--text-mid); max-width:70ch;}
+  .lead{color:var(--text-hi); font-size:16.5px;}
+
+  .callout{
+    display:grid; grid-template-columns:1fr 1fr; gap:0;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-top:28px;
+  }
+  .callout > div{padding:26px 28px;}
+  .callout .base-case{background:var(--amber-dim); border-right:1px solid var(--border);}
+  .callout .rec-case{background:var(--teal-dim);}
+  .callout h3{
+    font-family:var(--mono); font-size:13px; text-transform:none;
+    margin:0 0 8px; font-weight:600;
+  }
+  .callout .base-case h3{color:var(--amber);}
+  .callout .rec-case h3{color:var(--teal);}
+  .callout p{color:var(--text-hi); font-size:14.5px; margin:0;}
+
+  .stack-note{
+    display:flex; gap:14px; align-items:flex-start;
+    margin-top:28px; padding:18px 20px;
+    border:1px dashed var(--border); border-radius:10px;
+    background:var(--surface);
+  }
+  .stack-note .mark{
+    font-family:var(--mono); color:var(--rose); font-size:13px; font-weight:600;
+    flex-shrink:0; padding-top:1px;
+  }
+  .stack-note p{margin:0; font-size:14.5px;}
+
+  /* tipos grid */
+  .tipos-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:16px; margin-top:8px;
+  }
+  .tipo-card{
+    border:1px solid var(--border); border-radius:10px; padding:20px;
+    background:var(--surface);
+  }
+  .tipo-card h3{
+    font-family:var(--serif); font-weight:500; font-size:18px; margin:0 0 8px; color:var(--text-hi);
+  }
+  .tipo-card p{font-size:14px; margin:0;}
+  .tipo-card .tag{
+    display:inline-block; font-family:var(--mono); font-size:11px;
+    color:var(--teal); border:1px solid var(--teal); border-radius:20px;
+    padding:2px 9px; margin-bottom:10px;
+  }
+
+  /* ejemplos */
+  .example{
+    margin-bottom:44px; border:1px solid var(--border); border-radius:12px; overflow:hidden;
+  }
+  .example-head{padding:20px 24px 4px;}
+  .example-head h3{
+    font-family:var(--serif); font-weight:500; font-size:21px; margin:0 0 4px; color:var(--text-hi);
+  }
+  .example-head .example-meta{font-family:var(--mono); font-size:12px; color:var(--amber);}
+  .example-head p{font-size:14.5px; margin:10px 0 18px;}
+  pre{
+    margin:0; padding:20px 24px; overflow-x:auto;
+    background:#0E1316; border-top:1px solid var(--border);
+  }
+  code{font-family:var(--mono); font-size:13.5px; line-height:1.65; color:var(--text-hi);}
+  .tok-keyword{color:var(--teal);}
+  .tok-comment{color:var(--text-low); font-style:italic;}
+  .tok-string{color:var(--amber);}
+  .tok-number{color:var(--rose);}
+  .example-note{
+    padding:16px 24px 22px; font-size:13.5px; color:var(--text-mid);
+    border-top:1px solid var(--border); background:var(--surface);
+  }
+  .example-note strong{color:var(--text-hi);}
+
+  /* mini tree diagram for fibonacci */
+  .tree{display:flex; flex-direction:column; align-items:center; gap:10px; padding:22px 24px; background:var(--surface); border-top:1px solid var(--border);}
+  .tree-row{display:flex; gap:18px; justify-content:center;}
+  .tree .node{
+    font-family:var(--mono); font-size:12px; padding:6px 10px;
+    border:1px solid var(--border); border-radius:6px; background:var(--ink); color:var(--text-mid);
+  }
+  .tree .node.base{border-color:var(--amber); color:var(--amber);}
+
+  /* practicas */
+  .practicas-grid{display:flex; flex-direction:column; gap:14px; margin-top:8px;}
+  .practica{
+    border:1px solid var(--border); border-left:3px solid var(--border);
+    border-radius:10px; padding:22px 24px; background:var(--surface);
+  }
+  .practica[data-nivel="1"]{border-left-color:#5EC8B8;}
+  .practica[data-nivel="2"]{border-left-color:#7BC3A6;}
+  .practica[data-nivel="3"]{border-left-color:#C9B26A;}
+  .practica[data-nivel="4"]{border-left-color:#DB9861;}
+  .practica[data-nivel="5"]{border-left-color:#D9776C;}
+  .practica-head{display:flex; align-items:baseline; gap:12px; margin-bottom:8px; flex-wrap:wrap;}
+  .practica-head .nivel{font-family:var(--mono); font-size:12px; color:var(--text-mid);}
+  .practica-head h3{font-family:var(--serif); font-weight:500; font-size:19px; margin:0; color:var(--text-hi);}
+  .practica p{font-size:14.5px; margin:6px 0 12px;}
+  .practica ul{margin:0; padding-left:20px; color:var(--text-mid); font-size:14px;}
+  .practica li{margin-bottom:4px;}
+
+  /* quiz */
+  .quiz-card{
+    max-width:640px; margin:0 auto;
+    border:1px solid var(--border); border-radius:14px; background:var(--surface);
+    padding:32px;
+  }
+  .quiz-progress{display:flex; gap:6px; margin-bottom:22px;}
+  .quiz-progress .dot{
+    height:4px; flex:1; border-radius:2px; background:var(--border); transition:background .2s ease;
+  }
+  .quiz-progress .dot.done{background:var(--teal);}
+  .quiz-progress .dot.current{background:var(--text-mid);}
+  .quiz-meta{font-family:var(--mono); font-size:12px; color:var(--text-low); margin-bottom:10px;}
+  .quiz-question{font-family:var(--serif); font-size:21px; font-weight:500; margin:0 0 22px; color:var(--text-hi);}
+  .quiz-options{display:flex; flex-direction:column; gap:10px;}
+  .quiz-option{
+    text-align:left; padding:14px 16px; border-radius:8px;
+    border:1px solid var(--border); background:var(--ink); color:var(--text-hi);
+    font-family:var(--sans); font-size:14.5px; cursor:pointer;
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .quiz-option:hover:not(:disabled){border-color:var(--text-mid);}
+  .quiz-option.correct{border-color:var(--teal); background:var(--teal-dim);}
+  .quiz-option.incorrect{border-color:var(--rose); background:var(--rose-dim);}
+  .quiz-option:disabled{cursor:default;}
+  .quiz-feedback{margin-top:18px; padding:14px 16px; border-radius:8px; background:var(--ink); font-size:14px; color:var(--text-mid); display:none;}
+  .quiz-feedback.show{display:block;}
+  .quiz-feedback strong{color:var(--text-hi);}
+  .quiz-actions{margin-top:22px; display:flex; justify-content:flex-end;}
+  .btn{
+    font-family:var(--sans); font-weight:600; font-size:14px;
+    background:var(--teal); color:#0E1316; border:none; border-radius:8px;
+    padding:11px 20px; cursor:pointer;
+  }
+  .btn:disabled{opacity:.35; cursor:default;}
+  .btn.ghost{background:transparent; border:1px solid var(--border); color:var(--text-hi);}
+  .quiz-result{text-align:center;}
+  .quiz-result .score{font-family:var(--serif); font-size:52px; font-weight:600; color:var(--text-hi); margin:6px 0;}
+  .quiz-result .score span{color:var(--teal);}
+  .quiz-result p{margin:0 auto 22px; max-width:40ch;}
+  .review-list{text-align:left; margin-top:26px; border-top:1px solid var(--border); padding-top:20px; display:flex; flex-direction:column; gap:14px;}
+  .review-item{font-size:13.5px;}
+  .review-item .q{color:var(--text-hi); font-weight:600; margin-bottom:3px;}
+  .review-item .a{color:var(--text-mid);}
+  .review-item.wrong .a{color:var(--rose);}
+  .review-item .a.correct-answer{color:var(--teal);}
+
+  footer{padding:40px 0 60px; text-align:center;}
+  footer p{margin:0; font-size:13px; color:var(--text-low);}
+
+  @media (max-width:760px){
+    .hero .wrap{grid-template-columns:1fr; gap:36px;}
+    .callout{grid-template-columns:1fr;}
+    .callout .base-case{border-right:none; border-bottom:1px solid var(--border);}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Estructura de Datos · E-ETD-2 · Unidad I</div>
+      <h1 class="title">Recursi<em>vidad</em></h1>
+      <p class="hero-lede">Una función que se llama <strong>a sí misma</strong> para resolver un problema dividiéndolo en versiones más pequeñas del mismo problema — hasta llegar a un caso tan simple que ya no necesita dividirse más.</p>
+    </div>
+    <div class="stack-diagram">
+      <div class="frame f0">
+        <span class="frame-label">factorial(4)</span>
+        <div class="frame f0">
+          <span class="frame-label">factorial(3)</span>
+          <div class="frame f0">
+            <span class="frame-label">factorial(2)</span>
+            <div class="frame f0">
+              <span class="frame-label">factorial(1)</span>
+              <div class="frame base">
+                <span class="frame-label">factorial(0) → caso base</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <ul>
+    <li><a href="#teoria">Teoría</a></li>
+    <li><a href="#tipos">Tipos</a></li>
+    <li><a href="#ejemplos">Ejemplos</a></li>
+    <li><a href="#practicas">Prácticas</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+</nav>
+
+<main class="wrap">
+
+  <!-- TEORÍA -->
+  <section id="teoria">
+    <div class="section-head">
+      <h2 class="section-title">La clase: ¿qué es y cómo se sostiene?</h2>
+      <p class="section-sub">La idea completa cabe en una frase; el resto es aprender a confiar en ella.</p>
+    </div>
+
+    <p class="lead">Piensa en dos espejos puestos uno frente al otro: cada reflejo contiene otro reflejo, cada vez más pequeño, hasta que ya no se distingue nada más. La recursividad funciona igual — cada llamada contiene una versión más pequeña del mismo problema, hasta llegar a una tan simple que se resuelve directamente, sin volver a llamarse.</p>
+
+    <p>Formalmente, la recursividad es una técnica de programación en la que una función se invoca a sí misma, de forma directa o indirecta, para resolver un problema descomponiéndolo en subproblemas del mismo tipo pero de menor tamaño. Toda función recursiva bien construida tiene exactamente dos partes:</p>
+
+    <div class="callout">
+      <div class="base-case">
+        <h3>Caso base</h3>
+        <p>La condición que detiene la recursión. Se resuelve directamente, sin volver a llamar a la función. Sin caso base — o con uno mal definido — la función se llama infinitamente.</p>
+      </div>
+      <div class="rec-case">
+        <h3>Caso recursivo</h3>
+        <p>La función se llama a sí misma con una entrada <em>más pequeña</em> o más cercana al caso base. Cada llamada debe avanzar hacia esa condición de paro, nunca alejarse de ella.</p>
+      </div>
+    </div>
+
+    <div class="stack-note">
+      <span class="mark">pila</span>
+      <p>Cada vez que una función se llama a sí misma, Java apila (<em>push</em>) esa llamada en la <strong>pila de llamadas</strong> (call stack) y la deja en espera. Cuando por fin se alcanza el caso base, las llamadas empiezan a resolverse y a desapilarse (<em>pop</em>) en orden inverso — la última que entró es la primera que sale (LIFO). Si el caso base nunca llega, la pila crece sin control y Java lanza un <code style="background:none;color:var(--rose);font-size:13px;">StackOverflowError</code>.</p>
+    </div>
+  </section>
+
+  <!-- TIPOS -->
+  <section id="tipos">
+    <div class="section-head">
+      <h2 class="section-title">Tipos de recursividad</h2>
+      <p class="section-sub">La misma idea, con cinco formas distintas de organizarse.</p>
+    </div>
+    <div class="tipos-grid">
+      <div class="tipo-card">
+        <span class="tag">directa</span>
+        <h3>Directa</h3>
+        <p>La función se llama a sí misma dentro de su propio cuerpo. Es la forma más común: <code style="background:none;color:var(--teal);">factorial(n)</code> llamando a <code style="background:none;color:var(--teal);">factorial(n-1)</code>.</p>
+      </div>
+      <div class="tipo-card">
+        <span class="tag">indirecta</span>
+        <h3>Indirecta</h3>
+        <p>Una función A llama a una función B, y B vuelve a llamar a A, cerrando el ciclo entre dos o más funciones distintas.</p>
+      </div>
+      <div class="tipo-card">
+        <span class="tag">de cola</span>
+        <h3>De cola (tail)</h3>
+        <p>La llamada recursiva es la última instrucción que se ejecuta, sin operaciones pendientes después. El resultado se acumula en un parámetro adicional.</p>
+      </div>
+      <div class="tipo-card">
+        <span class="tag">no de cola</span>
+        <h3>No de cola</h3>
+        <p>Después de recibir el resultado de la llamada recursiva, la función todavía realiza una operación con él — como multiplicar en el factorial clásico.</p>
+      </div>
+      <div class="tipo-card">
+        <span class="tag">múltiple</span>
+        <h3>Múltiple o de árbol</h3>
+        <p>La función se llama a sí misma más de una vez en el mismo cuerpo, generando un árbol de llamadas. Fibonacci y Torres de Hanoi son los ejemplos clásicos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EJEMPLOS -->
+  <section id="ejemplos">
+    <div class="section-head">
+      <h2 class="section-title">Ejemplos resueltos en Java</h2>
+      <p class="section-sub">Cinco problemas, cada uno con un tipo de recursividad distinto.</p>
+    </div>
+
+    <div class="example">
+      <div class="example-head">
+        <h3>Factorial</h3>
+        <div class="example-meta">recursividad directa · no de cola</div>
+        <p>El ejemplo canónico. El caso base evita multiplicar por números negativos; cada llamada reduce <code style="background:none;color:var(--amber);">n</code> en 1, acercándose siempre al caso base.</p>
+      </div>
+      <pre><code class="java">public class Factorial {
+
+    public static int factorial(int n) {
+        // Caso base
+        if (n == 0) {
+            return 1;
+        }
+        // Caso recursivo: se acerca al caso base
+        return n * factorial(n - 1);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(factorial(5)); // 120
+    }
+}</code></pre>
+      <div class="example-note"><strong>Nota:</strong> es "no de cola" porque después de que <code style="background:none;color:var(--amber);">factorial(n-1)</code> retorna, todavía queda pendiente la multiplicación por <code style="background:none;color:var(--amber);">n</code>.</div>
+    </div>
+
+    <div class="example">
+      <div class="example-head">
+        <h3>Fibonacci</h3>
+        <div class="example-meta">recursividad múltiple / de árbol</div>
+        <p>Dos llamadas recursivas por invocación generan un árbol de llamadas que crece exponencialmente — útil para introducir el tema de complejidad algorítmica que se retoma en la Unidad II.</p>
+      </div>
+      <pre><code class="java">public class Fibonacci {
+
+    public static int fib(int n) {
+        // Caso base doble
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        // Caso recursivo: dos llamadas
+        return fib(n - 1) + fib(n - 2);
+    }
+}</code></pre>
+      <div class="tree" aria-hidden="true">
+        <div class="tree-row"><span class="node">fib(4)</span></div>
+        <div class="tree-row"><span class="node">fib(3)</span><span class="node">fib(2)</span></div>
+        <div class="tree-row"><span class="node">fib(2)</span><span class="node">fib(1)</span><span class="node">fib(1)</span><span class="node">fib(0)</span></div>
+        <div class="tree-row"><span class="node base">fib(1)</span><span class="node base">fib(0)</span></div>
+      </div>
+      <div class="example-note"><strong>Nota:</strong> observa que <code style="background:none;color:var(--amber);">fib(2)</code> y <code style="background:none;color:var(--amber);">fib(1)</code> se recalculan varias veces — el mismo subproblema se resuelve una y otra vez. Es el punto de partida perfecto para hablar de memoización más adelante.</div>
+    </div>
+
+    <div class="example">
+      <div class="example-head">
+        <h3>Suma de un arreglo</h3>
+        <div class="example-meta">recursividad directa · conecta con arreglos</div>
+        <p>El caso base es el arreglo vacío (índice fuera de rango); cada llamada avanza una posición.</p>
+      </div>
+      <pre><code class="java">public class SumaArreglo {
+
+    public static int suma(int[] datos, int indice) {
+        // Caso base: ya no quedan elementos
+        if (indice == datos.length) {
+            return 0;
+        }
+        // Caso recursivo
+        return datos[indice] + suma(datos, indice + 1);
+    }
+
+    public static void main(String[] args) {
+        int[] numeros = {4, 8, 15, 16, 23, 42};
+        System.out.println(suma(numeros, 0)); // 108
+    }
+}</code></pre>
+    </div>
+
+    <div class="example">
+      <div class="example-head">
+        <h3>Búsqueda binaria</h3>
+        <div class="example-meta">recursividad directa · preludio a la Unidad II</div>
+        <p>Cada llamada descarta la mitad del rango de búsqueda. El caso base es "ya no queda rango" o "el elemento del medio es el buscado".</p>
+      </div>
+      <pre><code class="java">public class BusquedaBinaria {
+
+    public static int buscar(int[] arr, int objetivo, int izq, int der) {
+        if (izq > der) {
+            return -1; // Caso base: no encontrado
+        }
+        int medio = (izq + der) / 2;
+        if (arr[medio] == objetivo) {
+            return medio; // Caso base: encontrado
+        } else if (arr[medio] < objetivo) {
+            return buscar(arr, objetivo, medio + 1, der);
+        } else {
+            return buscar(arr, objetivo, izq, medio - 1);
+        }
+    }
+}</code></pre>
+    </div>
+
+    <div class="example">
+      <div class="example-head">
+        <h3>Torres de Hanoi</h3>
+        <div class="example-meta">recursividad múltiple / de árbol</div>
+        <p>Mover n discos requiere resolver dos subproblemas de n-1 discos, con un movimiento intermedio. El número mínimo de movimientos es 2<sup>n</sup> − 1.</p>
+      </div>
+      <pre><code class="java">public class TorresHanoi {
+
+    public static void mover(int n, char origen, char destino, char auxiliar) {
+        if (n == 0) {
+            return; // Caso base: no hay disco que mover
+        }
+        mover(n - 1, origen, auxiliar, destino);
+        System.out.println("Mover disco " + n + " de " + origen + " a " + destino);
+        mover(n - 1, auxiliar, destino, origen);
+    }
+
+    public static void main(String[] args) {
+        mover(3, 'A', 'C', 'B'); // 7 movimientos = 2^3 - 1
+    }
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- PRÁCTICAS -->
+  <section id="practicas">
+    <div class="section-head">
+      <h2 class="section-title">Prácticas para los estudiantes</h2>
+      <p class="section-sub">Cinco ejercicios progresivos, del nivel 1 al 5, siguiendo el mismo formato del banco de ejercicios del curso.</p>
+    </div>
+
+    <div class="practicas-grid">
+
+      <div class="practica" data-nivel="1">
+        <div class="practica-head"><span class="nivel">Nivel 1</span><h3>Potencia de un número</h3></div>
+        <p><strong>Caso de uso:</strong> una calculadora necesita elevar un número base a un exponente entero sin usar operadores de potencia ni ciclos.</p>
+        <ul>
+          <li>Implementar <code style="background:none;color:var(--teal);">int potencia(int base, int exponente)</code> de forma recursiva.</li>
+          <li>Definir con claridad el caso base (exponente 0).</li>
+          <li>No usar <code style="background:none;color:var(--teal);">for</code>, <code style="background:none;color:var(--teal);">while</code> ni <code style="background:none;color:var(--teal);">Math.pow</code>.</li>
+        </ul>
+      </div>
+
+      <div class="practica" data-nivel="2">
+        <div class="practica-head"><span class="nivel">Nivel 2</span><h3>Suma de dígitos</h3></div>
+        <p><strong>Caso de uso:</strong> un sistema de validación necesita sumar los dígitos de un número (por ejemplo, para calcular un dígito verificador).</p>
+        <ul>
+          <li>Implementar <code style="background:none;color:var(--teal);">int sumaDigitos(int n)</code> que sume los dígitos de un entero positivo.</li>
+          <li>Usar el operador módulo y división entera para separar el último dígito en cada llamada.</li>
+          <li>Identificar el caso base cuando el número se reduce a un solo dígito.</li>
+        </ul>
+      </div>
+
+      <div class="practica" data-nivel="3">
+        <div class="practica-head"><span class="nivel">Nivel 3</span><h3>Invertir una cadena</h3></div>
+        <p><strong>Caso de uso:</strong> un módulo de validación de palíndromos necesita invertir una cadena de texto antes de compararla con la original.</p>
+        <ul>
+          <li>Implementar <code style="background:none;color:var(--teal);">String invertir(String texto)</code> sin usar <code style="background:none;color:var(--teal);">StringBuilder.reverse()</code>.</li>
+          <li>El caso base es la cadena vacía o de un solo carácter.</li>
+          <li>Extra: usar el resultado para determinar si una palabra es palíndromo.</li>
+        </ul>
+      </div>
+
+      <div class="practica" data-nivel="4">
+        <div class="practica-head"><span class="nivel">Nivel 4</span><h3>Máximo común divisor</h3></div>
+        <p><strong>Caso de uso:</strong> una aplicación de fracciones necesita simplificar resultados calculando el MCD de numerador y denominador.</p>
+        <ul>
+          <li>Implementar <code style="background:none;color:var(--teal);">int mcd(int a, int b)</code> usando el algoritmo de Euclides: <code style="background:none;color:var(--teal);">mcd(a, b) = mcd(b, a % b)</code>.</li>
+          <li>El caso base ocurre cuando <code style="background:none;color:var(--teal);">b</code> es 0.</li>
+          <li>Documentar si la implementación es de cola o no de cola, y justificar por qué.</li>
+        </ul>
+      </div>
+
+      <div class="practica" data-nivel="5">
+        <div class="practica-head"><span class="nivel">Nivel 5</span><h3>Torres de Hanoi con conteo</h3></div>
+        <p><strong>Caso de uso:</strong> se necesita no solo resolver el rompecabezas de Torres de Hanoi, sino reportar cuántos movimientos totales requirió, para comparar contra la fórmula teórica.</p>
+        <ul>
+          <li>Extender el ejemplo de clase para que <code style="background:none;color:var(--teal);">mover</code> reciba un contador (por referencia, con un arreglo de tamaño 1, o retornándolo) y acumule el total de movimientos.</li>
+          <li>Comparar el resultado obtenido contra 2<sup>n</sup> − 1 para n = 3, 5 y 8 discos.</li>
+          <li>Incluir en el reporte técnico una breve reflexión sobre por qué este algoritmo crece tan rápido.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz">
+    <div class="section-head">
+      <h2 class="section-title">Quiz final</h2>
+      <p class="section-sub">Ocho preguntas para cerrar el tema. Selecciona una opción para ver la retroalimentación.</p>
+    </div>
+    <div class="quiz-card" id="quizCard"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Estructura de Datos (E-ETD-2) · Unidad I — Conceptos básicos de estructuras de datos orientadas a objetos · MTI Luis Alberto Mendoza San Juan</p>
+  </div>
+</footer>
+
+<script>
+  // ---------- syntax highlighting ----------
+  function escapeHtml(str){
+    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+  function highlightJava(code){
+    const pattern = /(\/\/.*$)|("(?:[^"\\]|\\.)*")|(\b\d+\b)|\b(public|private|protected|static|class|void|int|long|double|float|boolean|char|String|return|if|else|for|while|do|new|this|import|package|final|break|continue|switch|case)\b/gm;
+    return escapeHtml(code).replace(pattern, (match, comment, string, number, keyword) => {
+      if (comment) return '<span class="tok-comment">' + comment + '</span>';
+      if (string) return '<span class="tok-string">' + string + '</span>';
+      if (number) return '<span class="tok-number">' + number + '</span>';
+      if (keyword) return '<span class="tok-keyword">' + keyword + '</span>';
+      return match;
+    });
+  }
+  document.querySelectorAll('code.java').forEach(el => {
+    el.innerHTML = highlightJava(el.textContent);
+  });
+
+  // ---------- scroll spy ----------
+  const sections = document.querySelectorAll('main section');
+  const navLinks = document.querySelectorAll('nav.toc a');
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        navLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector('nav.toc a[href="#' + entry.target.id + '"]');
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => spy.observe(s));
+
+  // ---------- quiz ----------
+  const QUESTIONS = [
+    {
+      q: "¿Cuál es el elemento que evita que una función recursiva se llame infinitamente?",
+      options: ["El caso recursivo", "El caso base", "El valor de retorno", "El parámetro de entrada"],
+      correct: 1,
+      explain: "El caso base es la condición de paro: cuando se cumple, la función retorna directamente sin volver a llamarse."
+    },
+    {
+      q: "En factorial(n) = n * factorial(n-1), ¿qué tipo de recursividad es?",
+      options: ["De cola", "No de cola", "Indirecta", "Múltiple"],
+      correct: 1,
+      explain: "Después de que factorial(n-1) retorna, todavía queda pendiente la multiplicación por n — por eso no es de cola."
+    },
+    {
+      q: "¿Qué estructura usa internamente Java para manejar las llamadas recursivas?",
+      options: ["Una cola (FIFO)", "Un árbol binario", "Una pila (LIFO)", "Una lista enlazada"],
+      correct: 2,
+      explain: "Cada llamada se apila (push) y se desapila (pop) al retornar, siguiendo el orden LIFO — último en entrar, primero en salir."
+    },
+    {
+      q: "Si una función recursiva nunca alcanza su caso base, ¿qué error lanza Java?",
+      options: ["NullPointerException", "StackOverflowError", "ArithmeticException", "ClassCastException"],
+      correct: 1,
+      explain: "La pila de llamadas crece sin control hasta agotar la memoria disponible, y Java lanza StackOverflowError."
+    },
+    {
+      q: "Cuando la función A llama a la función B, y B vuelve a llamar a A, se trata de recursividad:",
+      options: ["Directa", "Indirecta", "De cola", "Múltiple"],
+      correct: 1,
+      explain: "La recursividad indirecta ocurre cuando dos (o más) funciones se llaman entre sí, cerrando el ciclo."
+    },
+    {
+      q: "fib(n) = fib(n-1) + fib(n-2) es un ejemplo de recursividad:",
+      options: ["De cola", "Indirecta", "Múltiple o de árbol", "Lineal simple"],
+      correct: 2,
+      explain: "Cada llamada genera dos llamadas nuevas, formando un árbol de llamadas — por eso es múltiple o de árbol."
+    },
+    {
+      q: "¿Cuántos movimientos mínimos requiere resolver Torres de Hanoi con n discos?",
+      options: ["n!", "2n", "2ⁿ − 1", "n²"],
+      correct: 2,
+      explain: "La fórmula 2ⁿ − 1 sale directamente de la recurrencia T(n) = 2·T(n-1) + 1."
+    },
+    {
+      q: "En recursión de cola, ¿qué característica tiene la llamada recursiva?",
+      options: [
+        "Es la primera instrucción de la función",
+        "Es la última instrucción, sin operaciones pendientes después",
+        "Se repite varias veces en el mismo cuerpo",
+        "Nunca alcanza un caso base"
+      ],
+      correct: 1,
+      explain: "En la recursión de cola no queda ninguna operación pendiente tras la llamada recursiva; el resultado se acumula en un parámetro."
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = new Array(QUESTIONS.length).fill(null);
+  const quizCard = document.getElementById('quizCard');
+
+  function renderQuestion(){
+    const item = QUESTIONS[current];
+    const answered = answers[current] !== null;
+
+    let dots = '';
+    for (let i = 0; i < QUESTIONS.length; i++){
+      let cls = 'dot';
+      if (i < current || (i === current && answered)) cls += ' done';
+      else if (i === current) cls += ' current';
+      dots += '<div class="' + cls + '"></div>';
+    }
+
+    let optionsHtml = '';
+    item.options.forEach((opt, i) => {
+      let cls = 'quiz-option';
+      if (answered){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answers[current]) cls += ' incorrect';
+      }
+      optionsHtml += '<button class="' + cls + '" data-i="' + i + '" ' + (answered ? 'disabled' : '') + '>' + opt + '</button>';
+    });
+
+    let feedback = '';
+    if (answered){
+      const wasCorrect = answers[current] === item.correct;
+      feedback = '<div class="quiz-feedback show"><strong>' + (wasCorrect ? '¡Correcto!' : 'No exactamente.') + '</strong> ' + item.explain + '</div>';
+    }
+
+    quizCard.innerHTML =
+      '<div class="quiz-progress">' + dots + '</div>' +
+      '<div class="quiz-meta">Pregunta ' + (current + 1) + ' de ' + QUESTIONS.length + '</div>' +
+      '<p class="quiz-question">' + item.q + '</p>' +
+      '<div class="quiz-options">' + optionsHtml + '</div>' +
+      feedback +
+      '<div class="quiz-actions"><button class="btn" id="nextBtn" ' + (answered ? '' : 'disabled') + '>' +
+        (current === QUESTIONS.length - 1 ? 'Ver resultado' : 'Siguiente') +
+      '</button></div>';
+
+    quizCard.querySelectorAll('.quiz-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.getAttribute('data-i'));
+        answers[current] = i;
+        if (i === item.correct) score++;
+        renderQuestion();
+      });
+    });
+
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.addEventListener('click', () => {
+      if (current < QUESTIONS.length - 1){
+        current++;
+        renderQuestion();
+      } else {
+        renderResult();
+      }
+    });
+  }
+
+  function renderResult(){
+    let reviewHtml = '';
+    QUESTIONS.forEach((item, i) => {
+      const wrong = answers[i] !== item.correct;
+      reviewHtml += '<div class="review-item ' + (wrong ? 'wrong' : '') + '">' +
+        '<div class="q">' + (i + 1) + '. ' + item.q + '</div>' +
+        '<div class="a">Tu respuesta: ' + item.options[answers[i]] + '</div>' +
+        (wrong ? '<div class="a correct-answer">Correcta: ' + item.options[item.correct] + '</div>' : '') +
+        '</div>';
+    });
+
+    quizCard.innerHTML =
+      '<div class="quiz-result">' +
+        '<div class="quiz-meta">Resultado</div>' +
+        '<div class="score"><span>' + score + '</span> / ' + QUESTIONS.length + '</div>' +
+        '<p>' + resultMessage(score) + '</p>' +
+        '<button class="btn ghost" id="retryBtn">Intentar de nuevo</button>' +
+        '<div class="review-list">' + reviewHtml + '</div>' +
+      '</div>';
+
+    document.getElementById('retryBtn').addEventListener('click', () => {
+      current = 0; score = 0; answers.fill(null);
+      renderQuestion();
+    });
+  }
+
+  function resultMessage(s){
+    if (s === QUESTIONS.length) return "Dominas los conceptos base de recursividad. Listo para las prácticas del nivel 4 y 5.";
+    if (s >= QUESTIONS.length - 2) return "Muy bien. Revisa las preguntas marcadas antes de pasar a las prácticas.";
+    if (s >= QUESTIONS.length / 2) return "Vas por buen camino. Repasa el caso base y los tipos de recursividad antes de seguir.";
+    return "Conviene repasar la sección de teoría antes de intentar las prácticas.";
+  }
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

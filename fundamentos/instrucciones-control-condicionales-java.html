@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instrucciones de control: condicionales en Java</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1F2B; --ink-2:#242A3B; --card:#F5F1E8; --card-line:#DED6C2;
+    --text:#E4E7ED; --text-dim:#9AA1B4; --amber:#E8A33D; --teal:#4FB0AE; --rose:#E06C75;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink); color:var(--text); font-family:'Inter',sans-serif; line-height:1.6;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
+  code,pre,.mono{font-family:'JetBrains Mono',monospace;}
+  p code,li code,.quiz-item code,.pitfall code,.key-point code,.tip code,.warn code{background:rgba(232,163,61,.12); border:1px solid rgba(232,163,61,.28); color:var(--amber); padding:.5px 5px; border-radius:4px; font-size:.86em;}
+  .wrap{max-width:900px; margin:0 auto; padding:0 24px 90px;}
+
+  /* HERO */
+  .hero{padding:56px 24px 30px; text-align:center; border-bottom:1px solid #2E3549;}
+  .hero .badge{color:var(--amber); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem; font-weight:700; margin-bottom:10px;}
+  .hero h1{font-size:1.95rem; margin:0 0 10px; color:#fff;}
+  .hero p{color:var(--text-dim); max-width:660px; margin:0 auto; font-size:.98rem;}
+  .hero .src{margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; color:var(--text-dim);}
+  .hero .src b{color:var(--teal); font-weight:500;}
+
+  /* navegación de regreso */
+  .top-nav{max-width:900px; margin:0 auto; padding:20px 24px 0;}
+  .top-nav a{display:inline-block; color:var(--teal); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:.82rem; border:1px solid #2E3549; padding:7px 13px; border-radius:6px; background:var(--ink-2); transition:border-color .15s, color .15s;}
+  .top-nav a:hover{border-color:var(--teal); color:var(--amber);}
+
+  /* NAV de saltos rápidos */
+  .nav{max-width:960px; margin:22px auto 0; padding:0 24px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .nav a{text-decoration:none; color:var(--text); background:var(--ink-2); border:1px solid #2E3549; padding:6px 13px; border-radius:16px; font-size:.76rem; font-family:'JetBrains Mono',monospace;}
+  .nav a:hover{border-color:var(--amber); color:var(--amber);}
+
+  /* PESTAÑAS */
+  .tab-picker{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:18px 0;}
+  .tab-btn{background:transparent; border:1px solid #3C4459; color:var(--text); padding:8px 16px; border-radius:20px; font-family:'JetBrains Mono',monospace; font-size:.8rem; cursor:pointer;}
+  .tab-btn.active{background:var(--amber); color:var(--ink); border-color:var(--amber); font-weight:700;}
+  /* SECCIONES */
+  section{padding:42px 0; border-bottom:1px solid #2E3549;}
+  section:last-child{border-bottom:none;}
+  .eyebrow-sm{color:var(--amber); text-transform:uppercase; font-size:.72rem; letter-spacing:.12em; font-weight:600;}
+  h2{font-size:1.45rem; margin:6px 0 14px; color:#fff;}
+  h3.sub{font-size:1.05rem; color:#fff; margin:24px 0 6px;}
+  p{font-size:.96rem; color:var(--text);}
+  .muted{color:var(--text-dim); font-size:.92rem;}
+
+  /* ANALOGÍA */
+  .analogy{background:var(--ink-2); border-left:3px solid var(--teal); padding:16px 20px; border-radius:0 8px 8px 0; margin:16px 0; color:var(--text-dim); font-size:.95rem;}
+  .analogy b{color:var(--teal);}
+
+  /* CÓDIGO */
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; overflow-x:auto; font-size:.84rem; line-height:1.55; color:#D6D9E0; margin:10px 0;}
+  .kw{color:#E8A33D;} .tp{color:#4FB0AE;} .cm{color:#6A7086;} .num{color:#E06C75;} .str{color:#E8A33D;} .an{color:#B5541A; font-weight:700;} .tv{color:#B5541A; font-weight:700;}
+  pre.out{background:#12151E; border:1px dashed #3C4459; border-radius:8px; padding:12px 16px; font-size:.82rem; color:var(--teal); margin:6px 0 14px; white-space:pre-wrap;}
+
+  /* Comparativa lado a lado */
+  .code-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:680px){.code-grid{grid-template-columns:1fr;}}
+  .code-panel{border-radius:10px; overflow:hidden; border:1px solid #2E3549;}
+  .code-panel .lbl{padding:7px 14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;}
+  .code-panel.a .lbl{background:rgba(79,176,174,.15); color:var(--teal);}
+  .code-panel.b .lbl{background:rgba(224,108,117,.15); color:var(--rose);}
+  .code-panel pre{margin:0; background:#12151E; padding:14px 16px; overflow-x:auto; font-size:.82rem; line-height:1.55; color:#D6D9E0;}
+
+  /* Grids de 2 columnas */
+  .traits,.uses{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px;}
+  @media (max-width:600px){.traits,.uses{grid-template-columns:1fr;}}
+  .traits .box,.uses .box{background:var(--ink-2); border-radius:8px; padding:16px 18px; border:1px solid #2E3549;}
+  .traits .box h3{margin:0 0 6px; font-size:1rem; color:var(--teal);}
+  .uses .box h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .traits .box p,.uses .box p{margin:0; font-size:.9rem; color:var(--text-dim);}
+
+  /* Tabla comparativa */
+  table.cmp{width:100%; border-collapse:collapse; margin-top:12px; font-size:.86rem;}
+  table.cmp th,table.cmp td{border:1px solid #2E3549; padding:9px 11px; text-align:left; vertical-align:top;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td code,table.cmp td b{color:#fff;}
+
+  /* Errores frecuentes y avisos */
+  .pitfall{display:flex; gap:12px; margin:14px 0; align-items:flex-start;}
+  .pitfall .icon{color:var(--rose); font-size:1.2rem; line-height:1.4;}
+  .pitfall .body b{color:#fff;}
+  .warn{display:flex; gap:10px; background:rgba(224,108,117,.08); border:1px solid rgba(224,108,117,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .warn .icon{color:var(--rose);}
+  .tip{display:flex; gap:10px; background:rgba(79,176,174,.08); border:1px solid rgba(79,176,174,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .tip .icon{color:var(--teal);}
+  .key-point{background:var(--ink-2); border-left:3px solid var(--rose); border-radius:0 8px 8px 0; padding:12px 16px; margin-top:14px; font-size:.88rem; color:var(--text-dim);}
+  .key-point b{color:#fff;}
+
+  /* Checklist Pareto */
+  .checklist{list-style:none; padding:0; margin:18px 0;}
+  .checklist li{display:flex; gap:10px; padding:10px 0; border-bottom:1px dashed #2E3549; font-size:.95rem;}
+  .checklist li::before{content:"\2192"; color:var(--amber); font-weight:700;}
+
+  /* Active recall */
+  .quiz-item{background:var(--ink-2); border:1px solid #2E3549; border-radius:8px; padding:16px 18px; margin-bottom:12px;}
+  .quiz-item .q{font-weight:600; color:#fff; cursor:pointer;}
+  .quiz-item .a{display:none; margin-top:10px; color:var(--text-dim); font-size:.92rem; border-top:1px dashed #3C4459; padding-top:10px;}
+  .quiz-item.open .a{display:block;}
+
+  .footer-note{color:var(--text-dim); font-size:.85rem; text-align:center; padding:48px 24px 0; border-top:1px solid #2E3549; margin-top:50px;}
+  .footer-note .name{color:#fff; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; margin-top:6px; display:block;}
+  /* SIGNATURE: mesa de decisiones */
+  .sig{max-width:960px; margin:30px auto 0; padding:0 24px;}
+  .sig-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:12px; padding:20px 22px 22px;}
+  .sig-title{font-family:'Fraunces',serif; font-size:1.2rem; color:#fff; font-weight:600;}
+  .sig-sub{color:var(--text-dim); font-size:.9rem; margin:6px 0 0;}
+  .sig-sub b{color:#fff; font-weight:600;}
+  .sig-controls{display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:center; margin-top:16px; padding:14px; background:#1B1F2B; border:1px solid #2E3549; border-radius:8px;}
+  .sig-field{display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--text-dim);}
+  .sig-field input[type=number]{width:74px; background:#12151E; border:1px solid #3C4459; color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.86rem; padding:7px 9px; border-radius:6px;}
+  .sig-field input:focus{outline:none; border-color:var(--amber);}
+  .sig-check input{accent-color:var(--amber); width:16px; height:16px;}
+  .sig-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:16px; margin-top:16px;}
+  @media (max-width:760px){.sig-grid{grid-template-columns:1fr;}}
+  .sig-code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 12px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:.8rem; line-height:1.75; color:#D6D9E0;}
+  .sim-panel{display:none;}
+  .sim-panel.active{display:block;}
+  .sim-panel .cl{display:block; white-space:pre; padding:0 8px; border-left:3px solid transparent; border-radius:0 4px 4px 0; transition:background .2s, border-color .2s, opacity .2s;}
+  .sim-panel .cl.hit{border-left-color:var(--teal); background:rgba(79,176,174,.12);}
+  .sim-panel .cl.skip{opacity:.3;}
+  .ev{display:inline-block; margin-left:10px; font-size:.68rem; padding:1px 7px; border-radius:10px; border:1px solid #3C4459; color:var(--text-dim); opacity:.28; vertical-align:middle; transition:.2s;}
+  .ev.on{opacity:1;}
+  .ev.t{background:rgba(79,176,174,.18); border-color:rgba(79,176,174,.55); color:var(--teal);}
+  .ev.f{background:rgba(224,108,117,.16); border-color:rgba(224,108,117,.55); color:var(--rose);}
+  .ev.info{background:rgba(232,163,61,.16); border-color:rgba(232,163,61,.55); color:var(--amber);}
+  .sim-console{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:12px 14px; margin:0; min-height:150px; font-family:'JetBrains Mono',monospace; font-size:.78rem; line-height:1.7; color:#D6D9E0; white-space:pre-wrap;}
+  .sim-console .dim{color:#6A7086;}
+  .sim-console .ok{color:var(--teal);}
+  .sim-console .bad{color:var(--rose);}
+  .sig-explain{background:#1B1F2B; border-left:3px solid var(--amber); border-radius:0 6px 6px 0; padding:11px 14px; font-size:.85rem; color:var(--text-dim); min-height:70px; margin-top:12px;}
+  .sig-explain b{color:var(--amber);}
+  .sig-legend{display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--text-dim);}
+  .sig-legend span{display:flex; align-items:center; gap:6px;}
+  .lg{width:11px; height:11px; border-radius:3px; display:inline-block;}
+
+  /* diagrama de actividad */
+  .diagram{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px; margin-top:16px;}
+  .diagram svg{width:100%; height:auto; display:block;}
+  .diagram .cap{margin-top:10px; font-size:.82rem; color:var(--text-dim); text-align:center;}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="../index.html">&#8592; Volver al índice · Unidad 0</a>
+</nav>
+
+<div class="hero">
+  <div class="badge">Unidad 0 · Fundamentos de programación</div>
+  <h1>Instrucciones de control: condicionales</h1>
+  <p>Las instrucciones <code>if</code>, <code>if...else</code>, <code>else if</code> y <code>switch</code>: cómo hace un programa para <b>tomar decisiones</b>, qué es el seudocódigo, por qué existe la programación estructurada y cómo se ven estas instrucciones en un diagrama de actividad UML.</p>
+  <div class="src">Base bibliográfica: <b>Deitel — Cómo programar en Java, 7ma edición</b> · Cap. 4 (pp. 113-121) · Cap. 5, secc. 5.6-5.7 (pp. 176-183)</div>
+</div>
+<div class="sig">
+  <div class="sig-zone">
+    <div class="sig-title">Mesa de decisiones · traza el flujo paso a paso</div>
+    <p class="sig-sub">Elige una estructura, pon valores y observa <b>qué condición se evalúa</b>, <b>qué rama se ejecuta</b> y <b>qué imprime Java en consola</b>. Las líneas iluminadas son las que se ejecutan; las apagadas, las que el programa ignora.</p>
+
+    <div class="tab-picker" id="simTabs">
+      <button class="tab-btn active" data-tab="if" onclick="pickSim('if')">if simple</button>
+      <button class="tab-btn" data-tab="ifelse" onclick="pickSim('ifelse')">if...else</button>
+      <button class="tab-btn" data-tab="cadena" onclick="pickSim('cadena')">cadena else if</button>
+      <button class="tab-btn" data-tab="switch" onclick="pickSim('switch')">switch</button>
+      <button class="tab-btn" data-tab="dangling" onclick="pickSim('dangling')">else suelto</button>
+    </div>
+
+    <div class="sig-controls">
+      <label class="sig-field" id="fldCal">calificacion <input type="number" id="inCal" value="85" min="-50" max="150"></label>
+      <label class="sig-field" id="fldX" style="display:none">x <input type="number" id="inX" value="7"></label>
+      <label class="sig-field" id="fldY" style="display:none">y <input type="number" id="inY" value="3"></label>
+      <label class="sig-field sig-check" id="fldBreak" style="display:none"><input type="checkbox" id="inBreak" checked> break activo</label>
+      <button onclick="runSim()">Evaluar</button>
+    </div>
+
+    <div class="sig-grid">
+      <div class="sig-code" id="sigCode">
+<div class="sim-panel active" data-mode="if">
+<div class="cl" data-id="a1"><span class="kw">if</span> ( calificacion &gt;= <span class="num">60</span> )<span class="ev" data-ev="c1"></span></div>
+<div class="cl" data-id="a2">    System.out.println( <span class="str">"Aprobado"</span> );</div>
+<div class="cl" data-id="a3">System.out.println( <span class="str">"Fin del programa"</span> );</div>
+</div>
+
+<div class="sim-panel" data-mode="ifelse">
+<div class="cl" data-id="b1"><span class="kw">if</span> ( calificacion &gt;= <span class="num">60</span> )<span class="ev" data-ev="c1"></span></div>
+<div class="cl" data-id="b2">    System.out.println( <span class="str">"Aprobado"</span> );</div>
+<div class="cl" data-id="b3"><span class="kw">else</span></div>
+<div class="cl" data-id="b4">    System.out.println( <span class="str">"Reprobado"</span> );</div>
+<div class="cl" data-id="b5">System.out.println( <span class="str">"Fin del programa"</span> );</div>
+</div>
+
+<div class="sim-panel" data-mode="cadena">
+<div class="cl" data-id="q1"><span class="kw">if</span> ( calificacion &gt;= <span class="num">90</span> )<span class="ev" data-ev="c1"></span></div>
+<div class="cl" data-id="r1">    System.out.println( <span class="str">"A"</span> );</div>
+<div class="cl" data-id="q2"><span class="kw">else if</span> ( calificacion &gt;= <span class="num">80</span> )<span class="ev" data-ev="c2"></span></div>
+<div class="cl" data-id="r2">    System.out.println( <span class="str">"B"</span> );</div>
+<div class="cl" data-id="q3"><span class="kw">else if</span> ( calificacion &gt;= <span class="num">70</span> )<span class="ev" data-ev="c3"></span></div>
+<div class="cl" data-id="r3">    System.out.println( <span class="str">"C"</span> );</div>
+<div class="cl" data-id="q4"><span class="kw">else if</span> ( calificacion &gt;= <span class="num">60</span> )<span class="ev" data-ev="c4"></span></div>
+<div class="cl" data-id="r4">    System.out.println( <span class="str">"D"</span> );</div>
+<div class="cl" data-id="q5"><span class="kw">else</span></div>
+<div class="cl" data-id="r5">    System.out.println( <span class="str">"F"</span> );</div>
+</div>
+<div class="sim-panel" data-mode="switch">
+<div class="cl" data-id="s0"><span class="kw">switch</span> ( calificacion / <span class="num">10</span> ) {<span class="ev" data-ev="c0"></span></div>
+<div class="cl" data-id="s1">    <span class="kw">case</span> <span class="num">10</span>:<span class="ev" data-ev="k10"></span></div>
+<div class="cl" data-id="s2">    <span class="kw">case</span> <span class="num">9</span>:<span class="ev" data-ev="k9"></span></div>
+<div class="cl" data-id="s3">        System.out.println( <span class="str">"A"</span> );</div>
+<div class="cl" data-id="s4">        <span class="kw">break</span>;</div>
+<div class="cl" data-id="s5">    <span class="kw">case</span> <span class="num">8</span>:<span class="ev" data-ev="k8"></span></div>
+<div class="cl" data-id="s6">        System.out.println( <span class="str">"B"</span> );</div>
+<div class="cl" data-id="s7">        <span class="kw">break</span>;</div>
+<div class="cl" data-id="s8">    <span class="kw">case</span> <span class="num">7</span>:<span class="ev" data-ev="k7"></span></div>
+<div class="cl" data-id="s9">        System.out.println( <span class="str">"C"</span> );</div>
+<div class="cl" data-id="s10">        <span class="kw">break</span>;</div>
+<div class="cl" data-id="s11">    <span class="kw">case</span> <span class="num">6</span>:<span class="ev" data-ev="k6"></span></div>
+<div class="cl" data-id="s12">        System.out.println( <span class="str">"D"</span> );</div>
+<div class="cl" data-id="s13">        <span class="kw">break</span>;</div>
+<div class="cl" data-id="s14">    <span class="kw">default</span>:<span class="ev" data-ev="kd"></span></div>
+<div class="cl" data-id="s15">        System.out.println( <span class="str">"F"</span> );</div>
+<div class="cl" data-id="s16">        <span class="kw">break</span>;</div>
+<div class="cl" data-id="s17">}</div>
+</div>
+
+<div class="sim-panel" data-mode="dangling">
+<div class="cl" data-id="d1"><span class="kw">if</span> ( x &gt; <span class="num">5</span> )<span class="ev" data-ev="c1"></span></div>
+<div class="cl" data-id="d2">    <span class="kw">if</span> ( y &gt; <span class="num">5</span> )<span class="ev" data-ev="c2"></span></div>
+<div class="cl" data-id="d3">        System.out.println( <span class="str">"x e y son &gt; 5"</span> );</div>
+<div class="cl" data-id="d4">    <span class="kw">else</span></div>
+<div class="cl" data-id="d5">        System.out.println( <span class="str">"x es &lt;= 5"</span> );</div>
+<div class="cl" data-id="d6">System.out.println( <span class="str">"Fin"</span> );</div>
+</div>
+      </div>
+
+      <div>
+        <pre class="sim-console" id="simConsole">Pulsa "Evaluar" para ver el recorrido.</pre>
+        <div class="sig-explain" id="simExplain">Cada <b>chip</b> junto a una condición muestra su resultado: <b>true</b> (verde) o <b>false</b> (rojo).</div>
+      </div>
+    </div>
+
+    <div class="sig-legend">
+      <span><i class="lg" style="background:rgba(79,176,174,.6)"></i> línea que se ejecuta</span>
+      <span><i class="lg" style="background:#3C4459"></i> línea ignorada</span>
+      <span><i class="lg" style="background:var(--amber)"></i> condición evaluada</span>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <a href="#s01">algoritmo y control</a>
+  <a href="#s02">estructuras de control</a>
+  <a href="#s03">if</a>
+  <a href="#s04">if...else</a>
+  <a href="#s05">operador ?:</a>
+  <a href="#s06">cadena else if</a>
+  <a href="#s07">else suelto</a>
+  <a href="#s08">bloques y llaves</a>
+  <a href="#s09">switch</a>
+  <a href="#s10">LibroCalificaciones</a>
+  <a href="#s11">break y continue</a>
+  <a href="#s12">función práctica</a>
+  <a href="#s13">errores frecuentes</a>
+  <a href="#s14">pareto</a>
+  <a href="#s15">quiz</a>
+</div>
+
+<div class="wrap">
+<section id="s01">
+  <div class="eyebrow-sm">01 · Del problema al programa</div>
+  <h2>Algoritmos, seudocódigo y control del programa</h2>
+
+  <p>Antes de escribir una sola línea de Java hay que entender el problema y planear cómo resolverlo. Un <b>algoritmo</b> es un procedimiento que resuelve un problema en términos de <b>1)</b> las acciones a ejecutar y <b>2)</b> el orden en que se ejecutan.</p>
+
+  <div class="analogy">
+    <b>Analogía (Feynman):</b> una receta de cocina es un algoritmo: lista de acciones (romper el huevo, batir, freír) y un orden estricto. Si inviertes el orden "romper el huevo" y "calentar el aceite" <i>misma</i> lista de acciones, el resultado cambia por completo: llegas al trabajo mojado, como el ejecutivo del libro que se viste antes de bañarse.
+  </div>
+
+  <p>Especificar el orden en que se ejecutan las instrucciones se llama <b>control del programa</b>. Por defecto, Java ejecuta las instrucciones una tras otra, en el orden en que están escritas: eso es la <b>ejecución secuencial</b>. Cuando la siguiente instrucción a ejecutar <i>no</i> es la que sigue en el texto, estamos ante una <b>transferencia de control</b> — y ahí es donde entran las instrucciones de control de este capítulo.</p>
+
+  <h3 class="sub">El seudocódigo: planear sin pelearse con la sintaxis</h3>
+  <p>El <b>seudocódigo</b> es un lenguaje informal, parecido al lenguaje cotidiano, que sirve para desarrollar algoritmos sin preocuparse por los detalles de la sintaxis de Java. <b>No se ejecuta en la computadora</b>: ayuda a "organizar" el programa antes de escribirlo. Un programa en seudocódigo bien hecho se convierte en Java casi por sustitución de líneas.</p>
+
+<pre class="code"><span class="cm">/* Seudocódigo: determinar si un estudiante aprueba */</span>
+
+Si la calificación del estudiante es mayor o igual a 60
+    Imprimir "Aprobado"
+De lo contrario
+    Imprimir "Reprobado"</pre>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>La sangría del seudocódigo es opcional, pero se recomienda: enfatiza la estructura inherente de los programas estructurados. En Java, la sangría no cambia el programa — pero sí la legibilidad.</span></div>
+
+  <p class="muted">Dato de la historia: en la década de los sesenta se identificó a la instrucción <code>goto</code> como culpable de muchos problemas de mantenimiento. Java <b>no tiene</b> <code>goto</code> (sí está reservada la palabra, por lo que no puedes usarla como identificador).</p>
+</section>
+
+<section id="s02">
+  <div class="eyebrow-sm">02 · Marco teórico</div>
+  <h2>Solo tres estructuras de control (y dos maneras de combinarlas)</h2>
+
+  <p>Las investigaciones de <b>Bohm y Jacopini</b> (1966) demostraron que <b>todos</b> los programas pueden escribirse usando únicamente tres estructuras de control. Ese resultado es la base de la <b>programación estructurada</b>: programas más claros, más fáciles de depurar y con menos errores desde el inicio.</p>
+
+  <div class="traits">
+    <div class="box"><h3>1. Secuencia</h3><p>Las instrucciones se ejecutan una tras otra, en el orden escrito. Es el comportamiento por defecto de Java.</p></div>
+    <div class="box"><h3>2. Selección</h3><p>Se elige entre dos o más caminos según el resultado de una condición: <code>if</code>, <code>if...else</code>, <code>switch</code>.</p></div>
+    <div class="box"><h3>3. Repetición</h3><p>Se ejecuta un grupo de instrucciones varias veces mientras una condición sea verdadera: <code>while</code>, <code>do...while</code>, <code>for</code>.</p></div>
+    <div class="box"><h3>Las dos combinaciones posibles</h3><p><b>Apilamiento</b> (una instrucción tras otra, punto de salida unido al punto de entrada de la siguiente) y <b>anidamiento</b> (una instrucción de control dentro de otra).</p></div>
+  </div>
+
+  <h3 class="sub">Las instrucciones de control en Java</h3>
+  <table class="cmp">
+    <thead>
+      <tr><th>Tipo</th><th>Instrucción</th><th>Qué hace</th><th>¿Dónde se ve?</th></tr>
+    </thead>
+    <tbody>
+      <tr><td rowspan="3"><b>Selección</b></td><td><code>if</code></td><td>Ejecuta una acción solo si la condición es verdadera (selección simple)</td><td>Cap. 4, secc. 4.5</td></tr>
+      <tr><td><code>if...else</code></td><td>Ejecuta una acción si es verdadera y otra distinta si es falsa (selección doble)</td><td>Cap. 4, secc. 4.6</td></tr>
+      <tr><td><code>switch</code></td><td>Elige entre varias acciones según el valor de una expresión (selección múltiple)</td><td>Cap. 5, secc. 5.6</td></tr>
+      <tr><td rowspan="3"><b>Repetición</b></td><td><code>while</code></td><td>Cero o más iteraciones mientras la condición sea verdadera</td><td>Cap. 4, secc. 4.7</td></tr>
+      <tr><td><code>do...while</code></td><td>Una o más iteraciones (siempre se ejecuta al menos una vez)</td><td>Cap. 5</td></tr>
+      <tr><td><code>for</code></td><td>Repetición controlada por un contador</td><td>Cap. 5</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>Cada instrucción de control es de <b>una sola entrada / una sola salida</b>: se conectan entre sí como bloques de construcción. Esa regla simple es la que hace posible construir programas grandes sin perder el hilo.</span></div>
+
+  <p class="muted">Las palabras <code>if</code>, <code>else</code>, <code>switch</code>, <code>while</code>, <code>do</code> y <code>for</code> son <b>palabras clave</b>: no pueden usarse como nombres de variables o métodos.</p>
+</section>
+<section id="s03">
+  <div class="eyebrow-sm">03 · Selección simple</div>
+  <h2>La instrucción if</h2>
+
+  <p>Un programa usa <b>selección</b> para elegir entre cursos de acción. La instrucción <code>if</code> realiza una acción <b>si la condición es verdadera</b> y la omite si es falsa.</p>
+
+<pre class="code"><span class="cm">/* Seudocódigo */</span>
+Si la calificación del estudiante es mayor o igual a 60
+    Imprimir "Aprobado"</pre>
+
+  <p>En Java se escribe casi igual — la condición va <b>siempre entre paréntesis</b> y se evalúa a un valor <code>boolean</code> (<code>true</code> o <code>false</code>):</p>
+
+<pre class="code"><span class="kw">if</span> ( calificacionEstudiante &gt;= <span class="num">60</span> )
+    System.out.println( <span class="str">"Aprobado"</span> );
+
+System.out.println( <span class="str">"Fin del programa"</span> );  <span class="cm">// se ejecuta SIEMPRE</span></pre>
+
+<pre class="out">Con calificacionEstudiante = 75:
+Aprobado
+Fin del programa
+
+Con calificacionEstudiante = 42:
+Fin del programa</pre>
+
+  <div class="key-point"><b>Regla clave:</b> si la condición es falsa, <b>no se ejecuta el cuerpo</b>, pero el programa <b>sigue</b> con la instrucción siguiente. El <code>if</code> nunca "detiene" el programa: solo decide si ejecuta o no ese bloque.</div>
+
+  <div class="analogy">
+    <b>Diagrama de actividad UML:</b> el rombo (diamante) es el símbolo de <b>decisión</b>. De él salen dos flechas, cada una con una <b>condición de guardia</b> entre corchetes: <code>[calificacion &gt;= 60]</code> y <code>[calificacion &lt; 60]</code>. Solo una puede ser verdadera, así que el flujo siempre toma exactamente un camino. El círculo relleno es el estado inicial y el círculo doble, el estado final.
+  </div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Un solo cuerpo:</b> sin llaves, el <code>if</code> controla <b>únicamente la instrucción siguiente</b>. Si quieres varias instrucciones, necesitas un bloque con llaves <code>{ }</code> (sección 08).</span></div>
+</section>
+
+<section id="s04">
+  <div class="eyebrow-sm">04 · Selección doble</div>
+  <h2>La instrucción if...else</h2>
+
+  <p><code>if</code> solo puede ejecutar o ignorar una acción. <b><code>if...else</code></b> permite especificar <b>una acción cuando la condición es verdadera y otra distinta cuando es falsa</b>: siempre se ejecuta exactamente una de las dos.</p>
+
+<pre class="code"><span class="kw">if</span> ( calificacion &gt;= <span class="num">60</span> )
+    System.out.println( <span class="str">"Aprobado"</span> );
+<span class="kw">else</span>
+    System.out.println( <span class="str">"Reprobado"</span> );</pre>
+
+  <div class="diagram">
+    <svg viewBox="0 0 700 250" role="img" aria-label="Diagrama de actividad de una instrucción if...else">
+      <defs>
+        <marker id="fl" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+          <path d="M0,0 L0,6.4 L7.5,3.2 z" fill="#7A8296"/>
+        </marker>
+      </defs>
+      <circle cx="34" cy="120" r="9" fill="#E8A33D"/>
+      <line x1="45" y1="120" x2="98" y2="120" stroke="#7A8296" stroke-width="1.6" marker-end="url(#fl)"/>
+      <polygon points="155,120 230,58 305,120 230,182" fill="none" stroke="#E8A33D" stroke-width="1.8"/>
+      <text x="230" y="115" fill="#E4E7ED" font-family="JetBrains Mono, monospace" font-size="12" text-anchor="middle">calificacion</text>
+      <text x="230" y="133" fill="#E4E7ED" font-family="JetBrains Mono, monospace" font-size="12" text-anchor="middle">&gt;= 60</text>
+      <path d="M230,58 L230,32 L360,32" fill="none" stroke="#7A8296" stroke-width="1.6" marker-end="url(#fl)"/>
+      <text x="270" y="25" fill="#4FB0AE" font-family="JetBrains Mono, monospace" font-size="11">[true]</text>
+      <path d="M230,182 L230,214 L360,214" fill="none" stroke="#7A8296" stroke-width="1.6" marker-end="url(#fl)"/>
+      <text x="268" y="207" fill="#E06C75" font-family="JetBrains Mono, monospace" font-size="11">[false]</text>
+      <rect x="368" y="12" width="200" height="40" rx="6" fill="#242A3B" stroke="#2E3549"/>
+      <text x="468" y="37" fill="#E4E7ED" font-family="Inter, sans-serif" font-size="13" text-anchor="middle">imprimir "Aprobado"</text>
+      <rect x="368" y="194" width="200" height="40" rx="6" fill="#242A3B" stroke="#2E3549"/>
+      <text x="468" y="219" fill="#E4E7ED" font-family="Inter, sans-serif" font-size="13" text-anchor="middle">imprimir "Reprobado"</text>
+      <path d="M574,32 L628,32 L628,120" fill="none" stroke="#7A8296" stroke-width="1.6"/>
+      <path d="M628,112 L654,118 L628,126" fill="#7A8296"/>
+      <path d="M574,214 L628,214 L628,126" fill="none" stroke="#7A8296" stroke-width="1.6" marker-end="url(#fl)"/>
+      <circle cx="642" cy="120" r="11" fill="none" stroke="#E8A33D" stroke-width="2"/>
+      <circle cx="642" cy="120" r="5" fill="#E8A33D"/>
+    </svg>
+    <div class="cap">Diagrama de actividad UML de la instrucción <code>if...else</code>: de la decisión salen dos rutas con condición de guardia y ambas convergen en el estado final.</div>
+  </div>
+
+  <h3 class="sub">Buenas prácticas de sangría</h3>
+  <ul class="checklist">
+    <li>Utiliza sangría en <b>ambos</b> cuerpos de la instrucción <code>if...else</code>.</li>
+    <li>Si hay varios niveles de sangría, en cada nivel aplica la <b>misma cantidad</b> de espacio adicional (4 espacios en Java).</li>
+    <li>Elige una convención y aplícala de forma consistente en todo el programa.</li>
+  </ul>
+</section>
+<section id="s05">
+  <div class="eyebrow-sm">05 · Azúcar sintáctico</div>
+  <h2>El operador condicional (?:)</h2>
+
+  <p>Java tiene un único <b>operador ternario</b>: uno que usa <b>tres operandos</b>. Es la forma "exprés" de un <code>if...else</code> que <i>elige uno de dos valores</i>:</p>
+
+<pre class="code"><span class="cm">// estructura:  condicion ? valor_si_true : valor_si_false</span>
+
+System.out.println( calificacionEstudiante &gt;= <span class="num">60</span> ? <span class="str">"Aprobado"</span> : <span class="str">"Reprobado"</span> );</pre>
+
+  <p>El <b>primer operando</b> (izquierda del <code>?</code>) es la expresión booleana; el <b>segundo</b> (entre <code>?</code> y <code>:</code>) es el valor si es verdadera; el <b>tercero</b> (derecha del <code>:</code>) es el valor si es falsa.</p>
+
+<pre class="code"><span class="tp">int</span> calificacion = <span class="num">72</span>;
+<span class="tp">String</span> estado = (calificacion &gt;= <span class="num">60</span>) ? <span class="str">"Aprobado"</span> : <span class="str">"Reprobado"</span>;
+
+System.out.println( estado );   <span class="cm">// Salida: Aprobado</span></pre>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Cuándo usarlo:</b> cuando sustituye a un <code>if...else</code> <b>simple</b> que solo selecciona uno de dos valores. Su precedencia es baja, así que conviene encerrar toda la expresión entre paréntesis como en el ejemplo.</span></div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Cuándo NO usarlo:</b> las expresiones condicionales son más difíciles de leer que un <code>if...else</code> con nombre propio. Si tienes varias condiciones, varios efectos secundarios o líneas anidadas de <code>?...:...</code>, escribe el <code>if...else</code> normal.</span></div>
+</section>
+
+<section id="s06">
+  <div class="eyebrow-sm">06 · Selección múltiple con if</div>
+  <h2>La cadena else if: rangos y varios casos</h2>
+
+  <p>Para evaluar varios casos se colocan instrucciones <code>if...else</code> <b>dentro de otras</b>. Tradicionalmente se escribe "escalera", y la mayoría de los programadores prefieren la forma <code>else if</code> compacta:</p>
+
+<pre class="code"><span class="tp">int</span> calificacionEstudiante = <span class="num">85</span>;
+
+<span class="kw">if</span> ( calificacionEstudiante &gt;= <span class="num">90</span> )
+    System.out.println( <span class="str">"A"</span> );
+<span class="kw">else if</span> ( calificacionEstudiante &gt;= <span class="num">80</span> )
+    System.out.println( <span class="str">"B"</span> );
+<span class="kw">else if</span> ( calificacionEstudiante &gt;= <span class="num">70</span> )
+    System.out.println( <span class="str">"C"</span> );
+<span class="kw">else if</span> ( calificacionEstudiante &gt;= <span class="num">60</span> )
+    System.out.println( <span class="str">"D"</span> );
+<span class="kw">else</span>
+    System.out.println( <span class="str">"F"</span> );</pre>
+
+  <pre class="out">Salida:
+B</pre>
+
+  <div class="key-point"><b>Por qué imprime "B" y no "A":</b> con 85, <i>las cuatro primeras condiciones serían relevantes</i>… pero solo se evalúan hasta la primera que sea verdadera. La cadena se corta: <code>calificacion &gt;= 90</code> es <code>false</code>, luego <code>&gt;= 80</code> es <code>true</code> → se ejecuta el <code>"B"</code> y <b>ya no se evalúa nada más</b>. Prueba 95 en la mesa de decisiones de arriba.</div>
+
+  <h3 class="sub">El orden importa: trampa de los rangos</h3>
+  <p>Cuando las condiciones se solapan, el orden en que las escribes decide el resultado:</p>
+
+  <div class="code-grid">
+    <div class="code-panel b">
+      <div class="lbl">Orden incorrecto</div>
+<pre><span class="kw">if</span> ( nota &gt;= <span class="num">60</span> )
+    letra = <span class="str">"D"</span>;
+<span class="kw">else if</span> ( nota &gt;= <span class="num">90</span> )
+    letra = <span class="str">"A"</span>;   <span class="cm">// ¡inalcanzable!</span>
+<span class="cm">// una nota de 95 cae en la PRIMERA</span>
+<span class="cm">// rama y nunca llega a "A"</span></pre>
+    </div>
+    <div class="code-panel a">
+      <div class="lbl">Orden correcto</div>
+<pre><span class="kw">if</span> ( nota &gt;= <span class="num">90</span> )
+    letra = <span class="str">"A"</span>;
+<span class="kw">else if</span> ( nota &gt;= <span class="num">60</span> )
+    letra = <span class="str">"D"</span>;
+<span class="cm">// de mayor a menor: el rango más</span>
+<span class="cm">// específico se evalúa primero</span></pre>
+    </div>
+  </div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Regla práctica:</b> en cadenas de rangos, ordena las condiciones de <b>la más restrictiva a la más amplia</b> (de mayor a menor). Y recuerda que <code>else</code> siempre es la red de seguridad: captura todo lo que ninguna condición anterior capturó.</span></div>
+</section>
+<section id="s07">
+  <div class="eyebrow-sm">07 · El error clásico</div>
+  <h2>El problema del else suelto (dangling else)</h2>
+
+  <p>El compilador de Java asocia cada <code>else</code> con el <code>if</code> que le <b>precede inmediatamente</b>, a menos que las llaves <code>{ }</code> digan lo contrario. Esa regla produce el famoso <b>problema del else suelto</b>.</p>
+
+  <div class="code-grid">
+    <div class="code-panel b">
+      <div class="lbl">Lo que parece decir</div>
+<pre><span class="kw">if</span> ( x &gt; <span class="num">5</span> )
+    <span class="kw">if</span> ( y &gt; <span class="num">5</span> )
+        System.out.println(
+            <span class="str">"x e y son &gt; 5"</span> );
+<span class="kw">else</span>                          <span class="cm">// ¿del primer if?</span>
+    System.out.println(
+        <span class="str">"x es &lt;= 5"</span> );</pre>
+    </div>
+    <div class="code-panel a">
+      <div class="lbl">Lo que hace el compilador</div>
+<pre><span class="kw">if</span> ( x &gt; <span class="num">5</span> )
+    <span class="kw">if</span> ( y &gt; <span class="num">5</span> )
+        System.out.println(
+            <span class="str">"x e y son &gt; 5"</span> );
+    <span class="kw">else</span>                      <span class="cm">// ¡del if</span>
+        System.out.println(   <span class="cm">// interior!</span>
+            <span class="str">"x es &lt;= 5"</span> );</pre>
+    </div>
+  </div>
+
+  <p>Veamos las consecuencias con la mesa de decisiones (pestaña <b>"else suelto"</b>): si <code>x = 7</code> y <code>y = 3</code>, el programa imprime <code>"x es &lt;= 5"</code>… <b>aunque x NO sea menor o igual a 5</b>. Y si <code>x = 3</code>, el programa no imprime nada: el <code>else</code> pertenece al <code>if</code> interior, que nunca se ejecutó porque el <code>if</code> exterior era falso.</p>
+
+  <h3 class="sub">La solución: di exactamente a qué if pertenece el else</h3>
+
+<pre class="code"><span class="kw">if</span> ( x &gt; <span class="num">5</span> )
+{
+    <span class="kw">if</span> ( y &gt; <span class="num">5</span> )
+        System.out.println( <span class="str">"x e y son &gt; 5"</span> );
+}
+<span class="kw">else</span>
+    System.out.println( <span class="str">"x es &lt;= 5"</span> );</pre>
+
+  <div class="key-point"><b>Las llaves</b> le dicen al compilador que el segundo <code>if</code> pertenece al cuerpo del primero, y que el <code>else</code> se asocia con el <code>if</code> exterior. En la mesa de decisiones compara la pestaña "else suelto" con este código: el resultado de <code>x = 7, y = 3</code> cambia.</div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>Hoy en día la mayoría de los guías de estilo recomiendan <b>usar llaves siempre</b> en todo <code>if</code> y <code>else</code>, aunque el cuerpo tenga una sola línea: elimina de raíz esta clase de errores.</span></div>
+</section>
+
+<section id="s08">
+  <div class="eyebrow-sm">08 · Bloques, llaves y puntos y coma</div>
+  <h2>Cómo agrupar varias instrucciones (y el punto y coma que arruina todo)</h2>
+
+  <p>El <code>if</code> espera <b>una sola instrucción</b> en su cuerpo. Para incluir varias, enciérralas entre llaves: a ese conjunto de instrucciones se le llama <b>bloque</b>, y puede aparecer en cualquier lugar donde quepa una instrucción individual.</p>
+
+<pre class="code"><span class="kw">if</span> ( calificacion &gt;= <span class="num">60</span> )
+    System.out.println( <span class="str">"Aprobado"</span> );
+<span class="kw">else</span>
+{
+    System.out.println( <span class="str">"Reprobado."</span> );
+    System.out.println( <span class="str">"Debe tomar este curso otra vez."</span> );
+}</pre>
+
+  <pre class="out">Con calificacion = 45:
+Reprobado.
+Debe tomar este curso otra vez.</pre>
+
+  <div class="warn"><span class="icon">&#9888;</span><span>Sin las llaves del <code>else</code>, la segunda línea quedaría <b>fuerza del cuerpo</b> y se ejecutaría <i>siempre</i>, incluso cuando el estudiante aprueba. Este es un <b>error lógico</b>: el compilador no se queja (la sintaxis es válida), pero el programa produce resultados incorrectos.</span></div>
+
+  <h3 class="sub">El punto y coma que no debería estar ahí</h3>
+
+<pre class="code"><span class="cm">// ❌ ERROR LÓGICO: ese ; convierte el cuerpo del if</span>
+<span class="cm">//    en una instrucción VACÍA</span>
+<span class="kw">if</span> ( calificacion &gt;= <span class="num">60</span> );
+    System.out.println( <span class="str">"Aprobado"</span> );  <span class="cm">// se imprime SIEMPRE</span></pre>
+
+  <div class="key-point"><b>Error común 4.2 del libro:</b> un <code>;</code> después de la condición produce un <b>error lógico</b> en el <code>if</code> simple (el cuerpo queda vacío y la instrucción siguiente se ejecuta sin condición) y un <b>error de compilación</b> cuando el <code>if...else</code> tiene una instrucción en su cuerpo (habría dos "cuerpos").</div>
+
+  <ul class="checklist">
+    <li>Usa llaves <code>{ }</code> siempre, incluso con una sola instrucción: es la defensa contra los errores lógicos silenciosos.</li>
+    <li>Si escribes las llaves de apertura y cierre <b>antes</b> del contenido, no se te olvidará cerrar el bloque.</li>
+    <li>Un <b>error de sintaxis</b> lo atrapa el compilador; un <b>error lógico</b> solo lo descubre el usuario en tiempo de ejecución.</li>
+    <li>La instrucción vacía <code>;</code> es válida en Java, pero casi nunca es lo que querías escribir.</li>
+  </ul>
+</section>
+<section id="s09">
+  <div class="eyebrow-sm">09 · Selección múltiple</div>
+  <h2>La instrucción switch</h2>
+
+  <p>Cuando hay que elegir entre <b>muchos valores exactos</b> de una misma variable, encadenar <code>if...else if</code> se vuelve tedioso. La instrucción <code>switch</code> realiza una de varias acciones distintas según el valor de una expresión entera o de carácter.</p>
+
+  <div class="traits">
+    <div class="box"><h3>Expresión de control</h3><p>Lo que va entre paréntesis después de <code>switch</code>. Se evalúa <b>una sola vez</b> y debe ser <code>byte</code>, <code>short</code>, <code>int</code>, <code>char</code> o <code>String</code> — <b>nunca</b> <code>long</code>.</p></div>
+    <div class="box"><h3>case</h3><p>Etiquetas con <b>constantes</b> (<code>case 8:</code>, <code>case 'A':</code>, <code>case "lunes":</code>). Si la expresión coincide, se ejecutan las instrucciones de ese <code>case</code>.</p></div>
+    <div class="box"><h3>break</h3><p>Sale inmediatamente del <code>switch</code>. Sin ella, la ejecución <b>continúa</b> con el <code>case</code> siguiente: es el famoso <i>fall-through</i> (o "se pasa de largo").</p></div>
+    <div class="box"><h3>default</h3><p>Se ejecuta si <b>ningún</b> <code>case</code> coincide. Es la red de seguridad: conviene incluirlo siempre.</p></div>
+  </div>
+
+<pre class="code"><span class="tp">int</span> diaSemana = <span class="num">3</span>;
+
+<span class="kw">switch</span> ( diaSemana )          <span class="cm">// expresión de control</span>
+{
+    <span class="kw">case</span> <span class="num">1</span>:
+        System.out.println( <span class="str">"Lunes"</span> );
+        <span class="kw">break</span>;                  <span class="cm">// sale del switch</span>
+    <span class="kw">case</span> <span class="num">2</span>:
+        System.out.println( <span class="str">"Martes"</span> );
+        <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="num">3</span>:
+        System.out.println( <span class="str">"Miércoles"</span> );
+        <span class="kw">break</span>;
+    <span class="kw">default</span>:
+        System.out.println( <span class="str">"Valor no válido"</span> );
+        <span class="kw">break</span>;
+}
+
+System.out.println( <span class="str">"Sigue el resto del programa"</span> );</pre>
+
+  <pre class="out">Salida con diaSemana = 3:
+Miércoles
+Sigue el resto del programa</pre>
+
+  <h3 class="sub">Varios valores, una misma acción (case consecutivos)</h3>
+  <p>Java <b>no evalúa rangos</b>: cada valor debe listarse en su propio <code>case</code>. Si dos o más <code>case</code> van seguidos sin instrucciones entre ellos, comparten las mismas líneas:</p>
+
+<pre class="code"><span class="kw">switch</span> ( calificacion / <span class="num">10</span> )   <span class="cm">// 85 / 10 = 8 (división entera)</span>
+{
+    <span class="kw">case</span> <span class="num">10</span>:                    <span class="cm">// 100, 99, 98 ... 90</span>
+    <span class="kw">case</span> <span class="num">9</span>:
+        System.out.println( <span class="str">"A"</span> );
+        <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="num">8</span>:
+        System.out.println( <span class="str">"B"</span> );
+        <span class="kw">break</span>;
+    <span class="kw">default</span>:
+        System.out.println( <span class="str">"Otro"</span> );
+}</pre>
+
+  <div class="key-point"><b>La astucia de <code>calificacion / 10</code>:</b> la división entera trunca los decimales, así que cualquier nota de 90 a 99 se convierte en <code>9</code> (y 100 queda en <code>10</code>). Ese truco convierte un <i>rango</i> en un <i>valor exacto</i> que el <code>switch</code> sí sabe comparar.</div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Error común 5.7 del libro:</b> olvidar un <code>break</code> donde hace falta. Sin él, los <code>case</code> "se pasan" al siguiente y se ejecutan acciones que no tocaban. Prueba la pestaña <b>"switch"</b> de la mesa de decisiones con <b>break desactivado</b> y calificación 85: verás imprimir B, C, D y F en la misma corrida.</span></div>
+
+  <table class="cmp">
+    <thead>
+      <tr><th>Criterio</th><th>if / else if</th><th>switch</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Qué evalúa</td><td>Cualquier expresión booleana</td><td>Comparación de igualdad contra constantes</td></tr>
+      <tr><td>Rangos</td><td>Natural: <code>nota &gt;= 60</code></td><td>No directamente; hay que enumerar o transformar el valor</td></tr>
+      <tr><td>Valores a comparar</td><td>Pocos y solapados</td><td>Muchos valores exactos, un mismo tipo</td></tr>
+      <tr><td>Ventaja</td><td>Claridad con condiciones complejas</td><td>Menos repetición y saltos directos</td></tr>
+      <tr><td>Versiones</td><td>Desde el inicio de Java</td><td><code>String</code> y <code>enum</code> desde Java 7</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Buenas prácticas:</b> coloca <code>default</code> al final; incluye <code>break</code> en todos los <code>case</code> (el del último es opcional, pero algunos lo escriben por simetría); y cada valor de un <code>case</code> debe ser una <b>constante entera</b>, un carácter (<code>'A'</code>), una constante <code>final</code> o una enumeración.</span></div>
+</section>
+<section id="s10">
+  <div class="eyebrow-sm">10 · Caso completo</div>
+  <h2>LibroCalificaciones: switch en un programa real</h2>
+
+  <p>Este es el ejemplo con el que el libro desarrolla la clase <code>LibroCalificaciones</code>: lee un número arbitrario de calificaciones, calcula el promedio y, gracias a un <code>switch</code>, cuenta cuántos estudiantes obtuvieron A, B, C, D o F.</p>
+
+  <p class="muted"><b>Parte 1 — los datos y la entrada.</b> Observa las variables de instancia (se inicializan en <code>0</code> por defecto) y el método que recibe la entrada con <code>Scanner</code>:</p>
+
+<pre class="code"><span class="an">import</span> java.util.Scanner;   <span class="cm">// el programa usa la clase Scanner</span>
+
+<span class="kw">public class</span> <span class="tp">LibroCalificaciones</span>
+{
+    <span class="kw">private</span> <span class="tp">String</span> nombreDelCurso;  <span class="cm">// curso que representa este objeto</span>
+    <span class="kw">private</span> <span class="tp">int</span> total;              <span class="cm">// suma de las calificaciones</span>
+    <span class="kw">private</span> <span class="tp">int</span> contadorCalif;      <span class="cm">// número de calificaciones leídas</span>
+    <span class="kw">private</span> <span class="tp">int</span> aCuenta;            <span class="cm">// cuenta de calificaciones A</span>
+    <span class="kw">private</span> <span class="tp">int</span> bCuenta;            <span class="cm">// cuenta de calificaciones B</span>
+    <span class="kw">private</span> <span class="tp">int</span> cCuenta;            <span class="cm">// cuenta de calificaciones C</span>
+    <span class="kw">private</span> <span class="tp">int</span> dCuenta;            <span class="cm">// cuenta de calificaciones D</span>
+    <span class="kw">private</span> <span class="tp">int</span> fCuenta;            <span class="cm">// cuenta de calificaciones F</span>
+
+    <span class="cm">// el constructor solo establece el nombre del curso;</span>
+    <span class="cm">// las variables int restantes quedan en 0 por defecto</span>
+    <span class="kw">public</span> <span class="tp">LibroCalificaciones</span>( <span class="tp">String</span> nombre )
+    {
+        nombreDelCurso = nombre;
+    }
+
+    <span class="kw">public</span> <span class="tp">void</span> establecerNombreDelCurso( <span class="tp">String</span> nombre )
+    {
+        nombreDelCurso = nombre;
+    }
+
+    <span class="kw">public</span> <span class="tp">String</span> obtenerNombreDelCurso()
+    {
+        <span class="kw">return</span> nombreDelCurso;
+    }
+
+    <span class="cm">// muestra el mensaje de bienvenida</span>
+    <span class="kw">public</span> <span class="tp">void</span> mostrarMensaje()
+    {
+        System.out.printf( <span class="str">"Bienvenido al libro de calificaciones para\n%s!\n\n"</span>,
+            obtenerNombreDelCurso() );
+    }
+
+    <span class="cm">// lee un número arbitrario de calificaciones del usuario</span>
+    <span class="kw">public</span> <span class="tp">void</span> introducirCalif()
+    {
+        Scanner entrada = <span class="kw">new</span> Scanner( System.in );
+        <span class="tp">int</span> calificacion;   <span class="cm">// calificación introducida por el usuario</span>
+
+        System.out.printf( <span class="str">"%s\n%s\n   %s\n   %s\n"</span>,
+            <span class="str">"Escriba las calificaciones enteras en el rango de 0 a 100."</span>,
+            <span class="str">"Escriba el indicador de fin de archivo para terminar la entrada:"</span>,
+            <span class="str">"En UNIX/Linux/Mac OS X escriba &lt;ctrl&gt; d y después oprima Intro"</span>,
+            <span class="str">"En Windows escriba &lt;ctrl&gt; z y después oprima Intro"</span> );
+
+        <span class="kw">while</span> ( entrada.hasNext() )   <span class="cm">// repetición controlada por centinela</span>
+        {
+            calificacion = entrada.nextInt();  <span class="cm">// lee una calificación</span>
+            total += calificacion;             <span class="cm">// la suma a total</span>
+            ++contadorCalif;                   <span class="cm">// cuenta la calificación leída</span>
+            incrementarContadorCalifLetra( calificacion );
+        }
+    }
+    <span class="cm">// suma 1 al contador apropiado para la calificación indicada.</span>
+    <span class="cm">// es un método utilitario: solo lo llama introducirCalif().</span>
+    <span class="kw">private</span> <span class="tp">void</span> incrementarContadorCalifLetra( <span class="tp">int</span> calificacion )
+    {
+        <span class="kw">switch</span> ( calificacion / <span class="num">10</span> )   <span class="cm">// expresión de control</span>
+        {
+            <span class="kw">case</span> <span class="num">10</span>:  <span class="cm">// calificación entre 90 y 100</span>
+            <span class="kw">case</span> <span class="num">9</span>:   <span class="cm">// (ambos case comparten el mismo cuerpo)</span>
+                ++aCuenta;
+                <span class="kw">break</span>;   <span class="cm">// necesaria para salir del switch</span>
+            <span class="kw">case</span> <span class="num">8</span>:   <span class="cm">// calificación entre 80 y 89</span>
+                ++bCuenta;
+                <span class="kw">break</span>;
+            <span class="kw">case</span> <span class="num">7</span>:   <span class="cm">// calificación entre 70 y 79</span>
+                ++cCuenta;
+                <span class="kw">break</span>;
+            <span class="kw">case</span> <span class="num">6</span>:   <span class="cm">// calificación entre 60 y 69</span>
+                ++dCuenta;
+                <span class="kw">break</span>;
+            <span class="kw">default</span>:  <span class="cm">// cualquier otra: calificación &lt; 60</span>
+                ++fCuenta;
+                <span class="kw">break</span>;   <span class="cm">// opcional: es el último</span>
+        }
+    }
+
+    <span class="cm">// imprime el reporte con base en las calificaciones leídas</span>
+    <span class="kw">public</span> <span class="tp">void</span> mostrarReporteCalif()
+    {
+        System.out.println( <span class="str">"\nReporte de calificaciones:"</span> );
+
+        <span class="kw">if</span> ( contadorCalif != <span class="num">0</span> )   <span class="cm">// evita la división entre cero</span>
+        {
+            <span class="tp">double</span> promedio = (<span class="tp">double</span>) total / contadorCalif;
+
+            System.out.printf( <span class="str">"El total de las %d calificaciones introducidas es %d\n"</span>,
+                contadorCalif, total );
+            System.out.printf( <span class="str">"El promedio de la clase es %.2f\n"</span>, promedio );
+            System.out.printf( <span class="str">"%s\n%s%d\n%s%d\n%s%d\n%s%d\n%s%d\n"</span>,
+                <span class="str">"Numero de estudiantes que recibieron cada calificacion:"</span>,
+                <span class="str">"A: "</span>, aCuenta,
+                <span class="str">"B: "</span>, bCuenta,
+                <span class="str">"C: "</span>, cCuenta,
+                <span class="str">"D: "</span>, dCuenta,
+                <span class="str">"F: "</span>, fCuenta );
+        }
+        <span class="kw">else</span>
+        {
+            System.out.println( <span class="str">"No se introdujeron calificaciones"</span> );
+        }
+    }
+}</pre>
+
+  <p class="muted"><b>Parte 2 — la clase que lo pone en marcha.</b> Observa que <code>PruebaLibroCalificaciones</code> <b>nunca</b> llama a <code>incrementarContadorCalifLetra</code>: es un método privado que solo se invoca desde dentro de <code>introducirCalif()</code>.</p>
+
+<pre class="code"><span class="kw">public class</span> <span class="tp">PruebaLibroCalificaciones</span>
+{
+    <span class="kw">public static void</span> main( <span class="tp">String</span> args[] )
+    {
+        <span class="cm">// crea el objeto y le pasa el nombre del curso</span>
+        LibroCalificaciones miLibroCalificaciones =
+            <span class="kw">new</span> LibroCalificaciones( <span class="str">"CS101 Introducción a la programación en Java"</span> );
+
+        miLibroCalificaciones.mostrarMensaje();       <span class="cm">// mensaje de bienvenida</span>
+        miLibroCalificaciones.introducirCalif();      <span class="cm">// lee las calificaciones</span>
+        miLibroCalificaciones.mostrarReporteCalif();  <span class="cm">// imprime el reporte</span>
+    }
+}</pre>
+
+  <pre class="out">Bienvenido al libro de calificaciones para
+CS101 Introducción a la programación en Java!
+
+Escriba las calificaciones enteras en el rango de 0 a 100.
+Escriba el indicador de fin de archivo para terminar la entrada:
+   En UNIX/Linux/Mac OS X escriba &lt;ctrl&gt; d y después oprima Intro
+   En Windows escriba &lt;ctrl&gt; z y después oprima Intro
+99
+92
+45
+57
+63
+71
+76
+85
+90
+100
+^Z
+
+Reporte de calificaciones:
+El total de las 10 calificaciones introducidas es 778
+El promedio de la clase es 77.80
+Numero de estudiantes que recibieron cada calificacion:
+A: 4
+B: 1
+C: 2
+D: 1
+F: 2</pre>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Comprueba el conteo con la mano:</b> 99, 92, 90 y 100 son A (4); 85 es B (1); 71 y 76 son C (2); 63 es D (1); 45 y 57 son F (2). ¡Coincide con la salida!</span></div>
+
+  <div class="key-point"><b>Detalle importante:</b> el promedio usa <code>(double) total / contadorCalif</code>. Sin ese cast, Java haría <b>división entera</b> y el promedio de 778 / 10 sería <code>77</code> en vez de <code>77.80</code>. Además, el <code>if (contadorCalif != 0)</code> evita la división entre cero cuando no se escribió ninguna calificación.</div>
+</section>
+<section id="s11">
+  <div class="eyebrow-sm">11 · Alterar el flujo</div>
+  <h2>Las instrucciones break y continue</h2>
+
+  <p>Además de selección y repetición, Java tiene dos instrucciones que <b>alteran el flujo de control</b>:</p>
+
+  <div class="traits">
+    <div class="box"><h3>break</h3><p>Dentro de <code>while</code>, <code>do...while</code>, <code>for</code> o <code>switch</code>, provoca la <b>salida inmediata</b> de esa instrucción. La ejecución continúa en la primera línea <i>después</i> de ella.</p></div>
+    <div class="box"><h3>continue</h3><p>Dentro de un ciclo, <b>salta al final</b> de la iteración actual y pasa a la siguiente sin ejecutar el resto del cuerpo. No sale del ciclo: lo salta una vez.</p></div>
+  </div>
+
+  <p class="muted">Java también tiene <code>break</code> y <code>continue</code> <b>etiquetados</b> para instrucciones anidadas (se tratan en el apéndice N del libro). Aquí vemos los usos básicos.</p>
+
+<pre class="code"><span class="cm">// Fig. 5.12 — salir de un ciclo for con break</span>
+<span class="kw">public class</span> <span class="tp">PruebaBreak</span>
+{
+    <span class="kw">public static void</span> main( <span class="tp">String</span> args[] )
+    {
+        <span class="tp">int</span> cuenta;   <span class="cm">// la variable de control se usa también al salir</span>
+
+        <span class="kw">for</span> ( cuenta = <span class="num">1</span>; cuenta &lt;= <span class="num">10</span>; cuenta++ )   <span class="cm">// itera 10 veces</span>
+        {
+            <span class="kw">if</span> ( cuenta == <span class="num">5</span> )   <span class="cm">// si cuenta es 5,</span>
+                <span class="kw">break</span>;             <span class="cm">// termina el ciclo</span>
+
+            System.out.printf( <span class="str">"%d "</span>, cuenta );
+        }
+
+        System.out.printf( <span class="str">"\nSalio del ciclo en cuenta = %d\n"</span>, cuenta );
+    }
+}</pre>
+
+  <pre class="out">1 2 3 4
+Salio del ciclo en cuenta = 5</pre>
+
+  <div class="key-point"><b>Lectura del ejemplo:</b> el ciclo estaba preparado para llegar a 10, pero cuando <code>cuenta</code> valió <code>5</code> el <code>break</code> sacó al programa del <code>for</code>. Por eso la última línea imprime <code>5</code> y no <code>11</code>: la variable de control se "congela" en el valor que provocó la salida.</div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Nota:</b> <code>break</code> no tiene ningún efecto dentro de un <code>if</code>. Su dominio son los ciclos y el <code>switch</code>. Si escribes <code>if (x) break;</code> dentro de un ciclo, el <code>break</code> actúa sobre el ciclo, no sobre el <code>if</code>.</span></div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Cuándo conviene:</b> <code>break</code> es ideal para "escapar" de un ciclo cuando ya se encontró lo que se buscaba (una búsqueda, una validación de datos). <code>continue</code> sirve para saltar elementos que no interesan en la iteración actual. Pero si el programa se vuelve difícil de seguir con muchas sentencias de salto, casi siempre existe una versión más clara con condiciones bien planteadas.</span></div>
+</section>
+
+<section id="s12">
+  <div class="eyebrow-sm">12 · Función práctica</div>
+  <h2>Dónde viven los condicionales en un programa real</h2>
+
+  <div class="uses">
+    <div class="box"><h3>Calificaciones y certificaciones</h3><p>Convertir un número en una letra o en un mensaje de aprobación/reprobación (el caso <code>LibroCalificaciones</code>).</p></div>
+    <div class="box"><h3>Validación de datos de entrada</h3><p>Verificar que una edad esté en rango, que un correo tenga "@" y que una contraseña cumpla la longitud mínima <b>antes</b> de procesar.</p></div>
+    <div class="box"><h3>Permisos y roles</h3><p>Decidir qué ve un usuario según su nivel: administrador, editor o visitante — casi siempre con una cadena <code>if...else if</code> o un <code>switch</code> sobre el rol.</p></div>
+    <div class="box"><h3>Menús y opciones</h3><p>Un menú de consola que lee una opción del usuario y la traduce en una acción: el caso de estudio clásico del <code>switch</code>.</p></div>
+    <div class="box"><h3>Descuentos, impuestos y envíos</h3><p>Aplicar un porcentaje distinto según el monto, la zona o el tipo de cliente. Suelen encadenarse rangos con <code>else if</code>.</p></div>
+    <div class="box"><h3>Estados de un proceso</h3><p>¿Está conectado, desconectado o reintentando? ¿El pago fue aprobado, rechazado o pendiente? Cada estado dispara una acción distinta.</p></div>
+  </div>
+
+  <div class="analogy">
+    <b>Idea para llevarse:</b> un condicional es una <b>pregunta con respuesta sí/no</b> incrustada en el código. Si tu método tiene demasiadas preguntas seguidas, probablemente estás mezclando "qué hacer" con "cuándo hacerlo" — un buen diseño separa ambas cosas.
+  </div>
+</section>
+<section id="s13">
+  <div class="eyebrow-sm">13 · Errores frecuentes</div>
+  <h2>Los tropiezos típicos de este tema</h2>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b><code>=</code> en lugar de <code>==</code> en la condición.</b> En Java, <code>=</code> es asignación y <code>==</code> es igualdad. La expresión <code>if (calificacion = 60)</code> <b>compila</b> (asigna 60 a la variable y el valor 60 se convierte en <code>true</code>), así que el error solo se nota en la lógica del programa. Casi todos los compiladores lo advierten como <i>warning</i>: léelo.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>El <code>;</code> tras la condición del <code>if</code>.</b> <code>if (x &gt; 5);</code> deja el cuerpo vacío y la instrucción siguiente se ejecuta siempre (error lógico silencioso). En un <code>if...else</code> bien formado produce un error de compilación.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>Escribir rangos como en matemáticas.</b> <code>18 &lt;= edad &lt;= 65</code> es <b>error de compilación</b> en Java: primero compara <code>18 &lt;= edad</code> (devuelve un booleano) y luego intenta comparar ese booleano con 65. La forma correcta es <code>edad &gt;= 18 &amp;&amp; edad &lt;= 65</code>.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>Condiciones redundantes.</b> <code>if (x == true)</code> o <code>if (x != false)</code> son verbosas; <code>if (x)</code> basta. Del mismo modo, <code>if (x != false)</code> <b>no</b> es lo mismo que <code>if (x)</code> cuando <code>x</code> es un número: solo los valores 1 y 0 son equivalentes, no 1 y cualquier distinto de 0.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>Olvidar las llaves en el cuerpo.</b> Si el <code>if</code> debe abarcar dos instrucciones y no le pones <code>{ }</code>, la segunda se ejecuta sin condición. El programa compila y falla lógicamente — el peor tipo de error.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b><code>switch</code> sin <code>break</code>.</b> Produce <i>fall-through</i>: se ejecutan los <code>case</code> siguientes aunque no coincidan. También olvidar que las etiquetas deben ser <b>constantes</b> (no variables) y que dos <code>case</code> con el mismo valor son un <b>error de compilación</b>.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>Comparar texto con <code>==</code>.</b> En <code>switch (cadena)</code> Java compara bien, pero en código normal <code>if (nombre == "Ana")</code> compara <i>referencias</i>, no el contenido. Para <code>String</code> usa <code>nombre.equals("Ana")</code>.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">&#9888;</div>
+    <div class="body"><b>El <code>default</code> que falta.</b> Si la entrada del usuario es inesperada y no hay <code>default</code>, el programa no hace <b>nada</b> y da la sensación de que "se quedó colgado". Inclúyelo siempre, aunque solo sea para mostrar un mensaje de error.</div>
+  </div>
+</section>
+
+<section id="s14">
+  <div class="eyebrow-sm">14 · Principio de Pareto</div>
+  <h2>El 20% que produce el 80% de los resultados</h2>
+
+  <p>Si solo pudieras repasar cinco cosas antes del examen, serían estas:</p>
+
+  <div class="code-grid">
+    <div class="code-panel a">
+      <div class="lbl">1 · La forma de toda decisión</div>
+<pre><span class="kw">if</span> ( condicion booleana )
+    instruccion;
+<span class="kw">else</span>
+    instruccion;
+
+<span class="cm">// la condición SIEMPRE entre ( )</span>
+<span class="cm">// y SIEMPRE de tipo boolean</span></pre>
+    </div>
+    <div class="code-panel a">
+      <div class="lbl">2 · El operador ternario</div>
+<pre>condicion ? valor_si_true
+          : valor_si_false
+
+<span class="cm">// atajo de if...else que</span>
+<span class="cm">// solo elige uno de dos valores</span></pre>
+    </div>
+    <div class="code-panel a">
+      <div class="lbl">3 · La cadena else if</div>
+<pre><span class="kw">if</span>      ( nota &gt;= <span class="num">90</span> ) letra = <span class="str">"A"</span>;
+<span class="kw">else if</span> ( nota &gt;= <span class="num">80</span> ) letra = <span class="str">"B"</span>;
+<span class="kw">else</span>                letra = <span class="str">"F"</span>;
+<span class="cm">// se evalúa en orden y se corta</span>
+<span class="cm">// en la primera condición cierta</span></pre>
+    </div>
+    <div class="code-panel a">
+      <div class="lbl">4 · Anatomía del switch</div>
+<pre><span class="kw">switch</span> ( expresion ) {
+   <span class="kw">case</span> cte: ...; <span class="kw">break</span>;
+   <span class="kw">default</span>: ...;  <span class="kw">break</span>;
+}
+<span class="cm">// constantes + break + default</span></pre>
+    </div>
+  </div>
+
+  <div class="key-point"><b>5 · Los tres defectos que más se repiten:</b> <code>=</code> en vez de <code>==</code>, el <code>;</code> vacío después del <code>if</code> y el <code>break</code> olvidado en el <code>switch</code>. Los tres compilan (o casi) y los tres arruinan la lógica del programa.</div>
+
+  <ul class="checklist">
+    <li><b>if</b> → selección simple; <b>if...else</b> → doble; <b>cadena else if</b> → múltiple con rangos.</li>
+    <li><b>switch</b> → múltiple con valores exactos; el truco <code>valor / 10</code> convierte rangos en casos.</li>
+    <li>Java asocia cada <code>else</code> con el <code>if</code> <b>más cercano</b>: usa llaves para dejarlo claro.</li>
+    <li><b>break</b> sale; <b>continue</b> salta a la siguiente iteración; ninguno actúa dentro de un <code>if</code> aislado.</li>
+    <li>Error de sintaxis lo detecta el compilador; error lógico lo detecta quien usa el programa.</li>
+  </ul>
+</section>
+<section id="s15">
+  <div class="eyebrow-sm">15 · Active recall</div>
+  <h2>Pon a prueba lo aprendido</h2>
+
+  <p class="muted">Responde <b>en voz alta antes de abrir</b> cada respuesta. Si dudaste, vuelve a la sección indicada.</p>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">1. Con <code>calificacion = 72</code>, ¿qué imprime la cadena <code>else if</code> de la sección 06?</div>
+    <div class="a"><p><b>"C".</b> Las condiciones se evalúan en orden: <code>&gt;= 90</code> es falsa, <code>&gt;= 80</code> es falsa, <code>&gt;= 70</code> es verdadera → se imprime <code>"C"</code> y la cadena se corta. Las ramas siguientes ya no se evalúan.</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">2. ¿Qué pasa en <code>if (x &gt; 5);</code> con <code>x = 3</code>?</div>
+    <div class="a"><p>El <code>;</code> convierte el cuerpo en una <b>instrucción vacía</b>, así que <b>siempre se ejecuta nada</b> y la instrucción siguiente corre sin ninguna condición. Con <code>x = 3</code> se imprime igual: es un <b>error lógico</b> que el compilador no detecta.</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">3. En <code>switch (calificacion / 10)</code> con <code>calificacion = 85</code>, ¿qué se imprime si <b>ningún</b> <code>break</code> está presente?</div>
+    <div class="a"><p><b>B, C, D y F.</b> La entrada cae en <code>case 8</code> y, al faltar los <code>break</code>, la ejecución se <i>desliza</i> (<i>fall-through</i>) por todos los <code>case</code> posteriores, incluido <code>default</code>. Prueba la pestaña <b>switch</b> con el checkbox "break activo" apagado.</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">4. ¿Cuál es la forma correcta de verificar que una edad está entre 18 y 65 años?</div>
+    <div class="a"><p><code>edad &gt;= 18 &amp;&amp; edad &lt;= 65</code>. La expresión <code>18 &lt;= edad &lt;= 65</code> es un <b>error de compilación</b> en Java: primero obtiene un booleano y luego intenta compararlo con 65.</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">5. Si una variable <code>int</code> tiene valor 95, ¿qué expresión permite usarla como etiqueta de un <code>switch</code> para descartar los decimales?</div>
+    <div class="a"><p><code>valor / 10</code> → <code>95 / 10 = 9</code> (división entera, trunca). Así cualquier nota de 90 a 99 se vuelve el caso <code>9</code>, y 100 produce <code>10</code>, por eso se listan <code>case 10:</code> y <code>case 9:</code> juntos.</p></div>
+  </div>
+</section>
+
+<p class="footer-note">
+  Página elaborada con base en el capítulo 4 (pp. 113-121) y la sección 5.6-5.7 (pp. 176-183) de <i>Cómo programar en Java</i>, 7ma edición, de P. J. Deitel y H. M. Deitel.
+  <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+</p>
+</div>
+<script>
+var simMode = 'if';
+var $ = function(id){ return document.getElementById(id); };
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function line(id){ return document.querySelector('.sim-panel.active .cl[data-id="'+id+'"]'); }
+function mark(id, cls){ var l = line(id); if(l) l.classList.add(cls); }
+function chip(ev, cls, text){
+  var e = document.querySelector('.sim-panel.active .ev[data-ev="'+ev+'"]');
+  if(e){ e.className = 'ev on ' + cls; e.textContent = text; }
+}
+function out(txt, cls){
+  var c = $('simConsole');
+  c.innerHTML += '<span class="' + (cls || 'dim') + '">' + esc(txt) + '</span>\n';
+}
+function say(html){ $('simExplain').innerHTML = html; }
+
+function resetPanel(){
+  var panel = document.querySelector('.sim-panel.active');
+  if(!panel) return;
+  panel.querySelectorAll('.cl').forEach(function(l){ l.classList.remove('hit','skip'); });
+  panel.querySelectorAll('.ev').forEach(function(e){ e.className = 'ev'; e.textContent = ''; });
+  $('simConsole').innerHTML = 'Pulsa "Evaluar" para ver el recorrido.';
+  say('Cada <b>chip</b> junto a una condición muestra su resultado: <b>true</b> (verde), <b>false</b> (rojo) o un aviso <b>info</b> (ámbar).');
+}
+
+function pickSim(mode){
+  simMode = mode;
+  document.querySelectorAll('#simTabs .tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === mode); });
+  document.querySelectorAll('.sim-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.mode === mode); });
+  $('fldCal').style.display   = (mode === 'dangling') ? 'none' : 'flex';
+  $('fldX').style.display     = (mode === 'dangling') ? 'flex' : 'none';
+  $('fldY').style.display     = (mode === 'dangling') ? 'flex' : 'none';
+  $('fldBreak').style.display = (mode === 'switch')   ? 'flex' : 'none';
+  resetPanel();
+}
+
+function num(el, fallback){
+  var v = parseInt(el.value, 10);
+  return isNaN(v) ? fallback : v;
+}
+
+function runIf(isElse){
+  var cal = num($('inCal'), 0);
+  var ok = cal >= 60;
+  var p = isElse ? ['b1','b2','b3','b4','b5'] : ['a1','a2','a3'];
+
+  mark(p[0], 'hit');
+  chip('c1', ok ? 't' : 'f', ok ? 'true' : 'false');
+
+  if(ok){
+    mark(p[1], 'hit');
+    out('Aprobado', 'ok');
+  } else {
+    mark(p[1], 'skip');
+    out('el cuerpo del if NO se ejecuta', 'dim');
+  }
+
+  if(isElse){
+    if(ok){ mark(p[2],'skip'); mark(p[3],'skip'); }
+    else   { mark(p[2],'hit'); mark(p[3],'hit'); out('Reprobado', 'ok'); }
+    mark(p[4], 'hit');
+  } else {
+    mark(p[2], 'hit');
+  }
+  out('Fin del programa', 'dim');
+
+  say('calificacion = <b>' + cal + '</b>, por lo que <b>calificacion &gt;= 60</b> es <b>' + ok + '</b>. '
+      + (ok ? 'Se ejecuta la rama de la condición verdadera.'
+            : (isElse ? 'La condición es falsa: se salta al <b>else</b> y se ejecuta su cuerpo.'
+                      : 'Como la condición es falsa, el cuerpo se ignora y el programa continúa.')));
+}
+
+function runCadena(){
+  var cal = num($('inCal'), 0);
+  var tests = [['q1','r1',90,'A'], ['q2','r2',80,'B'], ['q3','r3',70,'C'], ['q4','r4',60,'D']];
+  var done = false, chosen = null, trace = [];
+
+  tests.forEach(function(t, i){
+    var idc = t[0], idr = t[1], th = t[2], letra = t[3];
+    if(!done){
+      var ok = cal >= th;
+      mark(idc, 'hit');
+      chip('c' + (i+1), ok ? 't' : 'f', ok ? 'true' : 'false');
+      trace.push(cal + ' &gt;= ' + th + ' → <b>' + ok + '</b>');
+      if(ok){ mark(idr, 'hit'); out(letra, 'ok'); done = true; chosen = letra; }
+      else { mark(idr, 'skip'); }
+    } else {
+      mark(idc, 'skip'); mark(idr, 'skip');
+    }
+  });
+
+  if(done){ mark('q5','skip'); mark('r5','skip'); }
+  else    { mark('q5','hit');  mark('r5','hit');  out('F', 'ok'); chosen = 'F'; }
+
+  say('<b>Traza:</b> ' + trace.join(' · ') + ' → imprime <b>' + chosen + '</b>. '
+      + (done ? 'En cuanto una condición es true, se ejecuta su rama y <b>todas las restantes se saltan sin evaluarse</b>.'
+              : 'Ninguna condición cumplió, así que se ejecuta el <b>else</b> final.'));
+}
+
+function runSwitch(){
+  var cal = num($('inCal'), 0);
+  var d = Math.trunc(cal / 10);
+  var brk = $('inBreak').checked;
+  var entries = [
+    {labels:['s1','s2'], chips:['k10','k9'], vals:[10,9], body:['s3'], brk:'s4', txt:'A'},
+    {labels:['s5'],      chips:['k8'],       vals:[8],    body:['s6'], brk:'s7', txt:'B'},
+    {labels:['s8'],      chips:['k7'],       vals:[7],    body:['s9'], brk:'s10', txt:'C'},
+    {labels:['s11'],     chips:['k6'],       vals:[6],    body:['s12'], brk:'s13', txt:'D'},
+    {labels:['s14'],     chips:['kd'],       vals:null,   body:['s15'], brk:'s16', txt:'F'}
+  ];
+  var m = -1;
+  for(var i = 0; i < 4 && m < 0; i++){ if(entries[i].vals.indexOf(d) >= 0) m = i; }
+  if(m < 0) m = 4;
+
+  mark('s0', 'hit');
+  chip('c0', 'info', cal + '/10 = ' + d);
+  out('calificacion / 10 = ' + d + '  (división entera)', 'dim');
+
+  for(var j = 0; j < m; j++){
+    entries[j].labels.forEach(function(l){ mark(l, 'skip'); });
+    entries[j].chips.forEach(function(ch){ chip(ch, 'f', 'false'); });
+    entries[j].body.forEach(function(l){ mark(l, 'skip'); });
+    mark(entries[j].brk, 'skip');
+  }
+
+  var e = entries[m];
+  var seenMatch = false;
+  e.labels.forEach(function(l){ mark(l, 'hit'); });
+  e.chips.forEach(function(ch, idx){
+    if(m === 4){ chip(ch, 'info', 'default'); return; }
+    var v = e.vals[idx];
+    if(v === d){ chip(ch, 't', 'true'); seenMatch = true; }
+    else if(seenMatch){ chip(ch, 'info', 'no se prueba'); }
+    else { chip(ch, 'f', 'false'); }
+  });
+  e.body.forEach(function(l){ mark(l, 'hit'); });
+  out(e.txt, 'ok');
+  mark(e.brk, brk ? 'hit' : 'skip');
+
+  if(!brk){
+    for(var k = m + 1; k < 5; k++){
+      entries[k].labels.forEach(function(l){ mark(l, 'hit'); });
+      entries[k].chips.forEach(function(ch){ chip(ch, 'info', 'pasado'); });
+      entries[k].body.forEach(function(l){ mark(l, 'hit'); });
+      out(entries[k].txt, 'ok');
+      mark(entries[k].brk, 'skip');
+    }
+    out('⚠ sin break: se ejecutaron varias ramas (fall-through)', 'bad');
+  }
+  mark('s17', 'hit');
+
+  say('<b>' + cal + ' / 10 = ' + d + '</b>. '
+      + (m === 4 ? 'Ningún case coincide con ' + d + ', así que se ejecuta el <b>default</b>.'
+                 : 'El valor coincide con el <b>case ' + e.txt + '</b> de la rama indicada.')
+      + (brk ? ' El <b>break</b> detiene el switch en su primera rama.'
+             : '<b>Sin break</b> la ejecución continúa con todos los case siguientes: eso es el <i>fall-through</i>.'));
+}
+
+function runDangling(){
+  var x = num($('inX'), 0), y = num($('inY'), 0);
+  var o1 = x > 5, o2 = y > 5;
+
+  mark('d1', 'hit');
+  chip('c1', o1 ? 't' : 'f', o1 ? 'true' : 'false');
+
+  if(o1){
+    mark('d2', 'hit');
+    chip('c2', o2 ? 't' : 'f', o2 ? 'true' : 'false');
+    if(o2){ mark('d3','hit'); out('x e y son > 5', 'ok'); mark('d4','skip'); mark('d5','skip'); }
+    else   { mark('d3','skip'); mark('d4','hit'); mark('d5','hit'); out('x es <= 5', 'ok'); }
+  } else {
+    mark('d2','skip'); mark('d3','skip'); mark('d4','skip'); mark('d5','skip');
+    out('el else pertenece al if interior: nada se ejecuta aquí', 'dim');
+  }
+
+  mark('d6', 'hit');
+  out('Fin', 'dim');
+
+  say('x = <b>' + x + '</b>, y = <b>' + y + '</b>. El <b>else</b> siempre se asocia al <b>if más cercano</b>: '
+      + (o1 ? (o2 ? 'ambas condiciones son true y se ejecuta la línea interior.'
+                  : 'el if interior es false, así que su else ejecuta "x es &lt;= 5" (aunque x sí sea mayor que 5).')
+            : 'el if exterior es false, el if interior ni siquiera se evalúa y su else queda fuera de juego.'));
+}
+
+function runSim(){
+  document.querySelectorAll('.sim-panel.active .cl').forEach(function(l){ l.classList.remove('hit','skip'); });
+  document.querySelectorAll('.sim-panel.active .ev').forEach(function(e){ e.className = 'ev'; e.textContent = ''; });
+  $('simConsole').innerHTML = '';
+  if(simMode === 'if') runIf(false);
+  else if(simMode === 'ifelse') runIf(true);
+  else if(simMode === 'cadena') runCadena();
+  else if(simMode === 'switch') runSwitch();
+  else runDangling();
+}
+</script>
+</body>
+</html>

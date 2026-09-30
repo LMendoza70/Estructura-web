@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java vs C# — Diferencias de sintaxis (Consola y POO)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1F2B; --ink-2:#242A3B; --card:#F5F1E8; --card-line:#DED6C2;
+    --text:#E4E7ED; --text-dim:#9AA1B4; --amber:#E8A33D; --teal:#4FB0AE; --rose:#E06C75;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink); color:var(--text); font-family:'Inter',sans-serif; line-height:1.6;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
+  code,pre,.mono{font-family:'JetBrains Mono',monospace;}
+  .wrap{max-width:960px; margin:0 auto; padding:0 24px 90px;}
+
+  .hero{padding:56px 24px 30px; text-align:center; border-bottom:1px solid #2E3549;}
+  .hero .badge{color:var(--amber); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem; font-weight:700; margin-bottom:10px;}
+  .hero h1{font-size:1.9rem; margin:0 0 10px; color:#fff;}
+  .hero p{color:var(--text-dim); max-width:640px; margin:0 auto; font-size:.98rem;}
+  .legend{display:flex; gap:18px; justify-content:center; margin-top:18px; font-family:'JetBrains Mono',monospace; font-size:.8rem;}
+  .legend span{display:flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+  .dot.java{background:var(--teal);} .dot.csharp{background:var(--amber);}
+
+  .nav{max-width:960px; margin:26px auto 0; padding:0 24px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .nav a{ text-decoration:none; color:var(--text); background:var(--ink-2); border:1px solid #2E3549; padding:6px 13px; border-radius:16px; font-size:.76rem; font-family:'JetBrains Mono',monospace; }
+  .nav a:hover{border-color:var(--amber); color:var(--amber);}
+
+  .diff{max-width:960px; margin:0 auto; padding:40px 24px 0; border-top:1px solid #2E3549;}
+  .diff-head{display:flex; align-items:baseline; gap:10px; margin-bottom:6px; flex-wrap:wrap;}
+  .diff-num{color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.85rem; font-weight:700;}
+  .diff h2{font-size:1.28rem; margin:0; color:#fff;}
+  .diff-note{color:var(--text-dim); font-size:.92rem; margin:8px 0 18px; max-width:760px;}
+
+  .code-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:680px){.code-grid{grid-template-columns:1fr;}}
+  .code-panel{border-radius:10px; overflow:hidden; border:1px solid #2E3549;}
+  .code-panel .lbl{
+    padding:7px 14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:.06em;
+  }
+  .code-panel.java .lbl{background:rgba(79,176,174,.15); color:var(--teal);}
+  .code-panel.csharp .lbl{background:rgba(232,163,61,.15); color:var(--amber);}
+  .code-panel pre{margin:0; background:#12151E; padding:14px 16px; overflow-x:auto; font-size:.82rem; color:#D6D9E0;}
+  .kw{color:#E8A33D;} .tp{color:#4FB0AE;} .cm{color:#6A7086;} .num{color:#E06C75;} .str{color:#E8A33D;} .an{color:#B5541A;}
+
+  .key-point{
+    background:var(--ink-2); border-left:3px solid var(--rose); border-radius:0 8px 8px 0;
+    padding:12px 16px; margin-top:14px; font-size:.88rem; color:var(--text-dim);
+  }
+  .key-point b{color:#fff;}
+
+  .footer-note{color:var(--text-dim); font-size:.85rem; text-align:center; padding:48px 24px 0; border-top:1px solid #2E3549; margin-top:50px;}
+  .footer-note .name{color:#fff; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">Referencia comparativa · POO en consola</div>
+  <h1>Java vs C#: diferencias de sintaxis</h1>
+  <p>Catorce diferencias clave para trabajar aplicaciones de consola orientadas a objetos, con el código exacto lado a lado — pensada para quien ya conoce uno de los dos lenguajes y necesita ubicarse rápido en el otro.</p>
+  <div class="legend">
+    <span><span class="dot java"></span> Java</span>
+    <span><span class="dot csharp"></span> C#</span>
+  </div>
+</div>
+
+<div class="nav">
+  <a href="#main">Punto de entrada</a>
+  <a href="#imprimir">Imprimir</a>
+  <a href="#leer">Leer entrada</a>
+  <a href="#namespace">Paquetes / namespaces</a>
+  <a href="#clases">Clases y modificadores</a>
+  <a href="#propiedades">Propiedades</a>
+  <a href="#constructores">Constructores</a>
+  <a href="#herencia">Herencia</a>
+  <a href="#interfaces">Interfaces</a>
+  <a href="#colecciones">Colecciones genéricas</a>
+  <a href="#cadenas">Formato de cadenas</a>
+  <a href="#excepciones">Excepciones</a>
+  <a href="#constantes">Constantes</a>
+  <a href="#igualdad">Igualdad</a>
+</div>
+
+<!-- 1 -->
+<div class="diff" id="main">
+  <div class="diff-head"><span class="diff-num">01</span><h2>Punto de entrada del programa</h2></div>
+  <p class="diff-note">Ambos lenguajes exigen un método <code>Main</code> como punto de arranque, pero difieren en la capitalización del nombre del método y en si es obligatorio envolverlo en una clase.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="kw">public class</span> Programa {
+    <span class="cm">// "main" en minúscula: exacto, Java distingue mayúsculas/minúsculas</span>
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        System.out.println(<span class="str">"Inicio"</span>);
+    }
+}</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="kw">class</span> Programa
+{
+    <span class="cm">// "Main" con M mayúscula</span>
+    <span class="kw">static void</span> Main(<span class="tp">string</span>[] args)
+    {
+        Console.WriteLine(<span class="str">"Inicio"</span>);
+    }
+}
+<span class="cm">// C# moderno también permite "top-level statements":
+// un archivo .cs sin clase ni Main explícito, solo el código directo.</span></pre></div>
+  </div>
+</div>
+
+<!-- 2 -->
+<div class="diff" id="imprimir">
+  <div class="diff-head"><span class="diff-num">02</span><h2>Imprimir en consola</h2></div>
+  <p class="diff-note">La clase y el método cambian de nombre, pero el comportamiento (con o sin salto de línea) es equivalente.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre>System.out.println(<span class="str">"Con salto de línea"</span>);
+System.out.print(<span class="str">"Sin salto de línea"</span>);
+System.out.printf(<span class="str">"Nombre: %s, edad: %d%n"</span>, nombre, edad);</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre>Console.WriteLine(<span class="str">"Con salto de línea"</span>);
+Console.Write(<span class="str">"Sin salto de línea"</span>);
+Console.WriteLine(<span class="str">$"Nombre: {nombre}, edad: {edad}"</span>);</pre></div>
+  </div>
+</div>
+
+<!-- 3 -->
+<div class="diff" id="leer">
+  <div class="diff-head"><span class="diff-num">03</span><h2>Leer entrada del usuario</h2></div>
+  <p class="diff-note">Java necesita instanciar un objeto <code>Scanner</code> explícitamente; C# lee directo desde la clase estática <code>Console</code>.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="kw">import</span> java.util.Scanner;
+
+Scanner entrada = <span class="kw">new</span> Scanner(System.in);
+System.out.print(<span class="str">"Nombre: "</span>);
+<span class="tp">String</span> nombre = entrada.nextLine();
+System.out.print(<span class="str">"Edad: "</span>);
+<span class="tp">int</span> edad = entrada.nextInt();   <span class="cm">// hay que convertir según el tipo</span></pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre>Console.Write(<span class="str">"Nombre: "</span>);
+<span class="tp">string</span> nombre = Console.ReadLine();
+Console.Write(<span class="str">"Edad: "</span>);
+<span class="tp">int</span> edad = <span class="tp">int</span>.Parse(Console.ReadLine());  <span class="cm">// ReadLine siempre da string</span></pre></div>
+  </div>
+  <div class="key-point">En C#, <code>Console.ReadLine()</code> siempre devuelve <code>string</code>; conviertes tú mismo con <code>int.Parse</code> o <code>int.TryParse</code>. En Java, <code>Scanner</code> ofrece un método específico por tipo (<code>nextInt()</code>, <code>nextDouble()</code>...).</div>
+</div>
+
+<!-- 4 -->
+<div class="diff" id="namespace">
+  <div class="diff-head"><span class="diff-num">04</span><h2>Paquetes vs espacios de nombres</h2></div>
+  <p class="diff-note">Java organiza el código en <b>paquetes</b> que reflejan la estructura de carpetas; C# usa <b>namespaces</b>, que son lógicos y no dependen de dónde esté físicamente el archivo.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="cm">// Debe coincidir con la ruta de carpetas: com/uthh/edd/unidad1</span>
+<span class="kw">package</span> com.uthh.edd.unidad1;
+
+<span class="kw">import</span> java.util.List;
+<span class="kw">import</span> java.util.ArrayList;</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="cm">// No depende de la carpeta física del archivo</span>
+<span class="kw">namespace</span> Uthh.Edd.Unidad1;
+
+<span class="kw">using</span> System.Collections.Generic;</pre></div>
+  </div>
+</div>
+
+<!-- 5 -->
+<div class="diff" id="clases">
+  <div class="diff-head"><span class="diff-num">05</span><h2>Declaración de clases y modificadores de acceso</h2></div>
+  <p class="diff-note">La sintaxis de la clase es casi idéntica; la diferencia importante está en el modificador de acceso <b>por defecto</b> cuando no escribes ninguno.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="kw">public class</span> Empleado {
+    <span class="kw">private</span> <span class="tp">String</span> nombre;   <span class="cm">// solo esta clase</span>
+    <span class="tp">double</span> salario;             <span class="cm">// sin modificador = "package-private":
+                                 // visible solo dentro del mismo paquete</span>
+    <span class="kw">protected</span> <span class="tp">int</span> antiguedad; <span class="cm">// clase + subclases (incluso en otro paquete)</span>
+    <span class="kw">public</span> <span class="tp">String</span> puesto;
+}</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="kw">public class</span> Empleado
+{
+    <span class="kw">private</span> <span class="tp">string</span> nombre;      <span class="cm">// solo esta clase</span>
+    <span class="tp">double</span> salario;                <span class="cm">// sin modificador = "private" por defecto
+                                    // (distinto a Java: aquí NO es visible
+                                    // ni siquiera para otras clases del mismo namespace)</span>
+    <span class="kw">protected</span> <span class="tp">int</span> antiguedad;
+    <span class="kw">internal</span> <span class="tp">string</span> puesto;    <span class="cm">// visible en todo el mismo ensamblado (.dll/.exe);
+                                    // no tiene equivalente directo en Java</span>
+}</pre></div>
+  </div>
+  <div class="key-point"><b>Cuidado con el default:</b> un miembro sin modificador en Java es visible para todo el paquete; en C# es <code>private</code>, el más restrictivo. Es la trampa más común al cambiar de lenguaje.</div>
+</div>
+
+<!-- 6 -->
+<div class="diff" id="propiedades">
+  <div class="diff-head"><span class="diff-num">06</span><h2>Propiedades automáticas vs getters/setters</h2></div>
+  <p class="diff-note">C# tiene sintaxis nativa de "propiedades"; Java no — el patrón getter/setter se escribe siempre a mano (o se genera con el IDE).</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="kw">public class</span> Producto {
+    <span class="kw">private</span> <span class="tp">double</span> precio;
+
+    <span class="kw">public</span> <span class="tp">double</span> getPrecio() {
+        <span class="kw">return</span> precio;
+    }
+    <span class="kw">public void</span> setPrecio(<span class="tp">double</span> precio) {
+        <span class="kw">if</span> (precio < <span class="num">0</span>) <span class="kw">throw new</span> IllegalArgumentException();
+        <span class="kw">this</span>.precio = precio;
+    }
+}</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="kw">public class</span> Producto
+{
+    <span class="cm">// Propiedad automática simple</span>
+    <span class="kw">public</span> <span class="tp">string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="cm">// Propiedad con lógica personalizada (equivalente al getter/setter de Java)</span>
+    <span class="kw">private</span> <span class="tp">double</span> _precio;
+    <span class="kw">public</span> <span class="tp">double</span> Precio
+    {
+        <span class="kw">get</span> => _precio;
+        <span class="kw">set</span>
+        {
+            <span class="kw">if</span> (value < <span class="num">0</span>) <span class="kw">throw new</span> ArgumentException();
+            _precio = value;
+        }
+    }
+}</pre></div>
+  </div>
+</div>
+
+<!-- 7 -->
+<div class="diff" id="constructores">
+  <div class="diff-head"><span class="diff-num">07</span><h2>Constructores y llamada al constructor de la clase padre</h2></div>
+  <p class="diff-note">Misma idea, distinta palabra clave para invocar al constructor de la superclase: <code>super()</code> en Java, <code>base()</code> en C#.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="kw">public class</span> Persona {
+    <span class="kw">protected</span> <span class="tp">String</span> nombre;
+    <span class="kw">public</span> Persona(<span class="tp">String</span> nombre) { <span class="kw">this</span>.nombre = nombre; }
+}
+
+<span class="kw">public class</span> Empleado <span class="kw">extends</span> Persona {
+    <span class="kw">private</span> <span class="tp">double</span> salario;
+    <span class="kw">public</span> Empleado(<span class="tp">String</span> nombre, <span class="tp">double</span> salario) {
+        <span class="kw">super</span>(nombre);         <span class="cm">// llama al constructor de Persona</span>
+        <span class="kw">this</span>.salario = salario;
+    }
+}</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="kw">public class</span> Persona
+{
+    <span class="kw">protected</span> <span class="tp">string</span> Nombre;
+    <span class="kw">public</span> Persona(<span class="tp">string</span> nombre) { Nombre = nombre; }
+}
+
+<span class="kw">public class</span> Empleado : Persona
+{
+    <span class="kw">private</span> <span class="tp">double</span> salario;
+    <span class="kw">public</span> Empleado(<span class="tp">string</span> nombre, <span class="tp">double</span> salario)
+        : <span class="kw">base</span>(nombre)          <span class="cm">// llama al constructor de Persona</span>
+    {
+        salario = salario;
+    }
+}</pre></div>
+  </div>
+</div>
+
+<!-- 8 -->
+<div class="diff" id="herencia">
+  <div class="diff-head"><span class="diff-num">08</span><h2>Herencia y sobrescritura de métodos</h2></div>
+  <p class="diff-note">Java permite sobrescribir cualquier método no <code>final</code> por defecto. C# exige que el método padre se declare explícitamente <code>virtual</code> para poder sobrescribirlo con <code>override</code>.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="kw">public class</span> Figura {
+    <span class="kw">public</span> <span class="tp">double</span> calcularArea() { <span class="kw">return</span> <span class="num">0</span>; }
+}
+
+<span class="kw">public class</span> Circulo <span class="kw">extends</span> Figura {
+    <span class="kw">private</span> <span class="tp">double</span> radio;
+
+    <span class="an">@Override</span>   <span class="cm">// anotación: opcional pero muy recomendada</span>
+    <span class="kw">public</span> <span class="tp">double</span> calcularArea() {
+        <span class="kw">return</span> Math.PI * radio * radio;
+    }
+}</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="kw">public class</span> Figura
+{
+    <span class="cm">// SIN "virtual" aquí, Circulo NO podría sobrescribir este método</span>
+    <span class="kw">public virtual</span> <span class="tp">double</span> CalcularArea() { <span class="kw">return</span> <span class="num">0</span>; }
+}
+
+<span class="kw">public class</span> Circulo : Figura
+{
+    <span class="kw">private</span> <span class="tp">double</span> radio;
+
+    <span class="kw">public override</span> <span class="tp">double</span> CalcularArea()   <span class="cm">// "override" es obligatorio, no opcional</span>
+    {
+        <span class="kw">return</span> Math.PI * radio * radio;
+    }
+}</pre></div>
+  </div>
+  <div class="key-point"><b>La diferencia real:</b> en Java, "se puede sobrescribir" es el comportamiento por defecto (a menos que marques <code>final</code>). En C#, "no se puede sobrescribir" es el default, y tienes que habilitarlo explícitamente con <code>virtual</code> + <code>override</code>.</div>
+</div>
+
+<!-- 9 -->
+<div class="diff" id="interfaces">
+  <div class="diff-head"><span class="diff-num">09</span><h2>Interfaces</h2></div>
+  <p class="diff-note">Java usa una palabra clave distinta para heredar de una clase (<code>extends</code>) e implementar una interfaz (<code>implements</code>). C# unifica ambas bajo el mismo símbolo <code>:</code>.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="kw">public interface</span> Imprimible {
+    <span class="kw">void</span> imprimir();
+}
+
+<span class="kw">public class</span> Factura <span class="kw">implements</span> Imprimible {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> imprimir() {
+        System.out.println(<span class="str">"Factura impresa"</span>);
+    }
+}</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="kw">public interface</span> IImprimible
+{
+    <span class="kw">void</span> Imprimir();
+}
+
+<span class="kw">public class</span> Factura : IImprimible   <span class="cm">// mismo ":" que se usa para heredar de una clase</span>
+{
+    <span class="kw">public void</span> Imprimir()
+    {
+        Console.WriteLine(<span class="str">"Factura impresa"</span>);
+    }
+}</pre></div>
+  </div>
+  <div class="key-point">Convención de nombres: en C# las interfaces casi siempre empiezan con <code>I</code> (<code>IImprimible</code>). En Java no existe esa convención; el nombre va sin prefijo (<code>Imprimible</code>).</div>
+</div>
+
+<!-- 10 -->
+<div class="diff" id="colecciones">
+  <div class="diff-head"><span class="diff-num">10</span><h2>Colecciones genéricas</h2></div>
+  <p class="diff-note">La sintaxis de genéricos es prácticamente idéntica; cambian los nombres de las clases y de qué paquete/namespace se importan.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="kw">import</span> java.util.List;
+<span class="kw">import</span> java.util.ArrayList;
+<span class="kw">import</span> java.util.Map;
+<span class="kw">import</span> java.util.HashMap;
+
+List&lt;<span class="tp">String</span>&gt; nombres = <span class="kw">new</span> ArrayList&lt;&gt;();
+nombres.add(<span class="str">"Ana"</span>);
+
+Map&lt;<span class="tp">String</span>, <span class="tp">Integer</span>&gt; edades = <span class="kw">new</span> HashMap&lt;&gt;();
+edades.put(<span class="str">"Ana"</span>, <span class="num">30</span>);</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="kw">using</span> System.Collections.Generic;
+
+List&lt;<span class="tp">string</span>&gt; nombres = <span class="kw">new</span> List&lt;<span class="tp">string</span>&gt;();
+nombres.Add(<span class="str">"Ana"</span>);
+
+Dictionary&lt;<span class="tp">string</span>, <span class="tp">int</span>&gt; edades = <span class="kw">new</span> Dictionary&lt;<span class="tp">string</span>, <span class="tp">int</span>&gt;();
+edades.Add(<span class="str">"Ana"</span>, <span class="num">30</span>);</pre></div>
+  </div>
+  <div class="key-point">El "diccionario" de Java es <code>HashMap</code>; en C# es <code>Dictionary</code>. La lógica y las operaciones (agregar, buscar por clave, recorrer) son conceptualmente las mismas.</div>
+</div>
+
+<!-- 11 -->
+<div class="diff" id="cadenas">
+  <div class="diff-head"><span class="diff-num">11</span><h2>Formato e interpolación de cadenas</h2></div>
+  <p class="diff-note">C# tiene interpolación nativa con <code>$"..."</code> desde hace años; Java la incorporó como <i>preview</i> reciente (<i>string templates</i>), así que en cursos y proyectos actuales lo más común sigue siendo <code>String.format</code> o concatenación.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="tp">String</span> nombre = <span class="str">"Ana"</span>;
+<span class="tp">int</span> edad = <span class="num">30</span>;
+
+<span class="cm">// Forma más común y estable en Java:</span>
+<span class="tp">String</span> mensaje = <span class="tp">String</span>.format(<span class="str">"%s tiene %d años"</span>, nombre, edad);
+
+<span class="cm">// También válido: concatenación simple</span>
+<span class="tp">String</span> otro = nombre + <span class="str">" tiene "</span> + edad + <span class="str">" años"</span>;</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="tp">string</span> nombre = <span class="str">"Ana"</span>;
+<span class="tp">int</span> edad = <span class="num">30</span>;
+
+<span class="cm">// Interpolación nativa, forma estándar en C# moderno:</span>
+<span class="tp">string</span> mensaje = <span class="str">$"{nombre} tiene {edad} años"</span>;</pre></div>
+  </div>
+</div>
+
+<!-- 12 -->
+<div class="diff" id="excepciones">
+  <div class="diff-head"><span class="diff-num">12</span><h2>Manejo de excepciones</h2></div>
+  <p class="diff-note">La sintaxis <code>try/catch/finally</code> es la misma. La diferencia importante: Java distingue entre excepciones <b>chequeadas</b> (obligan a declarar <code>throws</code> en la firma del método) y no chequeadas; C# no tiene ese concepto.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="cm">// IOException es "chequeada": el método debe declararla</span>
+<span class="kw">public void</span> leerArchivo() <span class="kw">throws</span> IOException {
+    <span class="kw">try</span> {
+        <span class="cm">// código que puede fallar</span>
+    } <span class="kw">catch</span> (IOException e) {
+        System.out.println(<span class="str">"Error: "</span> + e.getMessage());
+    } <span class="kw">finally</span> {
+        System.out.println(<span class="str">"Siempre se ejecuta"</span>);
+    }
+}</pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="cm">// No existe el concepto de excepción "chequeada": nunca se declara en la firma</span>
+<span class="kw">public void</span> LeerArchivo()
+{
+    <span class="kw">try</span>
+    {
+        <span class="cm">// código que puede fallar</span>
+    }
+    <span class="kw">catch</span> (IOException e)
+    {
+        Console.WriteLine(<span class="str">$"Error: {e.Message}"</span>);
+    }
+    <span class="kw">finally</span>
+    {
+        Console.WriteLine(<span class="str">"Siempre se ejecuta"</span>);
+    }
+}</pre></div>
+  </div>
+</div>
+
+<!-- 13 -->
+<div class="diff" id="constantes">
+  <div class="diff-head"><span class="diff-num">13</span><h2>Constantes</h2></div>
+  <p class="diff-note">Java usa <code>final</code> (combinado con <code>static</code> para constantes de clase). C# tiene dos palabras distintas según si el valor se conoce en tiempo de compilación o de ejecución.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="kw">public static final</span> <span class="tp">double</span> IVA = <span class="num">0.16</span>;
+<span class="kw">public final</span> <span class="tp">String</span> id;   <span class="cm">// se asigna una sola vez, en el constructor</span></pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="kw">public const</span> <span class="tp">double</span> IVA = <span class="num">0.16</span>;         <span class="cm">// valor fijo en tiempo de compilación</span>
+<span class="kw">public readonly string</span> Id;         <span class="cm">// se asigna una sola vez, en el constructor
+                                    // (equivalente real a "final" de Java)</span></pre></div>
+  </div>
+  <div class="key-point"><code>final</code> de Java se parece más a <code>readonly</code> de C# que a <code>const</code> — <code>const</code> en C# exige un valor calculable en tiempo de compilación, mientras que <code>readonly</code>/<code>final</code> pueden asignarse dentro del constructor.</div>
+</div>
+
+<!-- 14 -->
+<div class="diff" id="igualdad">
+  <div class="diff-head"><span class="diff-num">14</span><h2>Comparar igualdad de objetos</h2></div>
+  <p class="diff-note">El operador <code>==</code> se comporta distinto entre ambos lenguajes al comparar objetos — una fuente frecuente de errores al cambiar de uno a otro.</p>
+  <div class="code-grid">
+    <div class="code-panel java"><div class="lbl">Java</div><pre><span class="tp">String</span> a = <span class="kw">new</span> <span class="tp">String</span>(<span class="str">"hola"</span>);
+<span class="tp">String</span> b = <span class="kw">new</span> <span class="tp">String</span>(<span class="str">"hola"</span>);
+
+a == b;          <span class="cm">// false: compara referencias (misma dirección en memoria)</span>
+a.equals(b);      <span class="cm">// true: compara contenido — así se comparan objetos en Java</span></pre></div>
+    <div class="code-panel csharp"><div class="lbl">C#</div><pre><span class="tp">string</span> a = <span class="kw">new</span> <span class="tp">string</span>(<span class="str">"hola"</span>.ToCharArray());
+<span class="tp">string</span> b = <span class="kw">new</span> <span class="tp">string</span>(<span class="str">"hola"</span>.ToCharArray());
+
+a == b;           <span class="cm">// true: C# sobrecarga "==" para string y compara CONTENIDO</span>
+a.Equals(b);      <span class="cm">// también true, mismo resultado</span>
+<span class="cm">// Para tus propias clases, "==" SÍ compara referencia salvo que
+// sobrecargues el operador explícitamente (Java no permite sobrecargar operadores).</span></pre></div>
+  </div>
+  <div class="key-point"><b>Regla práctica:</b> en Java, usa siempre <code>.equals()</code> para comparar contenido de objetos (incluido <code>String</code>) y nunca <code>==</code> salvo que quieras comparar referencias a propósito.</div>
+</div>
+
+<p class="footer-note">
+  Referencia: Java vs C# — Sintaxis de consola y POO<br>
+  <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+</p>
+
+</body>
+</html>

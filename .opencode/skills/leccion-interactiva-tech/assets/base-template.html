@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><!-- TÍTULO DE LA PÁGINA --></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1F2B; --ink-2:#242A3B; --card:#F5F1E8; --card-line:#DED6C2;
+    --text:#E4E7ED; --text-dim:#9AA1B4; --amber:#E8A33D; --teal:#4FB0AE; --rose:#E06C75;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink); color:var(--text); font-family:'Inter',sans-serif; line-height:1.6;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
+  code,pre,.mono{font-family:'JetBrains Mono',monospace;}
+  .wrap{max-width:860px; margin:0 auto; padding:0 24px 90px;}
+
+  /* HERO */
+  .hero{padding:56px 24px 30px; text-align:center; border-bottom:1px solid #2E3549;}
+  .hero .badge{color:var(--amber); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem; font-weight:700; margin-bottom:10px;}
+  .hero h1{font-size:1.95rem; margin:0 0 10px; color:#fff;}
+  .hero p{color:var(--text-dim); max-width:620px; margin:0 auto; font-size:.98rem;}
+  .legend{display:flex; gap:18px; justify-content:center; margin-top:18px; font-family:'JetBrains Mono',monospace; font-size:.8rem;}
+  .legend span{display:flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+
+  /* NAV de saltos rápidos (comparativas / bancos de ejercicios) */
+  .nav{max-width:960px; margin:26px auto 0; padding:0 24px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .nav a{ text-decoration:none; color:var(--text); background:var(--ink-2); border:1px solid #2E3549; padding:6px 13px; border-radius:16px; font-size:.76rem; font-family:'JetBrains Mono',monospace; }
+  .nav a:hover{border-color:var(--amber); color:var(--amber);}
+
+  /* CHECKLIST + BARRA DE PROGRESO (guías de instalación) */
+  .progress-hero{max-width:860px; margin:32px auto 0; padding:0 24px;}
+  .progress-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:10px; padding:20px 22px;}
+  .progress-bar-track{background:#12151E; border-radius:8px; height:10px; overflow:hidden; margin-bottom:6px;}
+  .progress-bar-fill{background:var(--amber); height:100%; width:0%; transition:width .3s ease;}
+  .progress-label{text-align:right; font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--text-dim);}
+  .check-list{margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:8px 18px;}
+  @media (max-width:600px){.check-list{grid-template-columns:1fr;}}
+  .check-item{display:flex; align-items:center; gap:9px; font-size:.85rem; color:var(--text-dim); cursor:pointer;}
+  .check-item input{accent-color:var(--amber); width:16px; height:16px; cursor:pointer;}
+  .check-item.done{color:var(--teal); text-decoration:line-through;}
+
+  /* PESTAÑAS genéricas (por SO, por tipo, por algoritmo...) */
+  .tab-picker{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:18px 0;}
+  .tab-btn{background:transparent; border:1px solid #3C4459; color:var(--text); padding:8px 16px; border-radius:20px; font-family:'JetBrains Mono',monospace; font-size:.8rem; cursor:pointer;}
+  .tab-btn.active{background:var(--amber); color:var(--ink); border-color:var(--amber); font-weight:700;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* SECCIONES numeradas (objetos de aprendizaje) */
+  section{padding:42px 0; border-bottom:1px solid #2E3549;}
+  section:last-child{border-bottom:none;}
+  .step-num{color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em;}
+  h2{font-size:1.45rem; margin:6px 0 14px; color:#fff;}
+  h3.sub{font-size:1.05rem; color:#fff; margin:24px 0 6px;}
+
+  /* ANALOGÍA (Feynman) */
+  .analogy{background:var(--ink-2); border-left:3px solid var(--teal); padding:16px 20px; border-radius:0 8px 8px 0; margin:16px 0; color:var(--text-dim); font-size:.95rem;}
+  .analogy b{color:var(--teal);}
+
+  /* CÓDIGO */
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; overflow-x:auto; font-size:.84rem; color:#D6D9E0; margin:10px 0;}
+  .kw{color:#E8A33D;} .tp{color:#4FB0AE;} .cm{color:#6A7086;} .num{color:#E06C75;} .str{color:#E8A33D;} .an{color:#B5541A; font-weight:700;} .tv{color:#B5541A; font-weight:700;}
+
+  /* Comparativa lado a lado (2 tecnologías) */
+  .code-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:680px){.code-grid{grid-template-columns:1fr;}}
+  .code-panel{border-radius:10px; overflow:hidden; border:1px solid #2E3549;}
+  .code-panel .lbl{padding:7px 14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;}
+  .code-panel.a .lbl{background:rgba(79,176,174,.15); color:var(--teal);}
+  .code-panel.b .lbl{background:rgba(232,163,61,.15); color:var(--amber);}
+  .code-panel pre{margin:0; background:#12151E; padding:14px 16px; overflow-x:auto; font-size:.82rem; color:#D6D9E0;}
+
+  /* Grids de 2 columnas: componentes / función práctica */
+  .traits, .uses{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px;}
+  @media (max-width:600px){.traits, .uses{grid-template-columns:1fr;}}
+  .traits .box, .uses .box{background:var(--ink-2); border-radius:8px; padding:16px 18px; border:1px solid #2E3549;}
+  .traits .box h3{margin:0 0 6px; font-size:1rem; color:var(--teal);}
+  .uses .box h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .traits .box p, .uses .box p{margin:0; font-size:.9rem; color:var(--text-dim);}
+
+  /* Tabla comparativa */
+  table.cmp{width:100%; border-collapse:collapse; margin-top:12px; font-size:.86rem;}
+  table.cmp th, table.cmp td{border:1px solid #2E3549; padding:9px 11px; text-align:left;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td code, table.cmp td b{color:#fff;}
+
+  /* Errores frecuentes */
+  .pitfall{display:flex; gap:12px; margin:14px 0; align-items:flex-start;}
+  .pitfall .icon{color:var(--rose); font-size:1.2rem; line-height:1.4;}
+  .pitfall .body b{color:#fff;}
+
+  /* Avisos */
+  .warn{display:flex; gap:10px; background:rgba(224,108,117,.08); border:1px solid rgba(224,108,117,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem;}
+  .warn .icon{color:var(--rose);}
+  .tip{display:flex; gap:10px; background:rgba(79,176,174,.08); border:1px solid rgba(79,176,174,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem;}
+  .tip .icon{color:var(--teal);}
+  .key-point{background:var(--ink-2); border-left:3px solid var(--rose); border-radius:0 8px 8px 0; padding:12px 16px; margin-top:14px; font-size:.88rem; color:var(--text-dim);}
+  .key-point b{color:#fff;}
+
+  /* Checklist Pareto */
+  .checklist{list-style:none; padding:0; margin:18px 0;}
+  .checklist li{display:flex; gap:10px; padding:10px 0; border-bottom:1px dashed #2E3549; font-size:.95rem;}
+  .checklist li::before{content:"→"; color:var(--amber); font-weight:700;}
+
+  /* Active recall (quiz colapsable, sin JS) */
+  .quiz-item{background:var(--ink-2); border:1px solid #2E3549; border-radius:8px; padding:16px 18px; margin-bottom:12px;}
+  .quiz-item .q{font-weight:600; color:#fff; cursor:pointer;}
+  .quiz-item .a{display:none; margin-top:10px; color:var(--text-dim); font-size:.92rem; border-top:1px dashed #3C4459; padding-top:10px;}
+  .quiz-item.open .a{display:block;}
+
+  /* Banco de ejercicios: secciones colapsables por tema */
+  details{border-top:1px solid #2E3549; padding-top:26px;}
+  summary{list-style:none; cursor:pointer; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  summary::-webkit-details-marker{display:none;}
+  summary .arrow{color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.9rem; transition:transform .15s;}
+  details[open] summary .arrow{transform:rotate(90deg);}
+  .lvl{font-family:'JetBrains Mono',monospace; font-size:.7rem; font-weight:700; padding:3px 9px; border-radius:12px; text-transform:uppercase;}
+  .lvl-1, .lvl-2{background:rgba(79,176,174,.18); color:var(--teal);}
+  .lvl-3, .lvl-4{background:rgba(232,163,61,.18); color:var(--amber);}
+  .lvl-5{background:rgba(224,108,117,.18); color:var(--rose);}
+
+  /* Menu path (guías paso a paso con rutas de menú) */
+  .menu-path{display:inline-block; background:var(--ink-2); border:1px solid #3C4459; border-radius:6px; padding:4px 10px; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--amber);}
+
+  /* Bloque tipo árbol de directorios */
+  .tree{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:#D6D9E0; white-space:pre; overflow-x:auto;}
+
+  ol.steps{padding-left:20px; margin:12px 0;}
+  ol.steps li{margin-bottom:10px; font-size:.94rem;}
+  ul.bullets{padding-left:20px; margin:12px 0;}
+  ul.bullets li{margin-bottom:6px; font-size:.92rem; color:var(--text-dim);}
+
+  .footer-note{color:var(--text-dim); font-size:.85rem; text-align:center; padding:48px 24px 0; border-top:1px solid #2E3549; margin-top:50px;}
+  .footer-note .name{color:#fff; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge"><!-- ej. Estructura de Datos · E-ETD-2 --></div>
+  <h1><!-- Título --></h1>
+  <p><!-- Subtítulo: 1-2 frases --></p>
+</div>
+
+<!-- AQUÍ VA EL ELEMENTO SIGNATURE — ver SKILL.md para elegirlo -->
+
+<div class="wrap">
+
+  <!-- Repite <section> por cada bloque numerado según la variante (ver SKILL.md) -->
+
+</div>
+
+<p class="footer-note">
+  <!-- línea describiendo la página / el curso -->
+  <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+</p>
+
+<script>
+// Utilidad genérica para cualquier grupo de pestañas (SO, algoritmos, tipos...):
+// <button class="tab-btn active" data-tab="x" onclick="pickTab('grupo1','x')">...
+// <div class="tab-panel active" data-group="grupo1" data-tab="x">...
+function pickTab(group, tab){
+  document.querySelectorAll('[data-group="'+group+'"].tab-btn, #tabPicker_'+group+' .tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.tab-panel[data-group="'+group+'"]').forEach(p=> p.classList.toggle('active', p.dataset.tab===tab));
+}
+
+// Utilidad genérica para checklist + barra de progreso (guías de instalación):
+// <div class="check-list" id="checkList"><label class="check-item"><input type="checkbox"> texto</label>...
+const checks = document.querySelectorAll('#checkList input[type=checkbox]');
+checks.forEach(c=>{
+  c.addEventListener('change', ()=>{
+    c.closest('.check-item').classList.toggle('done', c.checked);
+    updateProgress();
+  });
+});
+function updateProgress(){
+  const total = checks.length;
+  if(!total) return;
+  const done = Array.from(checks).filter(c=> c.checked).length;
+  document.getElementById('barFill').style.width = (done/total*100) + '%';
+  document.getElementById('progLabel').textContent = done + ' / ' + total + ' pasos completados';
+}
+</script>
+
+</body>
+</html>

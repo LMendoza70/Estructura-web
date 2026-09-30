@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elementos de un Programa Java</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1B1F2B;
+            --ink-2: #242A3B;
+            --card: #F5F1E8;
+            --card-line: #DED6C2;
+            --text: #E4E7ED;
+            --text-dim: #9AA1B4;
+            --amber: #E8A33D;
+            --teal: #4FB0AE;
+            --rose: #E06C75;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--ink);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Navegación de regreso al índice */
+        .top-nav {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 20px 0;
+        }
+
+        .top-nav a {
+            display: inline-block;
+            color: var(--teal);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .85rem;
+            border: 1px solid var(--card-line);
+            padding: 8px 14px;
+            border-radius: 6px;
+            background: var(--ink-2);
+            transition: border-color .15s, color .15s;
+        }
+
+        .top-nav a:hover {
+            border-color: var(--teal);
+            color: var(--amber);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #2a2f3f 0%, #1f2333 100%);
+            border-left: 4px solid var(--amber);
+            padding: 40px;
+            margin-bottom: 60px;
+            border-radius: 8px;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            background: var(--amber);
+            color: var(--ink);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.5em;
+            margin-bottom: 12px;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.1em;
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+
+        /* Elemento Signature */
+        .signature {
+            background: var(--ink-2);
+            border: 2px solid var(--card-line);
+            padding: 30px;
+            border-radius: 8px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .code-canvas {
+            background: var(--ink);
+            border: 1px solid var(--card-line);
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .code-canvas.highlight {
+            background: rgba(232, 163, 61, 0.05);
+            border-color: var(--amber);
+        }
+
+        .canvas-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Secciones de contenido */
+        section {
+            margin-bottom: 60px;
+        }
+
+        section h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.8em;
+            color: var(--amber);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        section h2::before {
+            content: attr(data-number);
+            font-size: 0.7em;
+            background: var(--amber);
+            color: var(--ink);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        section h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3em;
+            color: var(--teal);
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        section p {
+            margin-bottom: 16px;
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        /* Analogy Box */
+        .analogy {
+            background: var(--ink-2);
+            border-left: 4px solid var(--teal);
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        .analogy strong {
+            color: var(--teal);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Code Panel */
+        .code-panel {
+            background: var(--ink);
+            border: 1px solid var(--card-line);
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .code-panel pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: var(--amber); font-weight: 600; }
+        .tp { color: var(--teal); }
+        .cm { color: var(--text-dim); font-style: italic; }
+        .num { color: #FFD580; }
+        .str { color: #98C379; }
+        .tv { color: var(--rose); font-weight: 500; }
+        .an { color: var(--amber); }
+
+        /* Traits Grid */
+        .traits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .trait-card {
+            background: var(--ink-2);
+            border: 1px solid var(--card-line);
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .trait-card h4 {
+            font-family: 'Fraunces', serif;
+            color: var(--amber);
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .trait-card p {
+            font-size: 0.95em;
+            color: var(--text-dim);
+        }
+
+        /* Uses Grid */
+        .uses {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .use-card {
+            background: var(--ink-2);
+            border-left: 3px solid var(--teal);
+            padding: 18px;
+            border-radius: 4px;
+        }
+
+        .use-card h4 {
+            color: var(--teal);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .use-card p {
+            font-size: 0.9em;
+            color: var(--text-dim);
+        }
+
+        /* Pitfall Box */
+        .pitfall {
+            background: rgba(224, 108, 117, 0.1);
+            border-left: 4px solid var(--rose);
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        .pitfall::before {
+            content: "⚠ ";
+            color: var(--rose);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .pitfall strong {
+            color: var(--rose);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Checklist Pareto */
+        .checklist {
+            list-style: none;
+            margin: 24px 0;
+        }
+
+        .checklist li {
+            background: var(--ink-2);
+            border-left: 3px solid var(--amber);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .checklist li::before {
+            content: "→";
+            color: var(--amber);
+            font-weight: bold;
+            flex-shrink: 0;
+            width: 20px;
+        }
+
+        /* Quiz Items */
+        .quiz-section {
+            margin: 24px 0;
+        }
+
+        .quiz-item {
+            background: var(--ink-2);
+            border: 1px solid var(--card-line);
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-item:hover {
+            border-color: var(--amber);
+        }
+
+        .quiz-question {
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .quiz-question::before {
+            content: "Q";
+            display: inline-block;
+            background: var(--amber);
+            color: var(--ink);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .quiz-item.open .quiz-question {
+            border-bottom: 1px solid var(--card-line);
+        }
+
+        .quiz-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .quiz-item.open .quiz-answer {
+            max-height: 500px;
+        }
+
+        .quiz-answer {
+            padding: 0 18px;
+            background: rgba(79, 176, 174, 0.05);
+        }
+
+        .quiz-answer p {
+            padding: 16px 0;
+            border-top: 1px solid var(--card-line);
+            color: var(--text);
+        }
+
+        .quiz-answer p:first-child {
+            border-top: none;
+            padding-top: 16px;
+        }
+
+        .quiz-answer p:last-child {
+            padding-bottom: 16px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            margin: 24px 0;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: var(--ink-2);
+            color: var(--amber);
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--card-line);
+        }
+
+        table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--card-line);
+        }
+
+        table tr:hover {
+            background: rgba(79, 176, 174, 0.05);
+        }
+
+        /* Comparison Table */
+        table.cmp td {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Footer */
+        .footer-note {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--card-line);
+            font-size: 0.95em;
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        .footer-note .name {
+            display: block;
+            margin-top: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(232, 163, 61, 0.1);
+            border-left: 4px solid var(--amber);
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .highlight-box strong {
+            color: var(--amber);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.8em;
+            }
+
+            .traits, .uses {
+                grid-template-columns: 1fr;
+            }
+
+            section h2 {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVEGACIÓN -->
+    <nav class="top-nav">
+        <a href="../index.html">← Volver al índice · Unidad 0</a>
+    </nav>
+
+    <div class="container">
+        <!-- HERO SECTION -->
+        <div class="hero">
+            <span class="badge">Fundamentos de Java</span>
+            <h1>Elementos de un Programa Java</h1>
+            <p>Domina los componentes básicos que construyen cualquier programa Java: comentarios, variables, tipos de datos, operadores y expresiones. Aprenderás no solo la sintaxis, sino también por qué cada elemento existe y cómo usarlo correctamente.</p>
+        </div>
+
+        <!-- ELEMENTO SIGNATURE: Anatomía de una línea de código -->
+        <div class="signature">
+            <h3>🔬 Elemento Signature: Desglosa una línea de código</h3>
+            <p style="margin-top: 16px; color: var(--text-dim);">Haz clic en cada parte para ver qué elemento Java es:</p>
+            <div class="code-canvas" id="signature">
+                <div style="background: var(--card); padding: 20px; border-radius: 6px; width: 100%; color: var(--ink); font-family: 'JetBrains Mono', monospace;">
+                    <div style="margin-bottom: 12px;">
+                        <span style="padding: 4px 8px; background: rgba(232, 163, 61, 0.2); border-radius: 4px; cursor: pointer;" onclick="highlightPart(0)"><span class="kw" style="color: var(--amber);">final</span></span>
+                        <span style="padding: 4px 8px; background: rgba(79, 176, 174, 0.2); border-radius: 4px; cursor: pointer;" onclick="highlightPart(1)"><span class="tp" style="color: var(--teal);">double</span></span>
+                        <span style="padding: 4px 8px; cursor: pointer;" onclick="highlightPart(2)">PI</span>
+                        <span style="padding: 4px 8px; cursor: pointer;" onclick="highlightPart(3)">=</span>
+                        <span style="padding: 4px 8px; background: rgba(255, 213, 128, 0.2); border-radius: 4px; cursor: pointer;" onclick="highlightPart(4)"><span class="num" style="color: #FFD580;">3.1415926536</span></span>
+                        <span style="padding: 4px 8px; cursor: pointer;" onclick="highlightPart(5)">;</span>
+                    </div>
+                    <div id="explanation" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--card-line); text-align: left; min-height: 60px;">
+                        <strong style="color: var(--ink);">→ Haz clic en cualquier parte arriba para ver su explicación</strong>
+                    </div>
+                </div>
+            </div>
+            <script>
+                const explanations = [
+                    { title: "Palabra Reservada (Modificador)", text: "final indica que el valor no puede cambiar después de la asignación. Solo se usa en constantes." },
+                    { title: "Tipo de Dato Primitivo", text: "double especifica que almacenaremos un número real de precisión doble (decimales). Ocupa 8 bytes." },
+                    { title: "Identificador (Nombre de Variable)", text: "PI es el nombre que elegimos para esta constante. Sigue las reglas: comienza con letra, solo letras/números/guiones bajos." },
+                    { title: "Operador de Asignación", text: "= asigna el valor de la derecha a la variable de la izquierda. No es comparación, es una acción." },
+                    { title: "Literal (Valor Constante)", text: "3.1415926536 es un literal numérico: el número tal como lo escribes en el código. Java lo interpreta como double." },
+                    { title: "Terminador de Sentencia", text: "; marca el final de la sentencia. Sin él, Java no sabrá dónde termina la instrucción." }
+                ];
+
+                function highlightPart(index) {
+                    const explanation = document.getElementById('explanation');
+                    const exp = explanations[index];
+                    explanation.innerHTML = `<strong style="color: var(--ink);">${exp.title}</strong><br>${exp.text}`;
+                }
+            </script>
+        </div>
+
+        <!-- SECCIÓN 01: COMENTARIOS -->
+        <section>
+            <h2 data-number="01">Comentarios</h2>
+            <p>Los comentarios son texto que escribes para explicar tu código, pero que <strong>Java ignora completamente</strong> al compilar. Son para los humanos, no para la máquina.</p>
+
+            <div class="analogy">
+                <strong>💡 Piénsalo así:</strong>
+                Un comentario es como escribir notas al margen de un libro. El autor (Java) no lee tus notas; solo leen los que estudian el libro (otros programadores, o tú en el futuro).
+            </div>
+
+            <h3>Tres tipos de comentarios</h3>
+
+            <div class="traits">
+                <div class="trait-card">
+                    <h4>Línea simple (//)</h4>
+                    <p>Comienza con <code>//</code> y termina al final de la línea. Úsalo para explicar un detalle rápido.</p>
+                </div>
+                <div class="trait-card">
+                    <h4>Bloque (/* */)</h4>
+                    <p>Comienza con <code>/*</code> y termina con <code>*/</code>. Puede abarcar varias líneas. Ideal para explicar secciones completas.</p>
+                </div>
+                <div class="trait-card">
+                    <h4>Documentación (/** */)</h4>
+                    <p>Comienza con <code>/**</code> y termina con <code>*/</code>. Especial: la herramienta <code>javadoc</code> genera documentación automática a partir de estos.</p>
+                </div>
+            </div>
+
+            <h3>Ejemplos de cada tipo</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Comentario de una línea: declare la constante PI</span>
+<span class="kw">final</span> <span class="tp">double</span> PI = <span class="num">3.1415926536</span>;
+
+<span class="cm">/*
+ * Comentario de bloque: este programa calcula
+ * el perímetro de una circunferencia.
+ * Entrada: radio (double)
+ * Salida: perímetro (double)
+ */</span>
+
+<span class="cm">/**
+ * Calcula el perímetro de una circunferencia
+ * @param radio el radio de la circunferencia
+ * @return el perímetro calculado
+ * @author Luis Mendoza
+ * @version 1.0
+ */</span></pre>
+            </div>
+
+            <div class="highlight-box">
+                <strong>✓ Buen uso:</strong> Comenta el "por qué" no el "qué". "Por qué": explica la decisión detrás del código. "Qué": es obvio si lees el código.
+            </div>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// ❌ MALO: comentario obvio</span>
+PI = PI + 1; <span class="cm">// Suma 1 a PI</span>
+
+<span class="cm">// ✓ BUENO: explica la decisión</span>
+<span class="cm">// Usamos double en lugar de float para mayor precisión</span>
+<span class="cm">// en cálculos de astronomía</span>
+<span class="kw">final</span> <span class="tp">double</span> PI = <span class="num">3.1415926536</span>;</pre>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 02: IDENTIFICADORES -->
+        <section>
+            <h2 data-number="02">Identificadores</h2>
+            <p>Un identificador es un nombre que <strong>tú eliges</strong> para variables, métodos, clases, constantes, etc. Java tiene reglas muy estrictas sobre qué nombres son válidos.</p>
+
+            <div class="analogy">
+                <strong>💡 Piénsalo así:</strong>
+                Los identificadores son etiquetas que pegas en cajas. La caja puede contener cualquier cosa, pero la etiqueta debe seguir reglas (no puede tener caracteres raros, no puede comenzar con número, etc.).
+            </div>
+
+            <h3>Reglas obligatorias</h3>
+            <ul style="margin-left: 20px; margin-bottom: 24px;">
+                <li>✓ Debe <strong>comenzar</strong> con una letra (a-z, A-Z), guion bajo (_) o símbolo de dólar ($)</li>
+                <li>✓ Puede contener letras, dígitos (0-9), guiones bajos (_) o dólares ($)</li>
+                <li>✓ <strong>Sensible a mayúsculas</strong>: <code>nombre</code>, <code>Nombre</code> y <code>NOMBRE</code> son tres identificadores distintos</li>
+                <li>❌ No puede ser una palabra reservada de Java (veremos la lista después)</li>
+                <li>❌ No puede contener espacios, guiones normales (-), ni otros símbolos</li>
+            </ul>
+
+            <h3>Ejemplos válidos e inválidos</h3>
+
+            <table class="cmp">
+                <thead>
+                    <tr>
+                        <th>Identificador</th>
+                        <th>¿Válido?</th>
+                        <th>Razón</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>radio</td>
+                        <td style="color: #98C379;">✓ SÍ</td>
+                        <td>Comienza con letra, contiene solo letras</td>
+                    </tr>
+                    <tr>
+                        <td>radio2</td>
+                        <td style="color: #98C379;">✓ SÍ</td>
+                        <td>Letras y dígitos permitidos</td>
+                    </tr>
+                    <tr>
+                        <td>_radio</td>
+                        <td style="color: #98C379;">✓ SÍ</td>
+                        <td>Guion bajo al inicio es válido</td>
+                    </tr>
+                    <tr>
+                        <td>2radio</td>
+                        <td style="color: var(--rose);">❌ NO</td>
+                        <td>Comienza con dígito</td>
+                    </tr>
+                    <tr>
+                        <td>radio-2</td>
+                        <td style="color: var(--rose);">❌ NO</td>
+                        <td>Contiene guion normal (-), no permitido</td>
+                    </tr>
+                    <tr>
+                        <td>radio 2</td>
+                        <td style="color: var(--rose);">❌ NO</td>
+                        <td>Contiene espacio</td>
+                    </tr>
+                    <tr>
+                        <td>int</td>
+                        <td style="color: var(--rose);">❌ NO</td>
+                        <td>Palabra reservada de Java</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Convenciones de nombres en Java</h3>
+            <p>No son obligatorias, pero <strong>todos los programadores Java las siguen</strong>. Aumentan la legibilidad:</p>
+
+            <div class="traits">
+                <div class="trait-card">
+                    <h4>📦 Clases</h4>
+                    <p>Comienzan con <strong>mayúscula</strong>. Palabras compuestas en PascalCase sin guiones bajos.<br>
+                    Ejemplos: <code>HolaMundo</code>, <code>Circulo</code>, <code>GestorBancario</code></p>
+                </div>
+                <div class="trait-card">
+                    <h4>📝 Variables y métodos</h4>
+                    <p>Comienzan con <strong>minúscula</strong>. Palabras compuestas en camelCase sin guiones bajos.<br>
+                    Ejemplos: <code>radio</code>, <code>calcularPerimetro</code>, <code>edadEstudiante</code></p>
+                </div>
+                <div class="trait-card">
+                    <h4>🔒 Constantes</h4>
+                    <p>Todas en <strong>MAYÚSCULAS</strong>. Palabras separadas por guiones bajos (_).<br>
+                    Ejemplos: <code>PI</code>, <code>VELOCIDAD_LUZ</code>, <code>TOTAL_ESTUDIANTES</code></p>
+                </div>
+            </div>
+
+            <h3>Ejemplos en contexto</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// ✓ CORRECTO: sigue convenciones Java</span>
+<span class="kw">public class</span> <span class="tp">CalculadoraGeometrica</span> {  <span class="cm">// Clase: PascalCase</span>
+    <span class="kw">final</span> <span class="tp">double</span> PI = <span class="num">3.1415926536</span>;  <span class="cm">// Constante: MAYÚSCULAS</span>
+
+    <span class="kw">public</span> <span class="tp">double</span> calcularPerimetro(<span class="tp">double</span> radio) {  <span class="cm">// Método: camelCase</span>
+        <span class="tp">double</span> perimetro = <span class="num">2</span> * PI * radio;  <span class="cm">// Variable: camelCase</span>
+        <span class="kw">return</span> perimetro;
+    }
+}</pre>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 03: VARIABLES Y VALORES -->
+        <section>
+            <h2 data-number="03">Variables y Valores</h2>
+            <p>Una <strong>variable</strong> es un contenedor con un nombre que almacena un valor. Puedes cambiar el valor dentro, pero el tipo debe mantenerse igual.</p>
+
+            <div class="analogy">
+                <strong>💡 Piénsalo así:</strong>
+                Una variable es como una caja etiquetada en tu escritorio. Pones algo en la caja (valor), le das un nombre (identificador), y especificas qué tipo de cosa va en esa caja (tipo de dato). Si la caja dice "solo números enteros", no puedes meter un texto dentro.
+            </div>
+
+            <h3>Partes de una variable</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="kw">int</span> edad = <span class="num">25</span>;
+<span class="cm">↑    ↑     ↑  ↑</span>
+<span class="cm">|    |     |  └─ Valor inicial (literal)</span>
+<span class="cm">|    |     └──── Operador de asignación</span>
+<span class="cm">|    └────────── Identificador (nombre)</span>
+<span class="cm">└─────────────── Tipo de dato</span></pre>
+            </div>
+
+            <h3>Declaración e inicialización</h3>
+
+            <div class="traits">
+                <div class="trait-card">
+                    <h4>Declaración</h4>
+                    <p>Indicarle a Java que existe una variable y qué tipo tiene:<br>
+                    <code>int edad;</code></p>
+                </div>
+                <div class="trait-card">
+                    <h4>Inicialización</h4>
+                    <p>Asignarle un valor inicial:<br>
+                    <code>edad = 25;</code></p>
+                </div>
+                <div class="trait-card">
+                    <h4>Ambas a la vez</h4>
+                    <p>Declarar e inicializar en una sola línea:<br>
+                    <code>int edad = 25;</code></p>
+                </div>
+            </div>
+
+            <h3>Ejemplos: múltiples formas</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Forma 1: Declarar sin inicializar</span>
+<span class="tp">int</span> numero;
+
+<span class="cm">// Forma 2: Inicializar después</span>
+numero = <span class="num">42</span>;
+
+<span class="cm">// Forma 3: Declarar e inicializar en una línea</span>
+<span class="tp">int</span> numero2 = <span class="num">42</span>;
+
+<span class="cm">// Forma 4: Múltiples variables del mismo tipo</span>
+<span class="tp">int</span> x = <span class="num">1</span>, y = <span class="num">2</span>, z = <span class="num">3</span>;
+
+<span class="cm">// Forma 5: Constante (no cambia)</span>
+<span class="kw">final</span> <span class="tp">double</span> VELOCIDAD_LUZ = <span class="num">299792458</span>;  <span class="cm">// m/s</span>
+<span class="cm">// VELOCIDAD_LUZ = 1000;  // ❌ Error: no puedes cambiar una constante</span></pre>
+            </div>
+
+            <h3>Cambiar el valor de una variable</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="tp">int</span> edad = <span class="num">25</span>;
+<span class="kw">System</span>.<span class="kw">out</span>.println(edad);  <span class="cm">// Salida: 25</span>
+
+edad = <span class="num">26</span>;  <span class="cm">// Cambiar el valor</span>
+<span class="kw">System</span>.<span class="kw">out</span>.println(edad);  <span class="cm">// Salida: 26</span>
+
+edad = edad + <span class="num">1</span>;  <span class="cm">// Usar el valor anterior en el cálculo</span>
+<span class="kw">System</span>.<span class="kw">out</span>.println(edad);  <span class="cm">// Salida: 27</span></pre>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 04: TIPOS DE DATOS PRIMITIVOS -->
+        <section>
+            <h2 data-number="04">Tipos de Datos Primitivos</h2>
+            <p>Java proporciona ocho tipos primitivos: tipos básicos que representan números, caracteres y valores lógicos. Son los "ladrillos" con que construyes tipos más complejos.</p>
+
+            <div class="analogy">
+                <strong>💡 Piénsalo así:</strong>
+                Los tipos primitivos son como tallas de cajas en un almacén. Tienes cajas para números pequeños (byte), números grandes (long), decimales (double), caracteres (char) y valores sí/no (boolean). Cada tipo ocupa un tamaño específico de memoria.
+            </div>
+
+            <h3>Tabla de tipos primitivos</h3>
+
+            <table class="cmp">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Bytes</th>
+                        <th>Rango</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>byte</strong></td>
+                        <td>1</td>
+                        <td>-128 a 127</td>
+                        <td>Entero muy pequeño (raramente usado)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>short</strong></td>
+                        <td>2</td>
+                        <td>-32,768 a 32,767</td>
+                        <td>Entero pequeño (poco usado)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>int</strong></td>
+                        <td>4</td>
+                        <td>-2,147,483,648 a 2,147,483,647</td>
+                        <td>Entero estándar (lo más común para enteros)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>long</strong></td>
+                        <td>8</td>
+                        <td>-9,223,372,036,854,775,808 a +9,223,372,036,854,775,807</td>
+                        <td>Entero muy grande (IDs, marcas de tiempo)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>float</strong></td>
+                        <td>4</td>
+                        <td>±3.4 × 10³⁸ (aprox. 6-7 dígitos decimales)</td>
+                        <td>Decimal de baja precisión (raro)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>double</strong></td>
+                        <td>8</td>
+                        <td>±1.7 × 10³⁰⁸ (aprox. 15-17 dígitos decimales)</td>
+                        <td>Decimal de alta precisión (estándar para decimales)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>char</strong></td>
+                        <td>2</td>
+                        <td>'\u0000' a '\uffff' (0 a 65,535)</td>
+                        <td>Un solo carácter Unicode</td>
+                    </tr>
+                    <tr>
+                        <td><strong>boolean</strong></td>
+                        <td>1</td>
+                        <td>true o false</td>
+                        <td>Valor lógico verdadero/falso</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Cuándo usar cada tipo: recomendaciones prácticas</h3>
+
+            <div class="uses">
+                <div class="use-card">
+                    <h4>int (enteros)</h4>
+                    <p>Edad, cantidad de estudiantes, índices de arrays. Es el "default" para números enteros. Usa <code>int</code> a menos que tengas una razón específica para otra cosa.</p>
+                </div>
+                <div class="use-card">
+                    <h4>double (decimales)</h4>
+                    <p>Calificaciones, precios, distancias, cualquier número con decimales. Usa <code>double</code> siempre para decimales.</p>
+                </div>
+                <div class="use-card">
+                    <h4>long (enteros muy grandes)</h4>
+                    <p>IDs de base de datos, marcas de tiempo (millisegundos desde 1970), números de teléfono largos.</p>
+                </div>
+                <div class="use-card">
+                    <h4>boolean (lógicos)</h4>
+                    <p>Banderas de control, condiciones: <code>boolean estáRegistrado = true;</code></p>
+                </div>
+                <div class="use-card">
+                    <h4>char (caracteres)</h4>
+                    <p>Un solo carácter: <code>char inicial = 'L';</code>. Para texto de varias letras usa <code>String</code> (no es primitivo).</p>
+                </div>
+                <div class="use-card">
+                    <h4>byte, short, float (raros)</h4>
+                    <p>Necesitan casos especiales: byte para arrays de datos binarios, short/float casi nunca. Evítalos en código principiante.</p>
+                </div>
+            </div>
+
+            <h3>Ejemplos de declaración</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Enteros</span>
+<span class="tp">byte</span> calificacion = <span class="num">95</span>;        <span class="cm">// 0 a 100</span>
+<span class="tp">short</span> año = <span class="num">2024</span>;          <span class="cm">// años recientes</span>
+<span class="tp">int</span> poblacion = <span class="num">1000000</span>;   <span class="cm">// población de ciudad</span>
+<span class="tp">long</span> idUsuario = <span class="num">9876543210L</span>;  <span class="cm">// Nota: sufijo L</span>
+
+<span class="cm">// Decimales</span>
+<span class="tp">float</span> aproximado = <span class="num">3.14f</span>;       <span class="cm">// Nota: sufijo f</span>
+<span class="tp">double</span> preciso = <span class="num">3.1415926536</span>;
+
+<span class="cm">// Caracteres y lógicos</span>
+<span class="tp">char</span> inicial = <span class="str">'L'</span>;
+<span class="tp">boolean</span> esActivo = <span class="kw">true</span>;
+<span class="tp">boolean</span> esPrueba = <span class="kw">false</span>;</pre>
+            </div>
+
+            <div class="highlight-box">
+                <strong>⚠️ Atención a los sufijos:</strong> <code>long</code> requiere <strong>L</strong> al final (<code>100L</code>), y <code>float</code> requiere <strong>f</strong> (<code>3.14f</code>). Si no los pones, Java asume que es <code>int</code> o <code>double</code>.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 05: LITERALES -->
+        <section>
+            <h2 data-number="05">Literales</h2>
+            <p>Un <strong>literal</strong> es un valor escrito tal cual en el código. Es la forma en que escribes valores concretos para que Java los entienda.</p>
+
+            <div class="analogy">
+                <strong>💡 Piénsalo así:</strong>
+                Si una variable es una caja, el literal es la cosa que metes en la caja. <code>42</code> es un literal entero, <code>"Hola"</code> es un literal de texto, <code>3.14</code> es un literal decimal.
+            </div>
+
+            <h3>Literales enteros</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Decimal (lo más común)</span>
+<span class="tp">int</span> numero = <span class="num">42</span>;
+<span class="tp">int</span> negativo = <span class="num">-100</span>;
+
+<span class="cm">// Octal (prefijo 0, poco usado)</span>
+<span class="tp">int</span> octal = <span class="num">010</span>;  <span class="cm">// Representa 8 en decimal</span>
+
+<span class="cm">// Hexadecimal (prefijo 0x, usado en colores, direcciones)</span>
+<span class="tp">int</span> hexadecimal = <span class="num">0x2A</span>;  <span class="cm">// Representa 42 en decimal</span>
+<span class="tp">int</span> color = <span class="num">0xFF5733</span>;     <span class="cm">// Código RGB</span>
+
+<span class="cm">// Números muy grandes: usa long con sufijo L</span>
+<span class="tp">long</span> granNumero = <span class="num">10000000000L</span>;</pre>
+            </div>
+
+            <h3>Literales decimales</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// double (estándar)</span>
+<span class="tp">double</span> pi = <span class="num">3.1415926536</span>;
+<span class="tp">double</span> negativo = <span class="num">-2.5</span>;
+
+<span class="cm">// Notación científica (útil para números muy grandes o pequeños)</span>
+<span class="tp">double</span> velocidadLuz = <span class="num">2.99792458e8</span>;  <span class="cm">// 299,792,458</span>
+<span class="tp">double</span> pequeño = <span class="num">1.5e-10</span>;        <span class="cm">// 0.00000000015</span>
+
+<span class="cm">// float (con sufijo f)</span>
+<span class="tp">float</span> aproximado = <span class="num">3.14f</span>;</pre>
+            </div>
+
+            <h3>Literales de carácter</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Caracteres normales (entre comillas simples)</span>
+<span class="tp">char</span> letra = <span class="str">'A'</span>;
+<span class="tp">char</span> digito = <span class="str">'5'</span>;
+<span class="tp">char</span> espacio = <span class="str">' '</span>;
+
+<span class="cm">// Caracteres especiales (secuencias de escape)</span>
+<span class="tp">char</span> tabulacion = <span class="str">'\t'</span>;  <span class="cm">// Tab</span>
+<span class="tp">char</span> saltoLinea = <span class="str">'\n'</span>;  <span class="cm">// Salto de línea</span>
+<span class="tp">char</span> comilla = <span class="str">'\''</span>;     <span class="cm">// Comilla simple (escapeada)</span>
+
+<span class="cm">// Caracteres Unicode (por código)</span>
+<span class="tp">char</span> letra_espanola = <span class="str">'\u00F1'</span>;  <span class="cm">// ñ</span></pre>
+            </div>
+
+            <h3>Literales de texto (String)</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Nota: String NO es un tipo primitivo, pero lo usamos todo el tiempo</span>
+<span class="tp">String</span> nombre = <span class="str">"Luis"</span>;
+<span class="tp">String</span> mensaje = <span class="str">"Hola, ¿cómo estás?"</span>;
+<span class="tp">String</span> vacio = <span class="str">""</span>;  <span class="cm">// Cadena vacía</span>
+
+<span class="cm">// Secuencias de escape en texto</span>
+<span class="tp">String</span> conTabs = <span class="str">"Nombre\tEdad\tCiudad"</span>;
+<span class="tp">String</span> multilinea = <span class="str">"Línea 1\nLínea 2\nLínea 3"</span>;</pre>
+            </div>
+
+            <h3>Literales booleanos</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="tp">boolean</span> verdadero = <span class="kw">true</span>;
+<span class="tp">boolean</span> falso = <span class="kw">false</span>;
+
+<span class="cm">// Los literales booleanos son siempre true o false (minúsculas)</span>
+<span class="cm">// Nota: ❌ True, False, TRUE no son válidos</span></pre>
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 1:</strong> Confundir comillas. Caracteres usan comillas simples <code>'A'</code>, textos usan comillas dobles <code>"Hola"</code>. <code>'Hola'</code> es un error.
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 2:</strong> Olvidar sufijos. <code>long</code> requiere <code>L</code>, <code>float</code> requiere <code>f</code>. <code>int x = 10000000000;</code> overflow, usa <code>long x = 10000000000L;</code>
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 3:</strong> Números con separadores. Java permite <code>1_000_000</code> (equivale a 1000000) para legibilidad, pero <code>1.000.000</code> (con puntos) está mal.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 06: OPERADORES -->
+        <section>
+            <h2 data-number="06">Operadores</h2>
+            <p>Un <strong>operador</strong> es un símbolo que realiza una acción sobre uno o más valores (operandos). Java tiene operadores para aritmética, comparación, lógica, asignación y más.</p>
+
+            <h3>Operadores aritméticos</h3>
+
+            <table class="cmp">
+                <thead>
+                    <tr>
+                        <th>Operador</th>
+                        <th>Nombre</th>
+                        <th>Ejemplo</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>+</strong></td>
+                        <td>Suma</td>
+                        <td><code>5 + 3</code></td>
+                        <td><code>8</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>-</strong></td>
+                        <td>Resta</td>
+                        <td><code>5 - 3</code></td>
+                        <td><code>2</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>*</strong></td>
+                        <td>Multiplicación</td>
+                        <td><code>5 * 3</code></td>
+                        <td><code>15</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>/</strong></td>
+                        <td>División</td>
+                        <td><code>15 / 3</code></td>
+                        <td><code>5</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>%</strong></td>
+                        <td>Módulo (resto)</td>
+                        <td><code>17 % 5</code></td>
+                        <td><code>2</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>++</strong></td>
+                        <td>Incremento</td>
+                        <td><code>x++</code> o <code>++x</code></td>
+                        <td>Suma 1 a x</td>
+                    </tr>
+                    <tr>
+                        <td><strong>--</strong></td>
+                        <td>Decremento</td>
+                        <td><code>x--</code> o <code>--x</code></td>
+                        <td>Resta 1 a x</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Operadores de asignación</h3>
+
+            <table class="cmp">
+                <thead>
+                    <tr>
+                        <th>Operador</th>
+                        <th>Descripción</th>
+                        <th>Ejemplo</th>
+                        <th>Equivale a</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>=</strong></td>
+                        <td>Asigna valor</td>
+                        <td><code>x = 5</code></td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>+=</strong></td>
+                        <td>Suma y asigna</td>
+                        <td><code>x += 3</code></td>
+                        <td><code>x = x + 3</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>-=</strong></td>
+                        <td>Resta y asigna</td>
+                        <td><code>x -= 3</code></td>
+                        <td><code>x = x - 3</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>*=</strong></td>
+                        <td>Multiplica y asigna</td>
+                        <td><code>x *= 2</code></td>
+                        <td><code>x = x * 2</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>/=</strong></td>
+                        <td>Divide y asigna</td>
+                        <td><code>x /= 2</code></td>
+                        <td><code>x = x / 2</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Operadores de comparación</h3>
+
+            <table class="cmp">
+                <thead>
+                    <tr>
+                        <th>Operador</th>
+                        <th>Descripción</th>
+                        <th>Ejemplo</th>
+                        <th>Resultado (si x=5)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>==</strong></td>
+                        <td>Igual a</td>
+                        <td><code>x == 5</code></td>
+                        <td><code>true</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>!=</strong></td>
+                        <td>No igual a</td>
+                        <td><code>x != 3</code></td>
+                        <td><code>true</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>&lt;</strong></td>
+                        <td>Menor que</td>
+                        <td><code>x &lt; 10</code></td>
+                        <td><code>true</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>&gt;</strong></td>
+                        <td>Mayor que</td>
+                        <td><code>x &gt; 3</code></td>
+                        <td><code>true</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>&lt;=</strong></td>
+                        <td>Menor o igual</td>
+                        <td><code>x &lt;= 5</code></td>
+                        <td><code>true</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>&gt;=</strong></td>
+                        <td>Mayor o igual</td>
+                        <td><code>x &gt;= 5</code></td>
+                        <td><code>true</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Operadores lógicos</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// AND lógico (&&): ambos deben ser true</span>
+<span class="kw">if</span> (edad >= <span class="num">18</span> && tieneLicencia) {
+    <span class="kw">System</span>.<span class="kw">out</span>.println(<span class="str">"Puedes conducir"</span>);
+}
+
+<span class="cm">// OR lógico (||): al menos uno debe ser true</span>
+<span class="kw">if</span> (esFinSemana || esVacacion) {
+    <span class="kw">System</span>.<span class="kw">out</span>.println(<span class="str">"¡A descansar!"</span>);
+}
+
+<span class="cm">// NOT lógico (!): invierte true ↔ false</span>
+<span class="kw">if</span> (!estáLloviendo) {
+    <span class="kw">System</span>.<span class="kw">out</span>.println(<span class="str">"Vamos al parque"</span>);
+}</pre>
+            </div>
+
+            <h3>Concatenación de textos</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// El operador + también concatena strings</span>
+<span class="tp">String</span> nombre = <span class="str">"Luis"</span>;
+<span class="tp">int</span> edad = <span class="num">30</span>;
+
+<span class="tp">String</span> resultado = <span class="str">"Mi nombre es "</span> + nombre + <span class="str">" y tengo "</span> + edad + <span class="str">" años"</span>;
+<span class="kw">System</span>.<span class="kw">out</span>.println(resultado);
+<span class="cm">// Salida: Mi nombre es Luis y tengo 30 años</span></pre>
+            </div>
+
+            <h3>Precedencia de operadores</h3>
+
+            <p>Cuando tienes varios operadores, Java los ejecuta en cierto orden (de mayor a menor precedencia):</p>
+
+            <div class="highlight-box">
+                <strong>Orden (de más alto a más bajo):</strong> Paréntesis () → Multiplicación/División/Módulo (*, /, %) → Suma/Resta (+, -) → Comparación (&lt;, &gt;, ==, !=) → AND lógico (&&) → OR lógico (||)
+            </div>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Ejemplos de precedencia</span>
+<span class="tp">int</span> resultado = <span class="num">2</span> + <span class="num">3</span> * <span class="num">4</span>;  <span class="cm">// 14, no 20 (primero 3*4, luego +2)</span>
+
+<span class="tp">int</span> resultado2 = (<span class="num">2</span> + <span class="num">3</span>) * <span class="num">4</span>;  <span class="cm">// 20 (paréntesis primero)</span>
+
+<span class="tp">boolean</span> test = <span class="num">5</span> > <span class="num">3</span> && <span class="num">2</span> < <span class="num">10</span>;  <span class="cm">// true (ambas condiciones se evalúan)</span></pre>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 07: EXPRESIONES -->
+        <section>
+            <h2 data-number="07">Expresiones</h2>
+            <p>Una <strong>expresión</strong> es una combinación de valores, variables y operadores que Java evalúa para producir un resultado.</p>
+
+            <div class="analogy">
+                <strong>💡 Piénsalo así:</strong>
+                Si una sentencia es una frase completa, una expresión es una parte de esa frase. <code>2 + 3</code> es una expresión que da como resultado <code>5</code>. Cuando lo asignas a una variable (<code>x = 2 + 3</code>), tienes una sentencia.
+            </div>
+
+            <h3>Tipos de expresiones</h3>
+
+            <div class="traits">
+                <div class="trait-card">
+                    <h4>Aritmética</h4>
+                    <p>Produce un número: <code>2 + 3 * 4</code> (resultado: 14)</p>
+                </div>
+                <div class="trait-card">
+                    <h4>Comparación</h4>
+                    <p>Produce un booleano: <code>edad > 18</code> (resultado: true o false)</p>
+                </div>
+                <div class="trait-card">
+                    <h4>Lógica</h4>
+                    <p>Produce un booleano: <code>x > 0 && x < 100</code> (resultado: true o false)</p>
+                </div>
+                <div class="trait-card">
+                    <h4>Asignación</h4>
+                    <p>Asigna un valor y devuelve ese valor: <code>x = 5</code> (resultado: 5)</p>
+                </div>
+            </div>
+
+            <h3>Ejemplos en contexto</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Expresión aritmética</span>
+<span class="tp">double</span> perimetro = <span class="num">2</span> * <span class="num">3.14159</span> * <span class="num">5</span>;  <span class="cm">// Expresión: 2 * 3.14159 * 5</span>
+
+<span class="cm">// Expresión de comparación</span>
+<span class="tp">boolean</span> esAdelescente = edad >= <span class="num">13</span> && edad <= <span class="num">19</span>;
+
+<span class="cm">// Expresión compleja</span>
+<span class="tp">double</span> promedio = (calificacion1 + calificacion2 + calificacion3) / <span class="num">3</span>;
+
+<span class="cm">// Asignación anidada</span>
+<span class="tp">int</span> x, y, z;
+x = y = z = <span class="num">10</span>;  <span class="cm">// Todos obtienen 10</span>
+
+<span class="cm">// Incremento en expresión</span>
+<span class="tp">int</span> contador = <span class="num">0</span>;
+<span class="kw">System</span>.<span class="kw">out</span>.println(++contador);  <span class="cm">// Imprime 1 (incrementa primero)</span>
+<span class="kw">System</span>.<span class="kw">out</span>.println(contador++);  <span class="cm">// Imprime 1 (imprime luego incrementa)</span>
+<span class="kw">System</span>.<span class="kw">out</span>.println(contador);    <span class="cm">// Imprime 2</span></pre>
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 1:</strong> Diferencia entre <code>++x</code> (pre-incremento) y <code>x++</code> (post-incremento). En la mayoría de casos dan el mismo resultado, pero en expresiones pueden diferir.
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 2:</strong> Usar <code>=</code> en lugar de <code>==</code> en condiciones. <code>if (x = 5)</code> asigna 5 a x, no compara. Usa <code>if (x == 5)</code>.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 08: EXPRESIONES ARITMÉTICAS Y LÓGICAS -->
+        <section>
+            <h2 data-number="08">Expresiones Aritméticas y Lógicas</h2>
+            <p>Ahora combinaremos operadores aritméticos y lógicos en expresiones más complejas, que son el corazón de cualquier programa.</p>
+
+            <h3>Expresiones aritméticas: paso a paso</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Ejemplo 1: Cálculo del área de un rectángulo</span>
+<span class="tp">double</span> largo = <span class="num">5.5</span>;
+<span class="tp">double</span> ancho = <span class="num">3.2</span>;
+<span class="tp">double</span> area = largo * ancho;  <span class="cm">// 17.6</span>
+
+<span class="cm">// Ejemplo 2: Convertir temperatura de Celsius a Fahrenheit</span>
+<span class="tp">double</span> celsius = <span class="num">25</span>;
+<span class="tp">double</span> fahrenheit = (celsius * <span class="num">9</span> / <span class="num">5</span>) + <span class="num">32</span>;  <span class="cm">// 77</span>
+
+<span class="cm">// Ejemplo 3: Calcular descuento</span>
+<span class="tp">double</span> precioOriginal = <span class="num">100</span>;
+<span class="tp">double</span> porcentajeDescuento = <span class="num">15</span>;
+<span class="tp">double</span> precioFinal = precioOriginal - (precioOriginal * porcentajeDescuento / <span class="num">100</span>);  <span class="cm">// 85</span></pre>
+            </div>
+
+            <h3>Expresiones lógicas: decisiones complejas</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Validar si un número está en rango</span>
+<span class="tp">int</span> numero = <span class="num">42</span>;
+<span class="tp">boolean</span> enRango = numero >= <span class="num">1</span> && numero <= <span class="num">100</span>;  <span class="cm">// true</span>
+
+<span class="cm">// Validar acceso: mayor de edad Y tiene documento</span>
+<span class="tp">int</span> edad = <span class="num">20</span>;
+<span class="tp">boolean</span> tieneDocumento = <span class="kw">true</span>;
+<span class="tp">boolean</span> puedeEntrar = edad >= <span class="num">18</span> && tieneDocumento;  <span class="cm">// true</span>
+
+<span class="cm">// Validar si es fin de semana O es día festivo</span>
+<span class="tp">String</span> dia = <span class="str">"sábado"</span>;
+<span class="tp">boolean</span> esFeriva = dia.equals(<span class="str">"sábado"</span>) || dia.equals(<span class="str">"domingo"</span>);  <span class="cm">// true</span>
+
+<span class="cm">// Invertir lógica: si NO está disponible</span>
+<span class="tp">boolean</span> disponible = <span class="kw">false</span>;
+<span class="tp">boolean</span> noDisponible = !disponible;  <span class="cm">// true</span></pre>
+            </div>
+
+            <h3>Combinación de aritmética y lógica</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Validar si una calificación es válida (0-100) y aprobó (>= 60)</span>
+<span class="tp">double</span> calificacion = <span class="num">75.5</span>;
+<span class="tp">boolean</span> esValida = calificacion >= <span class="num">0</span> && calificacion <= <span class="num">100</span>;
+<span class="tp">boolean</span> aprobo = calificacion >= <span class="num">60</span>;
+
+<span class="kw">if</span> (esValida && aprobo) {
+    <span class="tp">double</span> porcentaje = (calificacion / <span class="num">100</span>) * <span class="num">100</span>;  <span class="cm">// Redundante, pero lo hago para el ejemplo</span>
+    <span class="kw">System</span>.<span class="kw">out</span>.println(<span class="str">"¡Aprobaste con "</span> + calificacion + <span class="str">"!"</span>);
+} <span class="kw">else</span> <span class="kw">if</span> (esValida && !aprobo) {
+    <span class="kw">System</span>.<span class="kw">out</span>.println(<span class="str">"No aprobaste, nota: "</span> + calificacion);
+} <span class="kw">else</span> {
+    <span class="kw">System</span>.<span class="kw">out</span>.println(<span class="str">"Calificación inválida"</span>);
+}</pre>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 09: CONVERSIÓN DE TIPOS -->
+        <section>
+            <h2 data-number="09">Conversión de Tipos</h2>
+            <p>A veces necesitas cambiar un valor de un tipo a otro (p. ej., de <code>double</code> a <code>int</code>). Java permite esto, pero tienes que saber cuándo es seguro y cuándo pierdes información.</p>
+
+            <div class="analogy">
+                <strong>💡 Piénsalo así:</strong>
+                Convertir de un tipo a otro es como cambiar el formato de un archivo. Puedes convertir sin pérdida (double → int es posible pero pierdes decimales), o puedes convertir con riesgo si los valores se salen del rango del tipo destino.
+            </div>
+
+            <h3>Conversión implícita (automática)</h3>
+
+            <p>Java la hace automáticamente cuando es seguro (de un tipo "menor" a uno "mayor"):</p>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// byte → short → int → long → float → double</span>
+
+<span class="tp">int</span> numeroEntero = <span class="num">42</span>;
+<span class="tp">double</span> numeroDecimal = numeroEntero;  <span class="cm">// Conversión automática: 42.0</span>
+
+<span class="tp">byte</span> pequeño = <span class="num">10</span>;
+<span class="tp">int</span> grande = pequeño;  <span class="cm">// Conversión automática: 10</span></pre>
+            </div>
+
+            <h3>Conversión explícita (casting)</h3>
+
+            <p>Tú le dices a Java exactamente qué tipo quieres, usando paréntesis:</p>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// De double a int (PIERDES los decimales)</span>
+<span class="tp">double</span> precio = <span class="num">19.99</span>;
+<span class="tp">int</span> precioRedondeado = (<span class="tp">int</span>) precio;  <span class="cm">// 19 (se pierden los .99)</span>
+
+<span class="cm">// De long a int (cuidado si el valor es muy grande)</span>
+<span class="tp">long</span> numeroGrande = <span class="num">5000000000L</span>;
+<span class="tp">int</span> numeroChico = (<span class="tp">int</span>) numeroGrande;  <span class="cm">// ⚠️ Overflow: resultado impredecible</span>
+
+<span class="cm">// De String a int (requiere el método Integer.parseInt())</span>
+<span class="tp">String</span> texto = <span class="str">"42"</span>;
+<span class="tp">int</span> numero = <span class="tp">Integer</span>.parseInt(texto);  <span class="cm">// 42</span></pre>
+            </div>
+
+            <h3>Tabla de conversiones seguras</h3>
+
+            <table class="cmp">
+                <thead>
+                    <tr>
+                        <th>De</th>
+                        <th>A</th>
+                        <th>Seguro</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>int</td>
+                        <td>double</td>
+                        <td>✓</td>
+                        <td>Automática. Resultado: 42.0</td>
+                    </tr>
+                    <tr>
+                        <td>double</td>
+                        <td>int</td>
+                        <td>❌</td>
+                        <td>Requiere casting. Pierdes decimales. (int)3.99 = 3</td>
+                    </tr>
+                    <tr>
+                        <td>int</td>
+                        <td>long</td>
+                        <td>✓</td>
+                        <td>Automática. Seguro.</td>
+                    </tr>
+                    <tr>
+                        <td>long</td>
+                        <td>int</td>
+                        <td>❌</td>
+                        <td>Requiere casting. Riesgo de overflow si valor > 2.1 mil millones</td>
+                    </tr>
+                    <tr>
+                        <td>double</td>
+                        <td>float</td>
+                        <td>❌</td>
+                        <td>Requiere casting: (float)3.14. Posible pérdida de precisión.</td>
+                    </tr>
+                    <tr>
+                        <td>String</td>
+                        <td>int</td>
+                        <td>❌</td>
+                        <td>Usa Integer.parseInt("42"). Falla si el texto no es número.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Ejemplos prácticos</h3>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Caso 1: Redondear un número decimal</span>
+<span class="tp">double</span> valor = <span class="num">7.8</span>;
+<span class="tp">int</span> redondeado = (<span class="tp">int</span>)(valor + <span class="num">0.5</span>);  <span class="cm">// 8 (agregamos 0.5 antes de convertir)</span>
+
+<span class="cm">// Caso 2: Obtener el resto sin decimales</span>
+<span class="tp">double</span> resultado = <span class="num">17</span> / <span class="num">5</span>;      <span class="cm">// 3.4 (división de doubles)</span>
+<span class="tp">int</span> resultadoInt = <span class="num">17</span> / <span class="num">5</span>;  <span class="cm">// 3 (división de ints, sin decimales)</span>
+
+<span class="cm">// Caso 3: Convertir entrada de usuario (texto) a número</span>
+<span class="tp">String</span> edadTexto = <span class="str">"25"</span>;
+<span class="tp">int</span> edad = <span class="tp">Integer</span>.parseInt(edadTexto);  <span class="cm">// 25 (como número)</span>
+
+<span class="cm">// Caso 4: Convertir número a texto</span>
+<span class="tp">int</span> numero = <span class="num">42</span>;
+<span class="tp">String</span> numeroTexto = <span class="tp">String</span>.valueOf(numero);  <span class="cm">// "42"</span></pre>
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 1:</strong> Divisiones que pierden información. <code>int x = 17 / 5;</code> da 3, no 3.4. Si quieres decimales, haz <code>double x = 17.0 / 5.0;</code>
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 2:</strong> Overflow en casting. <code>(int)9000000000L</code> no da error pero el resultado es impredecible. Comprueba que el valor esté en rango antes de castear.
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 3:</strong> Convertir String a número sin validar. <code>Integer.parseInt("abc");</code> lanza una excepción. Siempre valida que el texto sea un número válido.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 10: PALABRAS RESERVADAS DE JAVA -->
+        <section>
+            <h2 data-number="10">Palabras Reservadas de Java</h2>
+            <p>Las <strong>palabras reservadas</strong> son palabras que Java se apropia para controlar el lenguaje. No puedes usarlas como identificadores (nombres de variables, métodos, clases). Hay 50 palabras reservadas en Java.</p>
+
+            <div class="analogy">
+                <strong>💡 Piénsalo así:</strong>
+                Las palabras reservadas son señales de tráfico: ALTO, CEDA, GIRE. Si intentas nombrar una variable "ALTO", Java te dice "no, eso ya significa algo especial". Necesitas elegir otro nombre.
+            </div>
+
+            <h3>Categorías principales</h3>
+
+            <div class="traits">
+                <div class="trait-card">
+                    <h4>🔂 Control de flujo</h4>
+                    <p><code>if</code>, <code>else</code>, <code>switch</code>, <code>case</code>, <code>default</code>, <code>for</code>, <code>while</code>, <code>do</code>, <code>break</code>, <code>continue</code>, <code>return</code></p>
+                </div>
+                <div class="trait-card">
+                    <h4>📦 Definición de tipos</h4>
+                    <p><code>class</code>, <code>interface</code>, <code>enum</code>, <code>extends</code>, <code>implements</code></p>
+                </div>
+                <div class="trait-card">
+                    <h4>👁️ Modificadores de acceso</h4>
+                    <p><code>public</code>, <code>private</code>, <code>protected</code>, <code>static</code>, <code>final</code>, <code>abstract</code></p>
+                </div>
+                <div class="trait-card">
+                    <h4>🔷 Tipos de datos</h4>
+                    <p><code>byte</code>, <code>short</code>, <code>int</code>, <code>long</code>, <code>float</code>, <code>double</code>, <code>char</code>, <code>boolean</code>, <code>void</code></p>
+                </div>
+                <div class="trait-card">
+                    <h4>⚡ Especiales</h4>
+                    <p><code>new</code>, <code>this</code>, <code>super</code>, <code>null</code>, <code>true</code>, <code>false</code>, <code>import</code>, <code>package</code>, <code>throw</code>, <code>throws</code>, <code>try</code>, <code>catch</code>, <code>finally</code></p>
+                </div>
+            </div>
+
+            <h3>Lista completa (50 palabras)</h3>
+
+            <div class="code-panel" style="background: var(--ink-2); padding: 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; overflow-x: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
+                <div style="color: var(--amber); font-weight: 600;">abstract</div>
+                <div style="color: var(--amber); font-weight: 600;">assert</div>
+                <div style="color: var(--amber); font-weight: 600;">boolean</div>
+                <div style="color: var(--amber); font-weight: 600;">break</div>
+                <div style="color: var(--amber); font-weight: 600;">byte</div>
+                <div style="color: var(--amber); font-weight: 600;">case</div>
+                <div style="color: var(--amber); font-weight: 600;">catch</div>
+                <div style="color: var(--amber); font-weight: 600;">char</div>
+                <div style="color: var(--amber); font-weight: 600;">class</div>
+                <div style="color: var(--amber); font-weight: 600;">const</div>
+                <div style="color: var(--amber); font-weight: 600;">continue</div>
+                <div style="color: var(--amber); font-weight: 600;">default</div>
+                <div style="color: var(--amber); font-weight: 600;">do</div>
+                <div style="color: var(--amber); font-weight: 600;">double</div>
+                <div style="color: var(--amber); font-weight: 600;">else</div>
+                <div style="color: var(--amber); font-weight: 600;">enum</div>
+                <div style="color: var(--amber); font-weight: 600;">extends</div>
+                <div style="color: var(--amber); font-weight: 600;">final</div>
+                <div style="color: var(--amber); font-weight: 600;">finally</div>
+                <div style="color: var(--amber); font-weight: 600;">float</div>
+                <div style="color: var(--amber); font-weight: 600;">for</div>
+                <div style="color: var(--amber); font-weight: 600;">goto</div>
+                <div style="color: var(--amber); font-weight: 600;">if</div>
+                <div style="color: var(--amber); font-weight: 600;">implements</div>
+                <div style="color: var(--amber); font-weight: 600;">import</div>
+                <div style="color: var(--amber); font-weight: 600;">instanceof</div>
+                <div style="color: var(--amber); font-weight: 600;">int</div>
+                <div style="color: var(--amber); font-weight: 600;">interface</div>
+                <div style="color: var(--amber); font-weight: 600;">long</div>
+                <div style="color: var(--amber); font-weight: 600;">native</div>
+                <div style="color: var(--amber); font-weight: 600;">new</div>
+                <div style="color: var(--amber); font-weight: 600;">package</div>
+                <div style="color: var(--amber); font-weight: 600;">private</div>
+                <div style="color: var(--amber); font-weight: 600;">protected</div>
+                <div style="color: var(--amber); font-weight: 600;">public</div>
+                <div style="color: var(--amber); font-weight: 600;">return</div>
+                <div style="color: var(--amber); font-weight: 600;">short</div>
+                <div style="color: var(--amber); font-weight: 600;">static</div>
+                <div style="color: var(--amber); font-weight: 600;">strictfp</div>
+                <div style="color: var(--amber); font-weight: 600;">super</div>
+                <div style="color: var(--amber); font-weight: 600;">switch</div>
+                <div style="color: var(--amber); font-weight: 600;">synchronized</div>
+                <div style="color: var(--amber); font-weight: 600;">this</div>
+                <div style="color: var(--amber); font-weight: 600;">throw</div>
+                <div style="color: var(--amber); font-weight: 600;">throws</div>
+                <div style="color: var(--amber); font-weight: 600;">transient</div>
+                <div style="color: var(--amber); font-weight: 600;">try</div>
+                <div style="color: var(--amber); font-weight: 600;">void</div>
+                <div style="color: var(--amber); font-weight: 600;">volatile</div>
+                <div style="color: var(--amber); font-weight: 600;">while</div>
+            </div>
+
+            <h3>Las palabras reservadas más comunes (por ahora)</h3>
+
+            <p>A medida que avances en el curso, entenderás para qué sirve cada una. Por ahora, estas son las más importantes:</p>
+
+            <div class="code-panel">
+                <pre>
+<span class="cm">// Tipos primitivos</span>
+<span class="kw">int</span>, <span class="kw">double</span>, <span class="kw">boolean</span>, <span class="kw">char</span>, <span class="kw">long</span>, <span class="kw">float</span>
+
+<span class="cm">// Definición de clases y métodos</span>
+<span class="kw">public</span> <span class="kw">class</span> MiClase { ... }
+<span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(String[] args) { ... }
+
+<span class="cm">// Control de flujo (veremos después)</span>
+<span class="kw">if</span> (...) { ... } <span class="kw">else</span> { ... }
+<span class="kw">for</span> (...) { ... }
+<span class="kw">while</span> (...) { ... }
+<span class="kw">return</span> valor;
+
+<span class="cm">// Valores especiales</span>
+<span class="kw">true</span>, <span class="kw">false</span>, <span class="kw">null</span>
+
+<span class="cm">// Modificadores</span>
+<span class="kw">final</span> <span class="tp">double</span> PI = <span class="num">3.14159</span>;  <span class="cm">// Constante</span>
+<span class="kw">static</span> <span class="tp">int</span> contador;      <span class="cm">// Variable de clase</span></pre>
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 1:</strong> Usar una palabra reservada como nombre de variable. <code>int if = 5;</code> da error. Usa <code>int condicion = 5;</code>
+            </div>
+
+            <div class="pitfall">
+                <strong>Error común 2:</strong> Confundir <code>null</code> ("nada") con <code>0</code> (número cero) o <code>""</code> (texto vacío). Son distintos.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 05 (Pareto): Las 5 reglas que explican el 80% -->
+        <section>
+            <h2 data-number="★">Principio de Pareto: El 80/20</h2>
+            <p>Aquí están las 5 reglas que explican el 80% de lo que necesitas saber sobre elementos de un programa Java:</p>
+
+            <ul class="checklist">
+                <li><strong>Siempre declara variables con su tipo.</strong> <code>int x = 5;</code> Esto permite a Java verificar que usas los valores correctamente.</li>
+                <li><strong>Comenta el "por qué", no el "qué".</strong> Tu código debe explicarse a sí mismo. Los comentarios explican decisiones no obvias.</li>
+                <li><strong>Usa int y double como tus tipos por defecto.</strong> Casi siempre funcionan. Otros tipos (byte, long, float) son para casos especiales.</li>
+                <li><strong>La precedencia de operadores importa.</strong> Cuando tengas duda, usa paréntesis: <code>(a + b) * c</code> es más claro que <code>a + b * c</code>.</li>
+                <li><strong>Las conversiones de tipos pueden perder información.</strong> Cuando conviertes double a int, pierdes decimales. Hazlo conscientemente.</li>
+            </ul>
+        </section>
+
+        <!-- SECCIÓN 06: ACTIVE RECALL -->
+        <section>
+            <h2 data-number="❓">Active Recall: Pruébate a ti mismo</h2>
+            <p>Haz clic en cada pregunta para revelar la respuesta. Intenta responder ANTES de hacer clic.</p>
+
+            <div class="quiz-section">
+                <div class="quiz-item">
+                    <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+                        <div>¿Cuál es la diferencia entre un comentario <code>//</code> y <code>/* */</code>?</div>
+                    </div>
+                    <div class="quiz-answer">
+                        <p><code>//</code> comenta hasta el final de la línea actual. <code>/* */</code> puede abarcar varias líneas. Ambos son ignorados por Java al compilar.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+                        <div>¿Cuál de estos es un identificador válido? <code>2numero</code>, <code>numero-2</code>, <code>_numero2</code></div>
+                    </div>
+                    <div class="quiz-answer">
+                        <p><code>_numero2</code> es válido. <code>2numero</code> comienza con dígito (inválido). <code>numero-2</code> contiene guion normal (inválido).</p>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+                        <div>¿Cuántos bytes ocupa un <code>long</code>? ¿Y su rango?</div>
+                    </div>
+                    <div class="quiz-answer">
+                        <p>Un <code>long</code> ocupa 8 bytes. Su rango es de -9,223,372,036,854,775,808 a +9,223,372,036,854,775,807.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+                        <div>¿Cuál es el resultado de <code>17 % 5</code>? ¿Y de <code>15 / 3</code>?</div>
+                    </div>
+                    <div class="quiz-answer">
+                        <p><code>17 % 5</code> = 2 (el resto de la división). <code>15 / 3</code> = 5 (división exacta).</p>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+                        <div>¿Qué ocurre al hacer <code>double x = 3.7; int y = (int) x;</code>?</div>
+                    </div>
+                    <div class="quiz-answer">
+                        <p><code>y</code> obtiene el valor 3. Se pierden los decimales (.7) porque <code>int</code> no puede representar decimales.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+                        <div>¿Puedo usar <code>int</code> como nombre de variable?</div>
+                    </div>
+                    <div class="quiz-answer">
+                        <p>No. <code>int</code> es una palabra reservada de Java. Debes elegir otro nombre, como <code>entero</code> o <code>numero</code>.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+                        <div>¿Cuál es la diferencia entre <code>++x</code> y <code>x++</code>?</div>
+                    </div>
+                    <div class="quiz-answer">
+                        <p><code>++x</code> (pre-incremento) incrementa primero y luego devuelve el valor. <code>x++</code> (post-incremento) devuelve primero el valor antiguo, luego incrementa. En la mayoría de casos funcionan igual, pero en expresiones pueden diferir.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+                        <div>¿Cuál es el resultado de <code>2 + 3 * 4</code>?</div>
+                    </div>
+                    <div class="quiz-answer">
+                        <p>14. La multiplicación se ejecuta primero (precedencia), así que: 3 * 4 = 12, luego 2 + 12 = 14.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+                        <div>¿Qué significa <code>final double PI = 3.14159;</code>?</div>
+                    </div>
+                    <div class="quiz-answer">
+                        <p>Define una constante llamada PI. Después de asignarle 3.14159, NO puedes cambiar su valor. Cualquier intento de asignación posterior da error.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <p class="footer-note">
+            Una guía exhaustiva de los elementos fundamentales de Java, desde comentarios hasta conversión de tipos. Domina estos conceptos y tendrás la base sólida para programar en Java.
+            <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+        </p>
+    </div>
+</body>
+</html>
