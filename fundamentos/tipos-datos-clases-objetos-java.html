@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tipos de datos: clases y objetos en Java (Cap. 2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1F2B; --ink-2:#242A3B; --card:#F5F1E8; --card-line:#DED6C2;
+    --text:#E4E7ED; --text-dim:#9AA1B4; --amber:#E8A33D; --teal:#4FB0AE; --rose:#E06C75;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink); color:var(--text); font-family:'Inter',sans-serif; line-height:1.6;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
+  code,pre,.mono{font-family:'JetBrains Mono',monospace;}
+  p code,li code,.quiz-item code,.pitfall code,.tip code,.warn code,.key-point code,.analogy code,td code{background:rgba(232,163,61,.12); border:1px solid rgba(232,163,61,.28); color:var(--amber); padding:.5px 5px; border-radius:4px; font-size:.86em;}
+  .wrap{max-width:900px; margin:0 auto; padding:0 24px 90px;}
+
+  /* HERO */
+  .hero{padding:56px 24px 30px; text-align:center; border-bottom:1px solid #2E3549;}
+  .hero .badge{color:var(--amber); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem; font-weight:700; margin-bottom:10px;}
+  .hero h1{font-size:1.95rem; margin:0 0 10px; color:#fff;}
+  .hero p{color:var(--text-dim); max-width:680px; margin:0 auto; font-size:.98rem;}
+  .hero .src{margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; color:var(--text-dim);}
+  .hero .src b{color:var(--teal); font-weight:500;}
+
+  /* navegación de regreso */
+  .top-nav{max-width:900px; margin:0 auto; padding:20px 24px 0;}
+  .top-nav a{display:inline-block; color:var(--teal); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:.82rem; border:1px solid #2E3549; padding:7px 13px; border-radius:6px; background:var(--ink-2); transition:border-color .15s, color .15s;}
+  .top-nav a:hover{border-color:var(--teal); color:var(--amber);}
+
+  /* NAV de saltos rápidos */
+  .nav{max-width:960px; margin:22px auto 0; padding:0 24px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .nav a{text-decoration:none; color:var(--text); background:var(--ink-2); border:1px solid #2E3549; padding:6px 13px; border-radius:16px; font-size:.76rem; font-family:'JetBrains Mono',monospace;}
+  .nav a:hover{border-color:var(--amber); color:var(--amber);}
+
+  /* SECCIONES */
+  section{padding:42px 0; border-bottom:1px solid #2E3549;}
+  section:last-child{border-bottom:none;}
+  .eyebrow-sm{color:var(--amber); text-transform:uppercase; font-size:.72rem; letter-spacing:.12em; font-weight:600;}
+  h2{font-size:1.45rem; margin:6px 0 14px; color:#fff;}
+  h3.sub{font-size:1.05rem; color:#fff; margin:26px 0 6px;}
+  p{font-size:.96rem; color:var(--text);}
+  .muted{color:var(--text-dim); font-size:.92rem;}
+
+  /* ANALOGÍA */
+  .analogy{background:var(--ink-2); border-left:3px solid var(--teal); padding:16px 20px; border-radius:0 8px 8px 0; margin:16px 0; color:var(--text-dim); font-size:.95rem;}
+  .analogy b{color:var(--teal);}
+
+  /* CÓDIGO */
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; overflow-x:auto; font-size:.84rem; line-height:1.55; color:#D6D9E0; margin:10px 0;}
+  .kw{color:#E8A33D;} .tp{color:#4FB0AE;} .cm{color:#6A7086;} .num{color:#E06C75;} .str{color:#E8A33D;} .an{color:#B5541A; font-weight:700;} .tv{color:#B5541A; font-weight:700;}
+  pre.out{background:#12151E; border:1px dashed #3C4459; border-radius:8px; padding:12px 16px; font-size:.82rem; color:var(--teal); margin:6px 0 14px; white-space:pre-wrap;}
+  pre.out::before{content:"Salida del programa"; display:block; color:#6A7086; font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px;}
+
+  /* Archivos lado a lado */
+  .code-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:680px){.code-grid{grid-template-columns:1fr;}}
+  .code-panel{border-radius:10px; overflow:hidden; border:1px solid #2E3549;}
+  .code-panel .lbl{padding:7px 14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;}
+  .code-panel.a .lbl{background:rgba(79,176,174,.15); color:var(--teal);}
+  .code-panel.b .lbl{background:rgba(232,163,61,.15); color:var(--amber);}
+  .code-panel pre{margin:0; background:#12151E; padding:14px 16px; overflow-x:auto; font-size:.8rem; line-height:1.55; color:#D6D9E0;}
+
+  /* Grids de 2 columnas */
+  .traits,.uses{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px;}
+  @media (max-width:600px){.traits,.uses{grid-template-columns:1fr;}}
+  .traits .box,.uses .box{background:var(--ink-2); border-radius:8px; padding:16px 18px; border:1px solid #2E3549;}
+  .traits .box h3{margin:0 0 6px; font-size:1rem; color:var(--teal);}
+  .uses .box h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .traits .box p,.uses .box p{margin:0; font-size:.9rem; color:var(--text-dim);}
+
+  /* Tabla comparativa */
+  table.cmp{width:100%; border-collapse:collapse; margin-top:12px; font-size:.86rem;}
+  table.cmp th,table.cmp td{border:1px solid #2E3549; padding:9px 11px; text-align:left; vertical-align:top;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td code,table.cmp td b{color:#fff;}
+  table.cmp td.center,table.cmp th.center{text-align:center;}
+
+  /* Errores frecuentes y avisos */
+  .pitfall{display:flex; gap:12px; margin:14px 0; align-items:flex-start;}
+  .pitfall .icon{color:var(--rose); font-size:1.2rem; line-height:1.4;}
+  .pitfall .body{font-size:.95rem; color:var(--text);}
+  .pitfall .body b{color:#fff;}
+  .warn{display:flex; gap:10px; background:rgba(224,108,117,.08); border:1px solid rgba(224,108,117,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .warn .icon{color:var(--rose);}
+  .tip{display:flex; gap:10px; background:rgba(79,176,174,.08); border:1px solid rgba(79,176,174,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .tip .icon{color:var(--teal);}
+  .key-point{background:var(--ink-2); border-left:3px solid var(--rose); border-radius:0 8px 8px 0; padding:12px 16px; margin-top:14px; font-size:.88rem; color:var(--text-dim);}
+  .key-point b{color:#fff;}
+
+  /* Fórmula destacada */
+  .formula{background:#12151E; border:1px solid var(--card-line); border-radius:8px; padding:14px 16px; margin:16px 0; text-align:center; font-family:'JetBrains Mono',monospace; font-size:.95rem; color:#fff;}
+  .formula b{color:var(--amber);}
+
+  /* Checklist Pareto */
+  .checklist{list-style:none; padding:0; margin:18px 0;}
+  .checklist li{display:flex; gap:10px; padding:10px 0; border-bottom:1px dashed #2E3549; font-size:.95rem;}
+  .checklist li::before{content:"\2192"; color:var(--amber); font-weight:700;}
+
+  /* Active recall */
+  .quiz-item{background:var(--ink-2); border:1px solid #2E3549; border-radius:8px; padding:16px 18px; margin-bottom:12px;}
+  .quiz-item .q{font-weight:600; color:#fff; cursor:pointer;}
+  .quiz-item .a{display:none; margin-top:10px; color:var(--text-dim); font-size:.92rem; border-top:1px dashed #3C4459; padding-top:10px;}
+  .quiz-item.open .a{display:block;}
+
+  /* Bloque tipo árbol de directorios */
+  .tree{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:#D6D9E0; white-space:pre; overflow-x:auto; margin:10px 0;}
+
+  ul.bullets{padding-left:20px; margin:12px 0;}
+  ul.bullets li{margin-bottom:7px; font-size:.93rem; color:var(--text-dim);}
+  ul.bullets li b{color:#fff;}
+  ol.steps{padding-left:20px; margin:12px 0;}
+  ol.steps li{margin-bottom:9px; font-size:.93rem; color:var(--text-dim);}
+  ol.steps li b{color:#fff;}
+
+  .footer-note{color:var(--text-dim); font-size:.85rem; text-align:center; padding:48px 24px 0; border-top:1px solid #2E3549; margin-top:50px;}
+  .footer-note .name{color:#fff; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; margin-top:6px; display:block;}
+
+  /* ============ SIGNATURE: taller de clases ============ */
+  .sig{max-width:960px; margin:30px auto 0; padding:0 24px;}
+  .sig-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:12px; padding:20px 22px 22px;}
+  .sig-title{font-family:'Fraunces',serif; font-size:1.2rem; color:#fff; font-weight:600;}
+  .sig-sub{color:var(--text-dim); font-size:.9rem; margin:6px 0 0;}
+  .sig-sub b{color:#fff; font-weight:600;}
+  .sig-controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; margin-top:16px; padding:14px; background:#1B1F2B; border:1px solid #2E3549; border-radius:8px;}
+  .sig-controls button{background:var(--amber); color:var(--ink); border:none; padding:9px 15px; border-radius:6px; font-weight:600; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:.78rem;}
+  .sig-controls button:hover{filter:brightness(1.08);}
+  .sig-controls button.secondary{background:transparent; color:var(--text); border:1px solid #3C4459;}
+  .sig-controls button.secondary:hover{border-color:var(--amber); color:var(--amber);}
+  .sig-field{display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--text-dim);}
+  .sig-field input[type=text]{width:110px; background:#12151E; border:1px solid #3C4459; color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.84rem; padding:8px 9px; border-radius:6px;}
+  .sig-field input:focus{outline:none; border-color:var(--amber);}
+  .sig-field select{background:#12151E; border:1px solid #3C4459; color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.78rem; padding:8px 9px; border-radius:6px; cursor:pointer;}
+  .sig-field select:focus{outline:none; border-color:var(--amber);}
+  .sig-check{display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:.76rem; color:var(--text-dim); cursor:pointer;}
+  .sig-check input{accent-color:var(--amber); width:16px; height:16px; cursor:pointer;}
+  .sig-grid{display:grid; grid-template-columns:1.1fr 1fr; gap:16px; margin-top:16px;}
+  @media (max-width:780px){.sig-grid{grid-template-columns:1fr;}}
+  .bp-title{font-family:'JetBrains Mono',monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:#6A7086; margin-bottom:8px;}
+  .bp-title b{color:var(--teal); font-weight:500;}
+  .bp{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:12px 10px; font-family:'JetBrains Mono',monospace; font-size:.78rem; line-height:1.7; color:#D6D9E0;}
+  .bp .cl{white-space:pre; padding:0 8px;}
+  .bp .mem{display:flex; justify-content:space-between; gap:8px; align-items:center; white-space:pre; padding:1px 8px 1px 22px; border-left:3px solid transparent; border-radius:0 4px 4px 0; cursor:pointer; transition:background .15s, border-color .15s;}
+  .bp .mem:hover{background:rgba(232,163,61,.10); border-left-color:var(--amber);}
+  .bp .mem.act{background:rgba(232,163,61,.16); border-left-color:var(--amber);}
+  .bp .mem .txt{overflow:hidden; text-overflow:ellipsis;}
+  .pill{font-size:.6rem; padding:1px 7px; border-radius:9px; text-transform:uppercase; letter-spacing:.05em; font-weight:700; flex:none;}
+  .pill.priv{background:rgba(224,108,117,.16); color:var(--rose); border:1px solid rgba(224,108,117,.4);}
+  .pill.pub{background:rgba(232,163,61,.16); color:var(--amber); border:1px solid rgba(232,163,61,.4);}
+  .pill.stc{background:rgba(79,176,174,.16); color:var(--teal); border:1px solid rgba(79,176,174,.4);}
+  .pill.prot{background:rgba(198,120,221,.16); color:#C678DD; border:1px solid rgba(198,120,221,.4);}
+  .objs{display:flex; flex-wrap:wrap; gap:10px; min-height:76px; background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:12px;}
+  .objs-empty{font-family:'JetBrains Mono',monospace; font-size:.74rem; color:#6A7086; align-self:center;}
+  .obj-card{background:#1B1F2B; border:1px solid #3C4459; border-radius:8px; padding:9px 11px; font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--text-dim); cursor:pointer; min-width:128px; transition:.2s;}
+  .obj-card b{color:#fff; display:block; font-size:.78rem; margin-bottom:3px;}
+  .obj-card .ln{display:block;}
+  .obj-card .val{color:var(--amber);}
+  .obj-card.sel{border-color:var(--amber); box-shadow:0 0 0 1px rgba(232,163,61,.35); background:#1F2434;}
+  .static-box{margin-top:12px; background:rgba(79,176,174,.07); border:1px dashed rgba(79,176,174,.5); border-radius:8px; padding:9px 11px; font-family:'JetBrains Mono',monospace; font-size:.76rem; color:var(--teal);}
+  .sig-console{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:11px 13px; margin-top:12px; min-height:130px; max-height:180px; overflow-y:auto; font-family:'JetBrains Mono',monospace; font-size:.74rem; line-height:1.7; color:#D6D9E0;}
+  .sig-console .ok{color:var(--teal);}
+  .sig-console .bad{color:var(--rose);}
+  .sig-console .dim{color:#6A7086;}
+  .sig-console .info{color:var(--amber);}
+  .sig-explain{background:#1B1F2B; border-left:3px solid var(--amber); border-radius:0 6px 6px 0; padding:11px 14px; font-size:.85rem; color:var(--text-dim); min-height:64px; margin-top:12px;}
+  .sig-explain b{color:var(--amber);}
+  .sig-legend{display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--text-dim);}
+  .sig-legend span{display:flex; align-items:center; gap:6px;}
+  .lg{width:11px; height:11px; border-radius:3px; display:inline-block;}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="../index.html">&#8592; Volver al índice · Unidad 0</a>
+  <a href="clases-objetos-herencia-java.html">Ver también: clases y herencia a fondo &#8594;</a>
+  <a href="elementos-programa-java.html">Ver también: elementos del programa &#8594;</a>
+</nav>
+
+<div class="hero">
+  <div class="badge">Unidad 0 · Fundamentos de programación</div>
+  <h1>Tipos de datos: clases y objetos</h1>
+  <p>Cómo se inventa un tipo de dato nuevo en Java: el tipo abstracto de datos (TAD), su especificación, y cómo se convierte en una <b>clase</b> con atributos privados, constructores, paquetes, miembros <code>static</code> y recolección de basura. Todo el capítulo 2, desglosado con ejemplos ejecutables.</p>
+  <div class="src">Base bibliográfica: <b>Joyanes y Zahonero — Estructuras de datos en Java, 1ª edición</b> · Cap. 2 (pp. 23-60)</div>
+</div>
+
+<!-- ===== SIGNATURE: taller de clases ===== -->
+<div class="sig">
+  <div class="sig-zone">
+    <div class="sig-title">Taller de clases · del plano al objeto</div>
+    <p class="sig-sub">A la izquierda el <b>plano</b> (la clase <b>CuentaBanco</b>); a la derecha los <b>objetos</b> creados con <b>new</b>. Elige en «ver desde» <b>dónde te colocas</b> — otro paquete, el mismo paquete o dentro de la clase — y pulsa cualquier miembro del plano para leer el veredicto del compilador (prueba el <code>protected</code>). Crea objetos, muévelos con <b>depositar(100)</b>, intenta un <b>saldo = 9999</b> directo y suéltalos con <b>últimaRef = null</b> para ver actuar al recolector de basura.</p>
+
+    <div class="sig-controls">
+      <label class="sig-field">titular <input type="text" id="inTitular" placeholder="opcional" maxlength="14"></label>
+      <button onclick="crearObjeto()">new CuentaBanco()</button>
+      <button class="secondary" onclick="depositarObjeto()">depositar(100)</button>
+      <button class="secondary" onclick="accesoDirecto()"><span id="refAcceso">c1</span>.saldo = 9999</button>
+      <button class="secondary" onclick="liberarObjeto()">últimaRef = null</button>
+      <button class="secondary" onclick="reiniciarTaller()">Reiniciar</button>
+      <label class="sig-field">ver desde
+        <select id="vistaAcceso" onchange="cambiarVista()">
+          <option value="fuera">otro paquete (sin heredar)</option>
+          <option value="paquete">mismo paquete</option>
+          <option value="dentro">dentro de CuentaBanco</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="sig-grid">
+      <div>
+        <div class="bp-title">CuentaBanco.java — <b>el plano (una sola copia)</b></div>
+        <div class="bp">
+          <div class="cl"><span class="kw">public class</span> <span class="tp">CuentaBanco</span> {</div>
+          <div class="mem" onclick="tocarMiembro('titular', this)"><span class="txt"><span class="kw">private</span> <span class="tp">String</span> titular;</span><span class="pill priv">private</span></div>
+          <div class="mem" onclick="tocarMiembro('saldo', this)"><span class="txt"><span class="kw">private</span> <span class="kw">double</span> saldo;</span><span class="pill priv">private</span></div>
+          <div class="mem" onclick="tocarMiembro('limite', this)"><span class="txt"><span class="kw">protected</span> <span class="kw">double</span> limite;</span><span class="pill prot">protected</span></div>
+          <div class="mem" onclick="tocarMiembro('total', this)"><span class="txt"><span class="kw">static int</span> totalCuentas;</span><span class="pill stc">static</span></div>
+          <div class="mem" onclick="tocarMiembro('ctor', this)"><span class="txt"><span class="kw">public</span> CuentaBanco(<span class="tp">String</span> t, <span class="kw">double</span> s)</span><span class="pill pub">ctor</span></div>
+          <div class="mem" onclick="tocarMiembro('depositar', this)"><span class="txt"><span class="kw">public void</span> depositar(<span class="kw">double</span> m)</span><span class="pill pub">public</span></div>
+          <div class="mem" onclick="tocarMiembro('getSaldo', this)"><span class="txt"><span class="kw">public double</span> getSaldo()</span><span class="pill pub">public</span></div>
+          <div class="cl">}</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="bp-title">Objetos creados — <b>cada uno tiene su propia copia de los atributos</b></div>
+        <div class="objs" id="objZone"></div>
+        <div class="static-box" id="staticVal">CuentaBanco.totalCuentas = 0</div>
+        <div class="sig-console" id="tallerLog"></div>
+      </div>
+    </div>
+
+    <div class="sig-explain" id="tallerExp">Pulsa un miembro del plano, un botón o una tarjeta de objeto: aquí se explica lo que acaba de pasar.</div>
+
+    <div class="sig-legend">
+      <span><i class="lg" style="background:rgba(224,108,117,.7)"></i> acceso denegado</span>
+      <span><i class="lg" style="background:rgba(232,163,61,.7)"></i> permitido (público)</span>
+      <span><i class="lg" style="background:rgba(198,120,221,.7)"></i> protected · paquete + subclases</span>
+      <span><i class="lg" style="background:rgba(79,176,174,.7)"></i> static · compartido por la clase</span>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <a href="#s01">abstracción</a>
+  <a href="#s02">TAD</a>
+  <a href="#s03">especificación</a>
+  <a href="#s04">clases y objetos</a>
+  <a href="#s05">visibilidad</a>
+  <a href="#s06">métodos y archivos</a>
+  <a href="#s07">paquetes</a>
+  <a href="#s08">constructores</a>
+  <a href="#s09">recolección (gc)</a>
+  <a href="#s10">this</a>
+  <a href="#s11">static</a>
+  <a href="#s12">clase Object</a>
+  <a href="#s13">TAD en Java</a>
+  <a href="#s14">errores</a>
+  <a href="#s15">pareto</a>
+  <a href="#s16">recall</a>
+</div>
+
+<div class="wrap">
+
+<!-- ===================== 01 ===================== -->
+<section id="s01">
+  <div class="eyebrow-sm">01 · Abstracción en lenguajes de programación (2.1)</div>
+  <h2>Usar algo sin saber cómo está hecho</h2>
+  <p>Un programa real no puede escribirse de una sola pieza: hay que dividirlo en piezas más pequeñas (<b>modularidad</b>) y crear tipos de datos que se ajusten exactamente a lo que el problema necesita (<b>abstracción de datos</b>). Bien usadas, estas dos técnicas producen programas más cortos, más legibles y más flexibles.</p>
+
+  <div class="analogy">
+    <b>Analogía (estilo Feynman):</b> conduces un auto girando el volante y el carro dobla. No necesitas saber nada de la cremallera ni de las varillas de dirección. Si el fabricante cambia ese mecanismo interno por otro, tú sigues girando el mismo volante y el carro sigue doblando. Eso es abstracción: <b>conoces lo que hace (el qué), no cómo lo hace (el cómo)</b>, y el cómo puede cambiar sin que te enteres.
+  </div>
+
+  <p>La abstracción que ofrecen los lenguajes de programación se divide en dos familias:</p>
+  <ul class="bullets">
+    <li><b>Abstracción de control</b> — describe el orden en que se ejecutan las sentencias. El microprocesador solo sabe hacer dos cosas: <i>secuencia</i> y <i>salto</i>; los lenguajes añaden encima las estructuras de control que ya viste (<code>if</code>, <code>while</code>, <code>for</code>). A nivel de unidad aparece la <b>abstracción procedimental</b>: los subprogramas son cajas negras — basta con saber <i>qué</i> hace la función y cuál es su parámetro, no cómo está implementada por dentro. En Java, la abstracción procedimental son los <b>métodos</b>.</li>
+    <li><b>Abstracción de datos</b> — la técnica de <b>inventar tipos de datos nuevos</b>, adecuados a la aplicación que se quiere escribir. FORTRAN, COBOL y ALGOL 60 traían tipos fijos (enteros, reales, caracteres); Pascal y ALGOL 68 permitieron ampliarlos con arrays y registros; y <b>SIMULA-67</b> dio el paso decisivo al mezclar datos y procedimientos en una sola construcción: <b>la clase</b>, de la que nació la programación orientada a objetos.</li>
+  </ul>
+
+  <h3 class="sub">Los tres tipos de datos que usa un programa</h3>
+  <table class="cmp">
+    <tr><th>Categoría</th><th>Ejemplos en Java</th><th>Quién lo define</th></tr>
+    <tr><td><b>Básicos (predefinidos)</b></td><td><code>int</code>, <code>char</code>, <code>double</code>, <code>boolean</code></td><td>El propio lenguaje</td></tr>
+    <tr><td><b>Estructurados</b></td><td>arrays, registros/estructuras (cap. 3 del libro)</td><td>Composición de tipos básicos</td></tr>
+    <tr><td><b>Definidos por el usuario (TAD)</b></td><td><code>Punto</code>, <code>CuentaBanco</code>, <code>Conjunto</code></td><td><b>Tú</b>, escribiendo una clase</td></tr>
+  </table>
+
+  <div class="tip"><span class="icon">💡</span><div>Los tipos básicos se estudiaron a fondo en la página <a href="elementos-programa-java.html" style="color:var(--teal);">Elementos de un programa Java</a>. Aquí el tema es la tercera fila: el tipo que tú inventas.</div></div>
+</section>
+
+<!-- ===================== 02 ===================== -->
+<section id="s02">
+  <div class="eyebrow-sm">02 · Tipos abstractos de datos (2.2)</div>
+  <h2>El TAD: datos + operaciones, con la representación oculta</h2>
+  <p>Un <b>tipo abstracto de datos (TAD)</b> es un tipo de dato definido por el programador. «Abstracto» significa que el programador <i>abstrae</i> un concepto creando un tipo nuevo. En esencia, un TAD se compone de sus datos y de las operaciones que se pueden realizar sobre ellos:</p>
+
+  <div class="formula">TAD <b>=</b> Representación (datos) <b>+</b> Operaciones (funciones y procedimientos)</div>
+
+  <p>El ejemplo clásico del libro: en Java <b>no existe</b> un tipo <code>Punto</code> con coordenadas x, y… pero es posible crearlo: se deciden <i>qué valores</i> guardan sus variables y <i>qué operaciones</i> lo manipulan. Para que un tipo definido por el usuario sea considerado un TAD, Ghezzi señala dos condiciones:</p>
+  <ul class="bullets">
+    <li>Existe una <b>construcción del lenguaje</b> que asocia la representación de los datos con las operaciones que los manipulan (en Java: la clase).</li>
+    <li>La <b>representación queda oculta</b> a las unidades de programa que usan el tipo (en Java: los miembros <code>private</code>).</li>
+  </ul>
+
+  <div class="traits">
+    <div class="box"><h3>Interfaz</h3><p>Lo visible para el exterior: las operaciones (métodos <code>public</code>) con las que el resto del programa se comunica con el TAD. Es la «vista simplificada» del objeto.</p></div>
+    <div class="box"><h3>Implementación</h3><p>Dos decisiones: (1) la <b>representación</b>, elegir las estructuras de datos; (2) las <b>operaciones</b>, elegir los algoritmos. Todo lo <code>private</code>.</p></div>
+    <div class="box"><h3>Ocultación de la información</h3><p>Las estructuras de datos reales son invisibles para el cliente; los algoritmos están encapsulados dentro del propio TAD.</p></div>
+    <div class="box"><h3>Cliente del TAD</h3><p>Quien usa el TAD solo llama a operaciones, sin interesarse por la representación física: podría cambiarse el interior sin tocar su código.</p></div>
+  </div>
+
+  <h3 class="sub">¿Para qué sirve especificar un TAD? Seis ventajas</h3>
+  <ol class="steps">
+    <li><b>Mejor conceptualización del mundo real</b>: agrupa estructuras y comportamientos comunes en un solo concepto.</li>
+    <li><b>Mejor robustez</b>: al tipar cada variable, el compilador detecta errores de tipo antes de ejecutar.</li>
+    <li><b>Mejor rendimiento</b>: conocer los objetos permite optimizar en tiempo de compilación.</li>
+    <li><b>Separa implementación de especificación</b>: se puede mejorar el interior sin romper la interfaz pública.</li>
+    <li><b>Extensibilidad</b>: los componentes reutilizables son más fáciles de crear y mantener.</li>
+    <li><b>Recoge la semántica del tipo</b>: las operaciones y los atributos quedan localizados en un solo sitio.</li>
+  </ol>
+
+  <table class="cmp">
+    <tr><th>Lenguaje</th><th>La unidad que implementa un TAD se llama</th></tr>
+    <tr><td>Modula-2</td><td>módulo</td></tr>
+    <tr><td>Ada</td><td>paquete</td></tr>
+    <tr><td>C++</td><td>clase</td></tr>
+    <tr><td><b>Java</b></td><td><b>clase</b></td></tr>
+  </table>
+
+  <div class="tip"><span class="icon">💡</span><div>Ya tienes un ejemplo completo de TAD hecho y funcionando en el curso: <a href="../tda-cuenta-bancaria-java.html" style="color:var(--teal);">TDA CuentaBancaria</a>. La teoría de esta sección es el marco que lo explica.</div></div>
+</section>
+
+<!-- ===================== 03 ===================== -->
+<section id="s03">
+  <div class="eyebrow-sm">03 · Especificación de los TAD (2.3)</div>
+  <h2>Escribir QUÉ hace el TAD antes de CÓMO lo hace</h2>
+  <p>La especificación describe el comportamiento del TAD: los valores que pueden tomar sus datos y las operaciones definidas sobre ellos. Hay dos enfoques, y conviene conocer los dos porque se complementan.</p>
+
+  <h3 class="sub">3.1 Especificación informal — en lenguaje natural</h3>
+  <p>Primero se nombra el TAD y sus datos; después, cada operación con sus argumentos y una descripción funcional:</p>
+  <pre class="code"><span class="tp">TAD Conjunto</span> (colección de elementos sin duplicidades, en cualquier
+orden; representa conjuntos matemáticos con sus operaciones)
+
+Conjuntovacio()
+    Crea un conjunto sin elementos.
+
+Añadir(Conjunto, elemento)
+    Comprueba si el elemento forma parte del conjunto; en caso negativo,
+    es añadido. La operación modifica al conjunto.
+
+Retirar(Conjunto, elemento)
+    Si el elemento pertenece al conjunto, es eliminado. Modifica al conjunto.
+
+Pertenece(Conjunto, elemento)
+    Devuelve cierto si el elemento forma parte del conjunto.
+
+Esvacio(Conjunto)
+    Devuelve cierto si el conjunto no tiene elementos.
+
+Cardinal(Conjunto)
+    Devuelve el número de elementos del conjunto.
+
+Union(Conjunto, Conjunto)
+    Devuelve un conjunto con los elementos comunes y no comunes a los dos.</pre>
+  <p class="muted">No sigue normas rígidas: simplemente indica, de forma comprensible, la acción que realiza cada operación. Sirve para <b>comunicar</b> la idea del tipo.</p>
+
+  <h3 class="sub">3.2 Especificación formal — axiomas que verifican la implementación</h3>
+  <p>Aquí se lista la <b>sintaxis</b> (tipos de argumentos y del resultado) y se describe la <b>semántica</b> con axiomas: expresiones que dan el resultado para valores concretos de los argumentos. Las operaciones marcadas con <code>*</code> son <b>constructores</b>: las que generan todos los valores posibles del TAD (normalmente la que inicializa y la que añade).</p>
+  <pre class="code"><span class="tp">TAD Conjunto</span> (colección de elementos sin duplicidades, en cualquier orden)
+
+<span class="cm">Sintaxis                                    → resultado</span>
+ *Conjuntovacio()                        →  Conjunto
+ *Añadir(Conjunto, Elemento)             →  Conjunto
+    Retirar(Conjunto, Elemento)          →  Conjunto
+    Pertenece(Conjunto, Elemento)        →  boolean
+    Esvacio(Conjunto)                    →  boolean
+    Cardinal(Conjunto)                   →  entero
+    Union(Conjunto, Conjunto)            →  Conjunto
+
+<span class="cm">Semántica   (∀ e1, e2 ∈ Elemento   y   ∀ C, D ∈ Conjunto)</span>
+    Añadir(Añadir(C, e1), e1)       ⇒  Añadir(C, e1)          <span class="cm">// no duplica</span>
+    Retirar(Conjuntovacio, e1)      ⇒  Conjuntovacio
+    Pertenece(Conjuntovacio, e1)    ⇒  falso
+    Pertenece(Añadir(C, e2), e1)    ⇒  si e1 = e2 entonces cierto
+                                         sino Pertenece(C, e1)
+    Esvacio(Conjuntovacio)          ⇒  cierto
+    Cardinal(Conjuntovacio)         ⇒  0
+    Cardinal(Añadir(C, e1))         ⇒  si Pertenece(C, e1) entonces Cardinal(C)
+                                         sino 1 + Cardinal(C)
+    Union(Conjuntovacio, C)         ⇒  C
+    Union(Añadir(C, e1), D)         ⇒  Añadir(Union(C, D), e1)</pre>
+
+  <table class="cmp">
+    <tr><th></th><th>Informal</th><th>Formal</th></tr>
+    <tr><td><b>Lenguaje</b></td><td>Natural, comprensible</td><td>Axiomas y símbolos lógicos</td></tr>
+    <tr><td><b>Para qué</b></td><td>Comunicar la idea del tipo</td><td>Verificar que la implementación es correcta</td></tr>
+    <tr><td><b>Operaciones constructoras</b></td><td>No se distinguen</td><td>Marcadas con <code>*</code></td></tr>
+  </table>
+  <div class="key-point"><b>Idea clave:</b> la especificación es el <b>contrato</b>. Primero decides qué promete el TAD (especificación); después implementas la clase para que cumpla ese contrato. Implementar al revés —«ya veré qué hago»— es la causa de que las clases crezcan sin control.</div>
+</section>
+
+<!-- ===================== 04 ===================== -->
+<section id="s04">
+  <div class="eyebrow-sm">04 · Clases y objetos (2.4 y 2.5.1)</div>
+  <h2>La clase es el plano; el objeto, lo que se construye</h2>
+  <p>La orientación a objetos nació en 1969, de la mano del noruego <b>Kristen Nygaard</b>: al intentar simular el movimiento de los barcos en un fiordo descubrió que era más fácil modelar los <b>elementos</b> (barcos, mareas, línea de costa) con las <b>acciones</b> que cada uno podía ejecutar, que programar todo a mano alzada. De ahí surgió SIMULA-67 y, décadas después, Java.</p>
+
+  <div class="traits">
+    <div class="box"><h3>Objeto: estado + comportamiento + identidad</h3><p>Definición de Booch: «algo que tiene un estado, un comportamiento y una identidad». Una máquina de fábrica: estado (on/off, velocidad, temperatura), comportamiento (arrancar, parar, medir temperatura), identidad (número de serie: cada instancia es única).</p></div>
+    <div class="box"><h3>Mensaje e interfaz</h3><p>Un <b>mensaje</b> es la instrucción que se envía a un objeto para que ejecute una acción. La <b>interfaz</b> es el conjunto de operaciones visibles: como los botones de una máquina de fax — el usuario no necesita saber qué hay dentro (abrirlo anularía la garantía).</p></div>
+    <div class="box"><h3>Clase: el tipo definido por el usuario</h3><p>«Un conjunto de objetos que comparten una estructura y un comportamiento comunes» (Booch). Contiene los datos (atributos / variables instancia) y las acciones (métodos / servicios).</p></div>
+    <div class="box"><h3>Instancia</h3><p>Un objeto concreto creado a partir de la clase. La clase se define una vez; los objetos se crean tantas veces como haga falta, cada uno con sus propios datos.</p></div>
+  </div>
+
+  <h3 class="sub">Declarar una clase: el formato</h3>
+  <pre class="code"><span class="kw">class</span> NombreClase
+{
+    lista_de_miembros   <span class="cm">// métodos y datos miembros de la clase</span>
+}</pre>
+
+  <p>Veámoslo con el <b>Ejemplo 2.1</b> del libro, la clase <code>Punto</code>, escrita completa y lista para compilar:</p>
+  <pre class="code"><span class="kw">public class</span> <span class="tp">Punto</span> {
+    <span class="kw">private int</span> x;                       <span class="cm">// coordenada x  (dato, oculto)</span>
+    <span class="kw">private int</span> y;                       <span class="cm">// coordenada y  (dato, oculto)</span>
+
+    <span class="kw">public</span> Punto(<span class="kw">int</span> x, <span class="kw">int</span> y) {        <span class="cm">// constructor con argumentos</span>
+        <span class="kw">this</span>.x = x;                      <span class="cm">// this.x: el campo · x: el parámetro</span>
+        <span class="kw">this</span>.y = y;                      <span class="cm">// (this se explica en la sección 10)</span>
+    }
+
+    <span class="kw">public</span> Punto() {                    <span class="cm">// constructor sin argumentos</span>
+        x = <span class="num">0</span>;
+        y = <span class="num">0</span>;
+    }
+
+    <span class="kw">public int</span> leerX()  { <span class="kw">return</span> x; }   <span class="cm">// consulta de la coordenada x</span>
+    <span class="kw">public int</span> leerY()  { <span class="kw">return</span> y; }   <span class="cm">// consulta de la coordenada y</span>
+
+    <span class="kw">public void</span> fijarX(<span class="kw">int</span> valorX) { x = valorX; }
+    <span class="kw">public void</span> fijarY(<span class="kw">int</span> valorY) { y = valorY; }
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">Punto</span> p = <span class="kw">new</span> Punto(<span class="num">2</span>, <span class="num">1</span>);       <span class="cm">// crea el objeto con coordenadas</span>
+        System.out.println(<span class="str">"Original: ("</span> + p.leerX() + <span class="str">", "</span> + p.leerY() + <span class="str">")"</span>);
+
+        p.fijarX(<span class="num">100</span>);                    <span class="cm">// el cliente usa la interfaz pública</span>
+        System.out.println(<span class="str">"Tras fijarX(100): ("</span> + p.leerX() + <span class="str">", "</span> + p.leerY() + <span class="str">")"</span>);
+
+        <span class="tp">Punto</span> origen = <span class="kw">new</span> Punto();       <span class="cm">// constructor sin argumentos</span>
+        System.out.println(<span class="str">"Origen: ("</span> + origen.leerX() + <span class="str">", "</span> + origen.leerY() + <span class="str">")"</span>);
+    }
+}</pre>
+  <pre class="out">Original: (2, 1)
+Tras fijarX(100): (100, 1)
+Origen: (0, 0)</pre>
+
+  <h3 class="sub">Crear y usar objetos</h3>
+  <pre class="code"><span class="tp">Punto</span> p;                        <span class="cm">// 1. declaración de una referencia (aún no hay objeto)</span>
+p = <span class="kw">new</span> Punto(<span class="num">2</span>, <span class="num">1</span>);            <span class="cm">// 2. new crea el objeto y devuelve una referencia</span>
+
+p.fijarX(<span class="num">100</span>);                  <span class="cm">// 3. el operador punto (.) selecciona un miembro</span>
+System.out.println(p.leerX());</pre>
+  <ul class="bullets">
+    <li><b><code>new</code></b> reserva el objeto y devuelve una <b>referencia</b> a él (no el objeto en sí).</li>
+    <li>El objeto <b>vive mientras alguna variable lo referencie</b>: cuando nadie lo referencie, el recolector de basura lo liberará (sección 09).</li>
+    <li>El operador <b><code>.</code></b> se usa tanto para métodos como para variables instancia.</li>
+  </ul>
+
+  <table class="cmp">
+    <tr><th></th><th>Clase</th><th>Objeto</th></tr>
+    <tr><td><b>Qué es</b></td><td>El plano / el tipo</td><td>La instancia / el ejemplar</td></tr>
+    <tr><td><b>Cuántos hay</b></td><td>Uno por programa (se escribe una vez)</td><td>Tantos como se creen con <code>new</code></td></tr>
+    <tr><td><b>Datos</b></td><td>Describe los atributos que <i>tendrá</i></td><td>Tiene <b>su propia copia</b> de cada atributo</td></tr>
+    <tr><td><b>Ejemplo</b></td><td><code>class Punto</code></td><td><code>new Punto(2, 1)</code></td></tr>
+  </table>
+</section>
+
+<!-- ===================== 05 ===================== -->
+<section id="s05">
+  <div class="eyebrow-sm">05 · Visibilidad de los miembros (2.5.2)</div>
+  <h2>Encapsulamiento: qué se ve y qué no</h2>
+  <p>Un principio fundamental de la orientación a objetos es la <b>ocultación de la información</b>: a ciertos datos del interior de una clase no se les puede acceder desde fuera. El mecanismo principal es ponerlos en la clase y declararlos <code>private</code>. Para controlar el acceso se usan tres especificadores, que pueden aparecer en cualquier orden:</p>
+
+  <pre class="code"><span class="kw">class</span> NombreClase
+{
+    <span class="kw">private</span>   declaracion miembro privado;      <span class="cm">// solo la propia clase</span>
+    <span class="kw">protected</span> declaracion miembro protegido;    <span class="cm">// clase + subclases + paquete</span>
+    <span class="kw">public</span>    declaracion miembro publico;      <span class="cm">// cualquiera</span>
+}</pre>
+
+  <p>La <b>tabla 2.1</b> del libro, completa y corregida (una <b>x</b> indica que el acceso está permitido):</p>
+  <table class="cmp">
+    <tr><th>Tipo de miembro</th><th class="center">Misma clase</th><th class="center">Subclase</th><th class="center">Mismo paquete</th><th class="center">Otro paquete</th></tr>
+    <tr><td><code>private</code></td><td class="center">x</td><td class="center">—</td><td class="center">—</td><td class="center">—</td></tr>
+    <tr><td><i>sin modificador</i> (por defecto)</td><td class="center">x</td><td class="center">solo si está en el mismo paquete</td><td class="center">x</td><td class="center">—</td></tr>
+    <tr><td><code>protected</code></td><td class="center">x</td><td class="center">x</td><td class="center">x</td><td class="center">x, pero solo a través de la subclase</td></tr>
+    <tr><td><code>public</code></td><td class="center">x</td><td class="center">x</td><td class="center">x</td><td class="center">x</td></tr>
+  </table>
+  <p class="muted">El <b>acceso por defecto</b> (sin especificador) solo vale dentro del paquete: esa es la diferencia práctica más importante con <code>protected</code>. Puedes verlo en vivo en el <b>taller</b> de la cabecera: cambia «ver desde» a <b>mismo paquete</b> y a <b>otro paquete</b> y pulsa el miembro <code>protected</code> del plano — el compilador cambiará de respuesta justo en la columna que la tabla señala con «x, pero solo a través de la subclase».</p>
+
+  <p><b>Ejemplo 2.3</b> del libro: dos clases del paquete <code>soporte</code> con distinta visibilidad. Archivo <code>Foto.java</code>:</p>
+  <div class="code-grid">
+    <div class="code-panel a">
+      <div class="lbl">Foto.java · el que guarda los datos</div>
+      <pre class="code"><span class="kw">package</span> soporte;
+
+<span class="kw">public class</span> <span class="tp">Foto</span> {
+    <span class="kw">private int</span> nt;               <span class="cm">// solo lo ve Foto</span>
+    <span class="kw">private char</span> opd;             <span class="cm">// solo lo ve Foto</span>
+    <span class="tp">String</span> q;                     <span class="cm">// por defecto: todo el paquete</span>
+
+    <span class="kw">public</span> Foto(<span class="tp">String</span> r) {       <span class="cm">// constructor (interfaz)</span>
+        nt  = <span class="num">0</span>;
+        opd = <span class="str">'S'</span>;
+        q   = r;
+    }
+
+    <span class="kw">public double</span> mtd() {         <span class="cm">// operación (interfaz)</span>
+        <span class="kw">return</span> nt * <span class="num">1.5</span>;
+    }
+}</pre>
+    </div>
+    <div class="code-panel b">
+      <div class="lbl">Marco.java · el cliente</div>
+      <pre class="code"><span class="kw">package</span> soporte;
+
+<span class="kw">public class</span> <span class="tp">Marco</span> {
+    <span class="kw">private double</span> p;
+    <span class="tp">String</span> t;
+
+    <span class="kw">public void</span> poner() {
+        <span class="tp">Foto</span> u = <span class="kw">new</span> Foto(<span class="str">"Paloma"</span>);
+
+        p = u.mtd();            <span class="cm">// OK: mtd() es público</span>
+        t = <span class="str">"**"</span> + u.q + <span class="str">"**"</span>;  <span class="cm">// OK: mismo paquete</span>
+        System.out.println(t);
+
+        <span class="cm">// System.out.println(u.nt);  ERROR: nt es private</span>
+    }
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">new</span> Marco().poner();
+    }
+}</pre>
+    </div>
+  </div>
+  <pre class="out">**Paloma**</pre>
+
+  <div class="key-point"><b>Principio de encapsulamiento:</b> las estructuras de datos internas de una clase <b>no pueden ser accesibles directamente</b> para el usuario de la clase. Los miembros <code>public</code> forman la <b>interfaz externa</b>; los <code>private</code> son los aspectos internos que no necesitas conocer para usar el objeto.</div>
+
+  <div class="tip"><span class="icon">💡</span><div><b>Convenciones de estilo</b> (del propio libro): agrupa los miembros por visibilidad en vez de mezclarlos — unos ponen primero los <code>private</code> (los datos) y después la interfaz <code>public</code>; otros al revés. Lo importante es que un lector encuentre la interfaz sin leer toda la clase.</div></div>
+</section>
+
+<!-- ===================== 06 ===================== -->
+<section id="s06">
+  <div class="eyebrow-sm">06 · Métodos, archivos y clases públicas (2.5.3 - 2.5.5)</div>
+  <h2>De la clase al archivo .java</h2>
+  <ul class="bullets">
+    <li>En Java <b>no existen métodos sueltos</b>: un método siempre es miembro de una clase, y su implementación va dentro del cuerpo de esa clase.</li>
+    <li>El código fuente de una clase se guarda en un archivo de texto con extensión <code>.java</code> <b>y el nombre de la clase</b>: <code>Racional.java</code>. Normalmente, una clase por archivo.</li>
+    <li>Las clases pueden ser <b>propias</b> (tú las escribes), <b>de terceros</b> (solo bytecode, en un paquete) o <b>de la biblioteca</b> que acompaña al desarrollo de Java (<code>java.lang</code>, <code>java.io</code>…).</li>
+  </ul>
+
+  <p><b>Ejemplo 2.4</b>: la clase <code>Racional</code>, con un método de consulta y un método de asignación por cada dato — el patrón típico de «acceso» de una clase:</p>
+  <pre class="code"><span class="kw">public class</span> <span class="tp">Racional</span> {
+    <span class="kw">private int</span> numerador;      <span class="cm">// representación (oculta)</span>
+    <span class="kw">private int</span> denominador;    <span class="cm">// representación (oculta)</span>
+
+    <span class="kw">public</span> Racional() {        <span class="cm">// inicializa a 0/1</span>
+        numerador   = <span class="num">0</span>;
+        denominador = <span class="num">1</span>;
+    }
+
+    <span class="kw">public int</span> leerN() { <span class="kw">return</span> numerador; }
+    <span class="kw">public int</span> leerD() { <span class="kw">return</span> denominador; }
+
+    <span class="kw">public void</span> fijar(<span class="kw">int</span> n, <span class="kw">int</span> d) {
+        <span class="kw">if</span> (d == <span class="num">0</span>) {
+            System.out.println(<span class="str">"El denominador no puede ser 0"</span>);
+            <span class="kw">return</span>;
+        }
+        numerador   = n;
+        denominador = d;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="tp">String</span> toString() {  <span class="cm">// redefine el de Object (sección 12)</span>
+        <span class="kw">return</span> numerador + <span class="str">"/"</span> + denominador;
+    }
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">Racional</span> r = <span class="kw">new</span> Racional();
+        r.fijar(<span class="num">3</span>, <span class="num">4</span>);
+        System.out.println(<span class="str">"r = "</span> + r);   <span class="cm">// println usa toString()</span>
+    }
+}</pre>
+  <pre class="out">r = 3/4</pre>
+
+  <h3 class="sub">Clases públicas</h3>
+  <p>La cabecera de una clase puede llevar el modificador <code>public</code>:</p>
+  <pre class="code"><span class="kw">public class</span> Examen
+{
+    <span class="cm">// miembros de la clase</span>
+}</pre>
+  <ul class="bullets">
+    <li><code>public class</code> → puede ser usada por <b>cualquier</b> clase, venga del paquete que venga. Es la costumbre habitual.</li>
+    <li>Clase <b>sin</b> <code>public</code> → solo podrán usarla las clases de <b>su mismo paquete</b>.</li>
+  </ul>
+  <div class="warn"><span class="icon">⚠</span><div><b>Advertencia del libro:</b> <code>public</code> es el <b>único</b> especificador de acceso que se puede escribir en la cabecera de una clase. Los demás (<code>private</code>, <code>protected</code>) se aplican a los <i>miembros</i>, nunca a la clase entera.</div></div>
+
+  <div class="tip"><span class="icon">💡</span><div><b>Java moderno:</b> desde Java 16 existe la palabra clave <code>record</code>, que genera automáticamente una clase de solo datos (campos, constructor, getters, <code>equals</code>, <code>toString</code>). Para una clase «de datos» como <code>Racional</code> o <code>Punto</code>, un <code>record</code> te ahorra casi todo el código de la sección — pero los miembros <code>private</code> con métodos a la medida siguen siendo la base que debes dominar.</div></div>
+</section>
+
+<!-- ===================== 07 ===================== -->
+<section id="s07">
+  <div class="eyebrow-sm">07 · Paquetes (2.6)</div>
+  <h2>Organizar las clases: package e import</h2>
+  <p>Los <b>paquetes</b> son la forma que tiene Java de organizar los archivos con las clases: agrupan clases relacionadas bajo un mismo nombre (como carpetas). Java trae paquetes propios — <code>java.lang</code>, <code>java.io</code>, <code>java.util</code>… — con clases básicas como <code>System</code>, <code>String</code> o <code>Integer</code>.</p>
+
+  <h3 class="sub">7.1 La sentencia package</h3>
+  <p>Debe ser la <b>primera línea</b> del archivo fuente de cada clase del paquete, y cada archivo debe ubicarse en un subdirectorio con el mismo nombre del paquete:</p>
+  <pre class="code"><span class="cm">// archivo Lapiz.java</span>
+<span class="kw">package</span> escritorio;
+
+<span class="kw">public class</span> <span class="tp">Lapiz</span> {
+    <span class="kw">private</span> <span class="tp">String</span> material;
+
+    <span class="kw">public</span> Lapiz(<span class="tp">String</span> material) {
+        <span class="kw">this</span>.material = material;
+    }
+
+    <span class="kw">public</span> <span class="tp">String</span> verMaterial() {
+        <span class="kw">return</span> material;
+    }
+}</pre>
+  <div class="tree">proyecto/
+└── escritorio/            ← la carpeta se llama como el paquete
+    ├── Lapiz.java         ← package escritorio;
+    ├── Boligrafo.java     ← package escritorio;
+    └── Folio.java         ← package escritorio;</div>
+  <p class="muted">Dos beneficios: (1) dentro del mismo paquete las restricciones de visibilidad son menores (los <code>protected</code> y los de acceso por defecto se vuelven visibles); (2) la selección de clases se abrevia con <code>import</code>.</p>
+
+  <h3 class="sub">7.2 La sentencia import</h3>
+  <p>Sin <code>import</code>, hay que escribir el nombre completo <code>paquete.Clase</code> cada vez. La sentencia <code>import</code> permite escribir solo el nombre de la clase; va <b>después</b> de <code>package</code> y antes de la declaración de las clases, en dos formatos:</p>
+  <pre class="code"><span class="kw">import</span> identificadorpaquete.nombreClase;   <span class="cm">// una clase concreta</span>
+<span class="kw">import</span> identificadorpaquete.*;             <span class="cm">// todas las del paquete</span></pre>
+  <pre class="code"><span class="kw">import</span> escritorio.<span class="kw">*</span>;
+
+<span class="kw">public class</span> <span class="tp">Arte</span> {
+    <span class="kw">private</span> java.io.PrintStream salida;   <span class="cm">// nombre completo (sin import)</span>
+    <span class="kw">private</span> Lapiz p;                      <span class="cm">// tras el import, solo el nombre</span>
+
+    <span class="kw">public</span> Arte() {
+        salida = System.out;
+        p = <span class="kw">new</span> Lapiz(<span class="str">"grafito"</span>);
+        salida.println(<span class="str">"Lápiz de "</span> + p.verMaterial());
+    }
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">new</span> Arte();
+    }
+}</pre>
+  <pre class="out">Lápiz de grafito</pre>
+
+  <p><b>Problemas de <code>import paquete.*</code></b> (conviene conocerlos antes de abusar de él):</p>
+  <ul class="bullets">
+    <li>No sabes qué clases concretas estás usando; con un <code>import</code> por clase, sí.</li>
+    <li>Puede haber <b>colisiones de nombres</b> entre tus clases y las del paquete.</li>
+    <li>Mayor tiempo de compilación, porque el compilador busca todas las clases del paquete.</li>
+  </ul>
+  <pre class="code"><span class="kw">import</span> java.util.*;      <span class="cm">// contiene java.util.Random</span>
+<span class="kw">import</span> numerico.*;       <span class="cm">// tu clase: numerico.Random  → ¡colisión!</span>
+
+<span class="kw">public class</span> <span class="tp">PruebaPaquetes</span> {
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="cm">// Random r = new Random();          ERROR: ambiguo</span>
+        java.util.Random r = <span class="kw">new</span> java.util.Random();   <span class="cm">// cualificado: OK</span>
+        System.out.println(r.nextInt(<span class="num">100</span>));
+    }
+}</pre>
+  <div class="tip"><span class="icon">💡</span><div>Aunque escribas <code>import paquete.*</code>, el compilador genera bytecode <b>solo</b> para las clases que realmente utilizas. Y el paquete <code>java.lang</code> (con <code>String</code>, <code>System</code>, <code>Math</code>…) está <b>importado automáticamente</b> en todos los programas: por eso nunca lo escribes.</div></div>
+</section>
+
+<!-- ===================== 08 ===================== -->
+<section id="s08">
+  <div class="eyebrow-sm">08 · Constructores (2.7)</div>
+  <h2>El método que se ejecuta solo al crear un objeto</h2>
+  <p>Un <b>constructor</b> es el método que se ejecuta automáticamente cuando se crea un objeto de una clase; sirve para inicializar sus miembros. Sus tres reglas, textualmente del libro:</p>
+  <ul class="checklist">
+    <li>El constructor tiene <b>el mismo nombre que la clase</b>.</li>
+    <li>Puede tener <b>cero o más argumentos</b> (se sobrecarga como cualquier método).</li>
+    <li><b>No tiene tipo de retorno</b>: nunca devuelve un valor, ni siquiera <code>void</code>.</li>
+  </ul>
+
+  <p><b>Ejemplo 2.8</b>: la clase <code>EquipoSonido</code> con tres constructores sobrecargados — cada uno inicializa el objeto de una forma distinta:</p>
+  <pre class="code"><span class="kw">public class</span> <span class="tp">EquipoSonido</span> {
+    <span class="kw">private int</span> potencia;
+    <span class="kw">private int</span> voltios;
+    <span class="kw">private int</span> numCd;
+    <span class="kw">private</span> <span class="tp">String</span> marca;
+
+    <span class="kw">public</span> EquipoSonido() {                  <span class="cm">// 1. por defecto (sin argumentos)</span>
+        marca = <span class="str">"Sin marca"</span>;
+        System.out.println(<span class="str">"Constructor por defecto"</span>);
+    }
+
+    <span class="kw">public</span> EquipoSonido(<span class="tp">String</span> mt) {         <span class="cm">// 2. un argumento</span>
+        marca = mt;
+        System.out.println(<span class="str">"Constructor con cadena"</span>);
+    }
+
+    <span class="kw">public</span> EquipoSonido(<span class="tp">String</span> mt, <span class="kw">int</span> p, <span class="kw">int</span> v) {  <span class="cm">// 3. tres argumentos</span>
+        marca    = mt;
+        potencia = p;
+        voltios  = v;
+        numCd    = <span class="num">20</span>;
+        System.out.println(<span class="str">"Constructor con tres argumentos"</span>);
+    }
+
+    <span class="kw">public</span> <span class="tp">String</span> verMarca() { <span class="kw">return</span> marca; }
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">EquipoSonido</span> rt = <span class="kw">new</span> EquipoSonido();               <span class="cm">// → el 1º</span>
+        <span class="tp">EquipoSonido</span> gt = <span class="kw">new</span> EquipoSonido(<span class="str">"JULAT"</span>);       <span class="cm">// → el 2º</span>
+        <span class="tp">EquipoSonido</span> ht = <span class="kw">new</span> EquipoSonido(<span class="str">"PARTOLA"</span>, <span class="num">35</span>, <span class="num">220</span>); <span class="cm">// → el 3º</span>
+
+        System.out.println(<span class="str">"rt.marca = "</span> + rt.verMarca());
+        System.out.println(<span class="str">"ht.marca = "</span> + ht.verMarca());
+    }
+}</pre>
+  <pre class="out">Constructor por defecto
+Constructor con cadena
+Constructor con tres argumentos
+rt.marca = Sin marca
+ht.marca = PARTOLA</pre>
+
+  <h3 class="sub">8.1 El constructor por defecto</h3>
+  <p>Cuando <b>no escribes ningún constructor</b>, Java genera automáticamente uno sin argumentos. ¿Qué valores pone en los miembros? El equivalente a los valores por defecto de Java:</p>
+  <pre class="code"><span class="kw">public class</span> <span class="tp">Defecto</span> {
+    <span class="kw">private int</span> edad;        <span class="cm">// 0</span>
+    <span class="kw">private double</span> peso;     <span class="cm">// 0.0</span>
+    <span class="kw">private boolean</span> activo;   <span class="cm">// false</span>
+    <span class="kw">private</span> <span class="tp">String</span> nombre;    <span class="cm">// null (sin objeto)</span>
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">Defecto</span> d = <span class="kw">new</span> Defecto();
+        System.out.println(d.edad);
+        System.out.println(d.peso);
+        System.out.println(d.activo);
+        System.out.println(d.nombre);
+    }
+}</pre>
+  <pre class="out">0
+0.0
+false
+null</pre>
+  <div class="warn"><span class="icon">⚠</span><div><b>Ojo con el libro:</b> la regla 2.7.1 de la edición impresa dice que el constructor por defecto deja <code>boolean</code> en <code>true</code>. <b>Es erróneo: en Java el valor por defecto de un <code>boolean</code> es <code>false</code></b> (compruébalo con el programa anterior). Sí son correctos los numéricos (0 / 0.0) y las referencias (<code>null</code>).</div></div>
+
+  <div class="warn"><span class="icon">⚠</span><div><b>Precaución del libro:</b> si defines <b>solo</b> constructores con argumentos, Java deja de generar el por defecto y <code>new NomClase()</code> <b>no compilará</b>. Si quieres permitirlo, declara tú mismo el constructor sin argumentos. (Para impedir que alguien cree el objeto «vacío»: omite ese constructor o hazlo <code>private</code>.)</div></div>
+</section>
+
+<!-- ===================== 09 ===================== -->
+<section id="s09">
+  <div class="eyebrow-sm">09 · Recolección de objetos (2.8)</div>
+  <h2>Garbage collection: Java no tiene delete</h2>
+  <p>En Java un objeto <b>siempre</b> debe estar referenciado por una variable. En el momento en que deja de estarlo, se activa la <b>recolección de memoria</b> (<i>garbage collection</i>): el objeto se libera y la memoria que ocupaba puede reutilizarse. No existe la sentencia <code>delete</code> de C++: basta con perder la referencia.</p>
+  <pre class="code"><span class="tp">Punto</span> p = <span class="kw">new</span> Punto(<span class="num">1</span>, <span class="num">2</span>);
+p = <span class="kw">null</span>;      <span class="cm">// el objeto Punto queda sin referencias → es basura</span></pre>
+
+  <p><b>Ejercicio 2.2</b> del libro, en el que se ve cómo <b>asignar referencias no copia el objeto</b> (dos variables pueden apuntar al mismo objeto):</p>
+  <pre class="code"><span class="kw">class</span> <span class="tp">Demo</span> {
+    <span class="kw">private int</span> datos;
+
+    <span class="kw">public</span> Demo() { datos = <span class="num">0</span>; }
+
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> finalize() {
+        System.out.println(<span class="str">"Fin de objeto Demo"</span>);
+    }
+}
+
+<span class="kw">class</span> <span class="tp">Prueba</span> {
+    <span class="kw">private double</span> x;
+
+    <span class="kw">public</span> Prueba() { x = -<span class="num">1.0</span>; }
+
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> finalize() {
+        System.out.println(<span class="str">"Fin de objeto Prueba"</span>);
+    }
+}
+
+<span class="kw">public class</span> <span class="tp">ProbarDemo</span> {
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">Demo</span> d1;
+        <span class="tp">Prueba</span> p1, p2;
+
+        d1 = <span class="kw">new</span> Demo();
+        p1 = <span class="kw">new</span> Prueba();
+        System.gc();           <span class="cm">// nada: d1 y p1 siguen referenciados</span>
+
+        p2 = p1;               <span class="cm">// p2 y p1 apuntan al MISMO objeto</span>
+        p1 = <span class="kw">new</span> Prueba();     <span class="cm">// el objeto original sigue vivo: lo tiene p2</span>
+        System.gc();           <span class="cm">// nada: el objeto de p2 sigue vivo</span>
+
+        p1 = <span class="kw">null</span>;
+        d1 = <span class="kw">new</span> Demo();      <span class="cm">// el primer Demo pierde su referencia</span>
+        System.gc();           <span class="cm">// aquí sí: 1ª Prueba basura + 1º Demo basura</span>
+    }                          <span class="cm">// al terminar main, se liberan los que queden</span>
+}</pre>
+
+  <table class="cmp">
+    <tr><th>Punto del programa</th><th>Objetos Demo vivos</th><th>Objetos Prueba vivos</th><th>Basura</th></tr>
+    <tr><td>tras <code>d1 = new Demo(); p1 = new Prueba();</code></td><td>1</td><td>1</td><td>0</td></tr>
+    <tr><td>tras <code>p2 = p1; p1 = new Prueba();</code></td><td>1</td><td><b>2</b> (el original, gracias a <code>p2</code>)</td><td>0</td></tr>
+    <tr><td>tras <code>p1 = null; d1 = new Demo();</code></td><td>1 (el nuevo)</td><td>1</td><td><b>2</b> → candidatas al recolector</td></tr>
+  </table>
+
+  <h3 class="sub">9.1 El método finalize()</h3>
+  <p>Es un método especial que se llama <b>automáticamente</b> —si lo has definido en la clase— justo antes de que la memoria del objeto recolectado se devuelva al sistema. <b>No es un destructor</b>: no libera memoria él mismo; en algunas aplicaciones se usa para liberar recursos (archivos, conexiones). Sus cuatro características:</p>
+  <ul class="bullets">
+    <li>No devuelve valor: es de tipo <code>void</code>.</li>
+    <li>No tiene argumentos.</li>
+    <li>No puede sobrecargarse.</li>
+    <li>Su visibilidad es <code>protected</code>.</li>
+  </ul>
+  <div class="warn"><span class="icon">⚠</span><div><b>Java actual:</b> <code>finalize()</code> está <b>obsoleto desde Java 9</b> (y marcado para su eliminación). Además, <code>System.gc()</code> es solo una <b>sugerencia</b> al JVM: no obliga a recolectar nada, ni garantiza cuándo correrá <code>finalize()</code>. Lo único que debes recordar del mecanismo es la regla de oro: <b>un objeto sin referencias es basura</b>.</div></div>
+</section>
+
+<!-- ===================== 10 ===================== -->
+<section id="s10">
+  <div class="eyebrow-sm">10 · Objeto que envía el mensaje: this (2.9)</div>
+  <h2>this: el objeto que está ejecutando el método</h2>
+  <p><code>this</code> es una referencia al objeto que envía el mensaje — es decir, al objeto que llama al método (que, en este caso, no debe ser <code>static</code>). Internamente Java lo define como:</p>
+  <pre class="code"><span class="kw">final</span> NombreClase <span class="kw">this</span>;    <span class="cm">// es final: no puede modificarse</span></pre>
+  <p>Por eso todas las variables y métodos de la clase están, implícitamente, cualificados por <code>this</code>. En esta clase:</p>
+  <pre class="code"><span class="kw">public double</span> area() {
+    <span class="kw">return</span> base * altura / <span class="num">2.0</span>;    <span class="cm">// ¿la base de qué objeto?</span>
+}</pre>
+  <p>El método es común a todos los <code>Triangulo</code>, pero cada variable instancia implícitamente está cualificada por <code>this</code>: es <b>como si</b> estuviera escrito <code>return this.base * this.altura / 2.0;</code>.</p>
+
+  <p><b>Los dos usos fundamentales de <code>this</code>:</b></p>
+  <ol class="steps">
+    <li><b>Evitar la colisión de identificadores</b> cuando un parámetro se llama igual que un atributo.</li>
+    <li><b>Devolver el mismo objeto</b> desde un método, para poder encadenar llamadas (estilo cascada).</li>
+  </ol>
+
+  <pre class="code"><span class="kw">public class</span> <span class="tp">Triangulo</span> {
+    <span class="kw">private double</span> base;
+    <span class="kw">private double</span> altura;
+
+    <span class="kw">public</span> <span class="tp">Triangulo</span> datosTriangulo(<span class="kw">double</span> base, <span class="kw">double</span> altura) {
+        <span class="kw">this</span>.base   = base;    <span class="cm">// this.base = campo · base = parámetro</span>
+        <span class="kw">this</span>.altura = altura;
+        <span class="kw">return this</span>;          <span class="cm">// devuelve el mismo objeto → cascada</span>
+    }
+
+    <span class="kw">public</span> <span class="tp">Triangulo</span> visualizar() {
+        System.out.println(<span class="str">"Base = "</span>   + base);
+        System.out.println(<span class="str">"Altura = "</span> + altura);
+        <span class="kw">return this</span>;
+    }
+
+    <span class="kw">public double</span> area() {
+        <span class="kw">return</span> base * altura / <span class="num">2.0</span>;
+    }
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">Triangulo</span> t = <span class="kw">new</span> <span class="tp">Triangulo</span>();
+
+        <span class="cm">// dos llamadas en una sola línea, gracias a "return this"</span>
+        t.datosTriangulo(<span class="num">15.0</span>, <span class="num">12.0</span>).visualizar();
+        System.out.println(<span class="str">"Area = "</span> + t.area());
+    }
+}</pre>
+  <pre class="out">Base = 15.0
+Altura = 12.0
+Area = 90.0</pre>
+  <div class="tip"><span class="icon">💡</span><div>Sin <code>this</code>, el nombre <code>base</code> en <code>this.base = base</code> haría referencia al parámetro y la asignación sería <code>base = base</code>: un clásico bug silencioso en el que el atributo nunca se inicializa. Java no te deja «elegir»: por eso el <code>this</code> explícito es obligatorio en estos casos.</div></div>
+</section>
+
+<!-- ===================== 11 ===================== -->
+<section id="s11">
+  <div class="eyebrow-sm">11 · Miembros static de una clase (2.10)</div>
+  <h2>Lo que pertenece a la clase, no a los objetos</h2>
+  <p>Cada objeto tiene <b>su propia copia</b> de las variables de la clase. Cuando quieras miembros que <b>no estén ligados a los objetos</b> sino a la clase —comunes a todos—, se declaran con <code>static</code>.</p>
+
+  <h3 class="sub">11.1 Variables static</h3>
+  <pre class="code"><span class="kw">public class</span> <span class="tp">Cuenta</span> {
+    <span class="kw">private static int</span> k = <span class="num">0</span>;      <span class="cm">// variable de clase</span>
+    <span class="kw">private static</span> <span class="tp">String</span> nombre;  <span class="cm">// otra variable de clase</span>
+
+    <span class="cm">// ...</span>
+}</pre>
+  <ul class="bullets">
+    <li>No forman parte de los objetos, sino de la propia clase: <b>hay una sola copia</b>.</li>
+    <li>Dentro de la clase se usan con normalidad, solo con su nombre.</li>
+    <li>Desde fuera se usan con el nombre de la clase: <code>Cuenta.k</code>. Se <i>podría</i> hacer a través de un objeto (<code>miCuenta.k</code>), pero <b>no es recomendable</b>: no pertenecen a los objetos.</li>
+    <li>Suele inicializarse en la propia definición o en un <b>bloque <code>static</code></b>, que se ejecuta una sola vez, al cargar la clase:</li>
+  </ul>
+  <pre class="code"><span class="kw">class</span> <span class="tp">DemoStatic</span> {
+    <span class="kw">private static int</span> k;
+    <span class="kw">private static double</span> r;
+    <span class="kw">private static</span> <span class="tp">String</span> cmn;
+
+    <span class="kw">static</span> {                 <span class="cm">// bloque static: una sola vez, al cargar la clase</span>
+        k   = <span class="num">1</span>;
+        r   = <span class="num">0.0</span>;
+        cmn = <span class="str">"Bloque"</span>;
+    }
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        System.out.println(k + <span class="str">" / "</span> + r + <span class="str">" / "</span> + cmn);
+    }
+}</pre>
+  <pre class="out">1 / 0.0 / Bloque</pre>
+
+  <h3 class="sub">11.2 Métodos static</h3>
+  <p>Los métodos <code>static</code> se controlan por la clase y <b>no necesitan crear un objeto</b> para llamarse: <code>NombreClase.metodo()</code>. Toda la biblioteca de matemáticas de Java es así — <code>Math.sin()</code>, <code>Math.sqrt()</code> — y <code>main()</code> también es <code>static</code> por la misma razón: la JVM necesita ejecutarlo sin objetos previos.</p>
+  <div class="warn"><span class="icon">⚠</span><div><b>Regla que convierte errores de compilación:</b> los métodos <code>static</code> <b>no tienen <code>this</code></b>, porque no pertenecen a ningún objeto. Por tanto solo pueden acceder a miembros <code>static</code>. Intentarlo produce el error <i>«non-static variable … cannot be referenced from a static context»</i>:</div></div>
+  <pre class="code"><span class="kw">public class</span> <span class="tp">Fiesta</span> {
+    <span class="kw">int</span> precio;              <span class="cm">// variable de instancia (no static)</span>
+    <span class="tp">String</span> cartel;           <span class="cm">// variable de instancia (no static)</span>
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        cartel = <span class="str">"Virgen de los pacientes"</span>;   <span class="cm">// ✗ ERROR de compilación</span>
+        precio = <span class="num">1</span>;                           <span class="cm">// ✗ ERROR de compilación</span>
+    }
+}</pre>
+
+  <p><b>Ejercicio 2.3</b>: contar los objetos vivos de una clase usando una variable <code>static</code> compartida — el ejemplo que inspira el contador <code>totalCuentas</code> del taller de arriba:</p>
+  <pre class="code"><span class="kw">class</span> <span class="tp">Ejemplo</span> {
+    <span class="kw">private int</span> datos;
+    <span class="kw">static int</span> cuenta = <span class="num">0</span>;         <span class="cm">// compartida por TODOS los objetos</span>
+
+    <span class="kw">public</span> Ejemplo() {
+        datos = <span class="num">0</span>;
+        cuenta++;                  <span class="cm">// nuevo objeto</span>
+    }
+
+    <span class="kw">public</span> Ejemplo(<span class="kw">int</span> g) {
+        datos = g;
+        cuenta++;                  <span class="cm">// nuevo objeto</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> finalize() {
+        System.out.println(<span class="str">"Fin de objeto Ejemplo"</span>);
+        cuenta--;                  <span class="cm">// objeto liberado</span>
+    }
+}
+
+<span class="kw">public class</span> <span class="tp">ProbarEjemplo</span> {
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        System.out.println(<span class="str">"Objetos Ejemplo: "</span> + Ejemplo.cuenta);
+
+        <span class="tp">Ejemplo</span> d1 = <span class="kw">new</span> Ejemplo();
+        <span class="tp">Ejemplo</span> d2 = <span class="kw">new</span> Ejemplo(<span class="num">11</span>);
+        System.out.println(<span class="str">"Objetos Ejemplo: "</span> + Ejemplo.cuenta);
+
+        d2 = d1;                   <span class="cm">// el objeto de d2 queda sin referencias</span>
+        System.gc();
+        System.out.println(<span class="str">"Objetos Ejemplo: "</span> + Ejemplo.cuenta);
+
+        d2 = d1 = <span class="kw">null</span>;           <span class="cm">// ya no queda ninguno referenciado</span>
+        System.gc();
+        System.out.println(<span class="str">"Objetos Ejemplo: "</span> + Ejemplo.cuenta);
+    }
+}</pre>
+  <pre class="out">Objetos Ejemplo: 0
+Objetos Ejemplo: 2
+… aquí el 3er y 4to println dependen de cuándo la JVM ejecute finalize()</pre>
+  <div class="warn"><span class="icon">⚠</span><div><b>Qué es lo que no falla:</b> <code>cuenta</code> solo cambia en dos sitios — <code>cuenta++</code> en cada constructor y <code>cuenta--</code> en cada <code>finalize()</code> — por eso su valor final es exactamente <b>el número de objetos todavía no recolectados</b>. Lo que <b>sí varía</b> entre una JVM y otra es <i>cuándo</i> se ejecuta <code>finalize()</code>: en una misma corrida puedes ver los <code>println</code> dar <code>0, 2, 2, 1, 0</code> con los mensajes «Fin de objeto Ejemplo» saliendo tarde, o verlos perfectamente intercalados. <b>No memorices una salida concreta</b>: <code>System.gc()</code> es solo una sugerencia. Lo que sí debes poder responder es <i>qué objetos quedan sin referencias en cada línea</i> (la tabla de la sección 09).</div></div>
+</section>
+
+<!-- ===================== 12 ===================== -->
+<section id="s12">
+  <div class="eyebrow-sm">12 · Clase Object (2.11)</div>
+  <h2>La superclase de todas las clases</h2>
+  <p><code>Object</code> es la superclase base de <b>todas</b> las clases de Java: cualquier clase que escribas hereda de ella (lo verás a fondo en herencia), y por eso toda variable referencia se puede convertir al tipo <code>Object</code>:</p>
+  <pre class="code"><span class="tp">Object</span> g;
+<span class="tp">String</span> cd = <span class="kw">new</span> <span class="tp">String</span>(<span class="str">"Barranco la Parra"</span>);
+g = cd;                     <span class="cm">// g referencia al mismo objeto que cd</span></pre>
+  <p>De <code>Object</code> destacan dos métodos, que casi siempre se <b>redefinen</b> en las clases:</p>
+  <ul class="bullets">
+    <li><b><code>boolean equals(Object k)</code></b> — compara el objeto receptor con el argumento y devuelve <code>true</code> si son «iguales». <b>No confundir con <code>==</code></b>, que solo compara si ambas referencias apuntan al mismo objeto en memoria.</li>
+    <li><b><code>String toString()</code></b> — devuelve la representación en cadena del objeto. <code>System.out.println(objeto)</code> llama a este método, por eso conviene redefinirlo.</li>
+  </ul>
+  <p>Además, el operador <b><code>instanceof</code></b> (relacional, devuelve <code>boolean</code>) permite saber de qué clase es una referencia — muy útil cuando una variable es de tipo <code>Object</code> y puede recibir cualquier cosa:</p>
+  <pre class="code"><span class="kw">public class</span> <span class="tp">PruebaObject</span> {
+    <span class="kw">public static void</span> procesar(<span class="tp">Object</span> g) {
+        <span class="kw">if</span> (g <span class="kw">instanceof</span> <span class="tp">String</span>) {
+            System.out.println(<span class="str">"Cadena: "</span> + g);
+        } <span class="kw">else if</span> (g <span class="kw">instanceof</span> <span class="tp">Double</span>) {
+            System.out.println(<span class="str">"Número real: "</span> + g);
+        } <span class="kw">else</span> {
+            System.out.println(<span class="str">"Otro objeto"</span>);
+        }
+    }
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">String</span> ar = <span class="kw">new</span> <span class="tp">String</span>(<span class="str">"Iglesia románica"</span>);
+        <span class="tp">String</span> a  = <span class="str">"Vida sana"</span>;
+
+        System.out.println(ar.equals(a));                     <span class="cm">// false</span>
+        System.out.println(ar.equals(<span class="str">"Iglesia románica"</span>));     <span class="cm">// true</span>
+        System.out.println(ar == <span class="str">"Iglesia románica"</span>);          <span class="cm">// false</span>
+
+        <span class="tp">Double</span> r = <span class="tp">Double</span>.valueOf(<span class="num">2.5</span>);   <span class="cm">// new Double(2.5) está obsoleto</span>
+        System.out.println(r.toString());
+
+        procesar(<span class="str">"hola"</span>);
+        procesar(<span class="tp">Double</span>.valueOf(<span class="num">72</span>));
+        procesar(<span class="kw">new int</span>[<span class="num">3</span>]);
+    }
+}</pre>
+  <pre class="out">false
+true
+false
+2.5
+Cadena: hola
+Número real: 72.0
+Otro objeto</pre>
+  <div class="key-point"><b>¿Por qué el tercer <code>println</code> da <code>false</code>?</b> Porque <code>ar</code> fue creado con <code>new</code> (objeto nuevo, memoria propia) y el literal <code>"Iglesia románica"</code> vive en el pool de cadenas: son <b>dos objetos distintos con el mismo texto</b>. <code>==</code> compara identidad; <code>equals()</code> compara contenido.</div>
+</section>
+
+<!-- ===================== 13 ===================== -->
+<section id="s13">
+  <div class="eyebrow-sm">13 · Tipos abstractos de datos en Java (2.12)</div>
+  <h2>Poniendo todo junto: el TAD Conjunto como clase</h2>
+  <p>La implementación de un TAD en Java es «natural»: <b>la clase</b>. Dentro de la clase viven la representación de los datos y las operaciones (los métodos); la interfaz queda determinada por la etiqueta <code>public</code> de cada método que representa una operación del TAD.</p>
+
+  <table class="cmp">
+    <tr><th>Especificación del TAD (sección 03)</th><th>Implementación en la clase</th><th>Visibilidad</th></tr>
+    <tr><td><code>Conjuntovacio()</code></td><td>constructor <code>Conjunto()</code></td><td><code>public</code></td></tr>
+    <tr><td><code>Añadir(Conjunto, elemento)</code></td><td><code>annadir(Object elemento)</code></td><td><code>public</code></td></tr>
+    <tr><td><code>Retirar(Conjunto, elemento)</code></td><td><code>retirar(Object elemento)</code></td><td><code>public</code></td></tr>
+    <tr><td><code>Pertenece(Conjunto, elemento)</code></td><td><code>pertenece(Object elemento)</code></td><td><code>public</code></td></tr>
+    <tr><td><code>Esvacio(Conjunto)</code></td><td><code>esVacio()</code></td><td><code>public</code></td></tr>
+    <tr><td><code>Cardinal(Conjunto)</code></td><td><code>cardinal()</code></td><td><code>public</code></td></tr>
+    <tr><td><code>Union(Conjunto, Conjunto)</code></td><td><code>union(Conjunto c2)</code></td><td><code>public</code></td></tr>
+    <tr><td>— (representación interna)</td><td><code>Object[] cto</code>, <code>int cardinal</code>, <code>int capacidad</code></td><td><b><code>private</code></b></td></tr>
+  </table>
+
+  <p>La implementación completa del <b>Ejemplo 2.12</b> del libro (archivo <code>Conjunto.java</code>), corregida, indentada y lista para compilar — usa un array de <code>Object</code> como representación y lo amplía cuando se llena:</p>
+  <pre class="code"><span class="kw">package</span> conjunto;
+
+<span class="kw">public class</span> <span class="tp">Conjunto</span> {
+    <span class="kw">static final int</span> M = <span class="num">20</span>;              <span class="cm">// capacidad de cada ampliación</span>
+
+    <span class="kw">private</span> <span class="tp">Object</span>[] cto;              <span class="cm">// representación (oculta)</span>
+    <span class="kw">private int</span> cardinal;                <span class="cm">// número de elementos</span>
+    <span class="kw">private int</span> capacidad;               <span class="cm">// tamaño actual del array</span>
+
+    <span class="kw">public</span> Conjunto() {                  <span class="cm">// Conjuntovacio(): crea el TAD</span>
+        cto       = <span class="kw">new</span> <span class="tp">Object</span>[M];
+        cardinal  = <span class="num">0</span>;
+        capacidad = M;
+    }
+
+    <span class="kw">public boolean</span> esVacio() {
+        <span class="kw">return</span> cardinal == <span class="num">0</span>;
+    }
+
+    <span class="cm">// añade un elemento sólo si aún no está (sin duplicidades)</span>
+    <span class="kw">public void</span> annadir(<span class="tp">Object</span> elemento) {
+        <span class="kw">if</span> (!pertenece(elemento)) {
+            <span class="kw">if</span> (cardinal == capacidad) {        <span class="cm">// sin sitio: ampliar</span>
+                <span class="tp">Object</span>[] nuevoCto = <span class="kw">new</span> <span class="tp">Object</span>[capacidad + M];
+                <span class="kw">for</span> (<span class="kw">int</span> k = <span class="num">0</span>; k &lt; capacidad; k++) {
+                    nuevoCto[k] = cto[k];
+                }
+                cto       = nuevoCto;
+                capacidad += M;
+            }
+            cto[cardinal++] = elemento;
+        }
+    }
+
+    <span class="cm">// quita el elemento, si pertenece, desplazando el resto a la izquierda</span>
+    <span class="kw">public void</span> retirar(<span class="tp">Object</span> elemento) {
+        <span class="kw">if</span> (pertenece(elemento)) {
+            <span class="kw">int</span> k = <span class="num">0</span>;
+            <span class="kw">while</span> (!cto[k].equals(elemento)) {
+                k++;
+            }
+            <span class="kw">for</span> (<span class="kw">int</span> j = k; j &lt; cardinal - <span class="num">1</span>; j++) {
+                cto[j] = cto[j + <span class="num">1</span>];
+            }
+            cto[cardinal - <span class="num">1</span>] = <span class="kw">null</span>;
+            cardinal--;
+        }
+    }
+
+    <span class="cm">// búsqueda secuencial: ¿está el elemento en el conjunto?</span>
+    <span class="kw">public boolean</span> pertenece(<span class="tp">Object</span> elemento) {
+        <span class="kw">int</span> k = <span class="num">0</span>;
+        <span class="kw">boolean</span> encontrado = <span class="kw">false</span>;
+        <span class="kw">while</span> (k &lt; cardinal &amp;&amp; !encontrado) {
+            encontrado = cto[k].equals(elemento);
+            k++;
+        }
+        <span class="kw">return</span> encontrado;
+    }
+
+    <span class="kw">public int</span> cardinal() {
+        <span class="kw">return</span> cardinal;
+    }
+
+    <span class="cm">// unión de dos conjuntos (sin duplicados por annadir)</span>
+    <span class="kw">public</span> <span class="tp">Conjunto</span> union(<span class="tp">Conjunto</span> c2) {
+        <span class="tp">Conjunto</span> u = <span class="kw">new</span> Conjunto();
+        <span class="kw">for</span> (<span class="kw">int</span> k = <span class="num">0</span>; k &lt; cardinal; k++) {
+            u.annadir(cto[k]);
+        }
+        <span class="kw">for</span> (<span class="kw">int</span> k = <span class="num">0</span>; k &lt; c2.cardinal; k++) {
+            u.annadir(c2.cto[k]);
+        }
+        <span class="kw">return</span> u;
+    }
+
+    <span class="cm">// elemento n-ésimo (n desde 1); lanza excepción si está fuera de rango</span>
+    <span class="kw">public</span> <span class="tp">Object</span> elemento(<span class="kw">int</span> n) <span class="kw">throws</span> <span class="tp">Exception</span> {
+        <span class="kw">if</span> (n &gt;= <span class="num">1</span> &amp;&amp; n &lt;= cardinal) {
+            <span class="kw">return</span> cto[n - <span class="num">1</span>];
+        }
+        <span class="kw">throw new</span> <span class="tp">Exception</span>(<span class="str">"Fuera de rango"</span>);
+    }
+
+    <span class="kw">public static void</span> main(<span class="tp">String</span>[] args) <span class="kw">throws</span> <span class="tp">Exception</span> {
+        <span class="tp">Conjunto</span> a = <span class="kw">new</span> Conjunto();
+        a.annadir(<span class="str">"rojo"</span>);
+        a.annadir(<span class="str">"azul"</span>);
+        a.annadir(<span class="str">"rojo"</span>);                  <span class="cm">// sin efecto: ya pertenece</span>
+
+        <span class="tp">Conjunto</span> b = <span class="kw">new</span> Conjunto();
+        b.annadir(<span class="str">"azul"</span>);
+        b.annadir(<span class="str">"verde"</span>);
+
+        <span class="tp">Conjunto</span> u = a.union(b);
+
+        System.out.println(<span class="str">"Cardinal(a) = "</span> + a.cardinal());
+        System.out.println(<span class="str">"Pertenece rojo: "</span> + a.pertenece(<span class="str">"rojo"</span>));
+        System.out.println(<span class="str">"Elemento 1 de a: "</span> + a.elemento(<span class="num">1</span>));
+        System.out.println(<span class="str">"Cardinal(a union b) = "</span> + u.cardinal());
+    }
+}</pre>
+  <pre class="out">Cardinal(a) = 2
+Pertenece rojo: true
+Elemento 1 de a: rojo
+Cardinal(a union b) = 3</pre>
+
+  <div class="key-point"><b>La frase que resume el capítulo:</b> si mañana cambias la representación (un array por una lista enlazada, digamos), <b>no se rompe nada</b> para quien usa la clase… siempre que los métodos <code>public</code> sigan haciendo lo que prometía la especificación. Eso es separar interfaz de implementación, y es exactamente lo que un TAD compra para ti.</div>
+
+  <div class="tip"><span class="icon">💡</span><div>Este <code>Conjunto</code> guarda <b>cualquier cosa</b> porque trabaja con <code>Object</code>. Más adelante en el curso lo tiparemos como <code>Conjunto&lt;T&gt;</code> con <b>genéricos</b>: misma idea, pero el compilador obligará a que todos los elementos sean del mismo tipo. Ver <a href="../genericos-java-explicacion.html" style="color:var(--teal);">Genéricos en Java</a>.</div></div>
+</section>
+
+<!-- ===================== 14 ===================== -->
+<section id="s14">
+  <div class="eyebrow-sm">14 · Errores frecuentes</div>
+  <h2>Lo que más se repite en exámenes y en la práctica</h2>
+
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>«No me deja hacer <code>new</code> sin argumentos»:</b> definiste solo constructores con argumentos y Java dejó de generar el por defecto. Si la clase necesita un <code>new Clase()</code>, declara tú mismo ese constructor (o usa siempre el constructor completo). Recuerda también que el constructor <b>no devuelve nada</b>: poner <code>void</code> delante convierte en método normal… y ya no inicializa nada al crear el objeto.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Desde <code>main</code> (o cualquier método <code>static</code>) tocar atributos de instancia:</b> no hay objeto receptor, no hay <code>this</code>, y el compilador responde <i>«non-static variable … cannot be referenced from a static context»</i>. Solución: crear un objeto dentro de <code>main</code> y trabajar a través de él, o hacer el miembro <code>static</code> si de verdad es de la clase.</div>
+  </div>
+
+  <div class="pitfall">
+    <div class="icon">⚠</div>
+    <div class="body"><b>Comparar objetos con <code>==</code>:</b> compara <b>referencias</b> (¿apuntan al mismo objeto?), no contenido. Dos <code>String</code> con el mismo texto escritos con <code>new</code> dan <code>false</code> con <code>==</code>. Para comparar el contenido de un objeto hay que usar <code>equals()</code>, y para mostrarlo, <code>toString()</code>.</div>
+  </div>
+
+  <div class="warn"><span class="icon">⚠</span><div>Un error de «tránsito» muy común: <b><code>p1 = p2</code> no copia el objeto</b>, solo copia la referencia. Después de <code>p2 = p1</code>, ambas variables apuntan al <b>mismo</b> objeto: modificarlo por una se nota por la otra (y al hacer <code>p1 = null</code> no se destruye nada, porque sigue vivo vía <code>p2</code>). Fíjate en la tabla de la sección 09.</div></div>
+</section>
+
+<!-- ===================== 15 ===================== -->
+<section id="s15">
+  <div class="eyebrow-sm">15 · Principio de Pareto</div>
+  <h2>El 20% de reglas que explica el 80% del capítulo</h2>
+  <ul class="checklist">
+    <li><b>TAD = datos + operaciones</b>, con la representación oculta: lo <code>public</code> es la interfaz; lo <code>private</code>, la implementación. Ese es todo el secreto del encapsulamiento.</li>
+    <li><b>La clase es el plano, el objeto es la instancia</b>: se crea con <code>new</code>, cada objeto tiene <b>su propia copia</b> de los atributos, y solo lo <code>static</code> se comparte entre todos.</li>
+    <li><b>Tres visibilidades + una por defecto</b>: <code>private</code> (solo la clase), <code>protected</code> (clase, subclases y paquete), sin modificador (solo el paquete) y <code>public</code> (todos).</li>
+    <li><b>El constructor</b> lleva el nombre de la clase, no devuelve nada, se invoca con <code>new</code> y puede sobrecargarse; si escribes uno con argumentos, <b>pierdes</b> el por defecto.</li>
+    <li><b>Sin referencias = basura</b>: no hay <code>delete</code> en Java; el <i>garbage collector</i> libera el objeto (y <code>finalize()</code> es solo un aviso previo, hoy obsoleto). Al comparar objetos: <code>equals()</code>, nunca <code>==</code>.</li>
+  </ul>
+
+  <div class="eyebrow-sm" style="margin-top:34px">Mini-reto · Ejercicio 2.7 del libro (p. 56)</div>
+  <h3 class="sub">¿Qué está mal en esta clase <code>Buffer</code>?</h3>
+  <p>Esta es la definición <b>literal del libro</b>, sin tocar. Compílala y observa: javac <b>se para en el primer lote de errores</b> — cada arreglo que haces deja ver el siguiente — por eso la lista de problemas es más larga que la salida real.</p>
+
+  <div class="code-grid">
+    <div class="code-panel a">
+      <div class="lbl">Buffer.java · tal cual aparece en el ejercicio</div>
+      <pre class="code"><span class="kw">import</span> java.io.*;
+
+<span class="kw">class</span> <span class="tp">Buffer</span>
+{
+    <span class="kw">private char</span> datos[];
+    <span class="kw">private int</span> cursor ;
+    <span class="kw">private</span> Buffer(<span class="kw">int</span> n)
+    {
+        datos = <span class="kw">new char</span>[n]
+    };
+    <span class="kw">public static int</span> Long( <span class="kw">return</span> cursor;);
+    <span class="kw">public</span> <span class="tp">String</span> contenido(){}
+}</pre>
+    </div>
+    <div class="code-panel b">
+      <div class="lbl">Salida real de javac (JDK 25)</div>
+      <pre class="out">Buffer.java:9: error: ';' expected
+        datos = new char[n]
+                           ^
+Buffer.java:11: error: illegal start of type
+    public static int Long( return cursor;);
+                            ^
+Buffer.java:11: error: illegal start of type
+    public static int Long( return cursor;);
+                                          ^
+3 errors</pre>
+    </div>
+  </div>
+
+  <ul class="checklist">
+    <li><b>① Falta el <code>;</code></b> tras <code>new char[n]</code>: javac lo señala con <i>«';' expected»</i> (el primer error de la salida). En cambio, el <code>;</code> <i>sobrante</i> tras la llave final del constructor (<code>};</code>) Java lo tolera: es ruido, no error.</li>
+    <li><b>② <code>Long(…)</code> está mal declarada</b>: le faltan los paréntesis <code>()</code> y las llaves <code>{}</code> del cuerpo → <i>«illegal start of type»</i>. Al arreglar eso aparece la segunda cara del problema: es <code>static</code> pero devuelve <code>cursor</code>, que es de instancia → <i>«non-static variable cursor cannot be referenced from a static context»</i>. Y debería llamarse <code>long()</code>… mejor <code>cuantos()</code>, para no pelearse con la clase <code>Long</code>.</li>
+    <li><b>③ <code>contenido()</code> promete un <code>String</code> y no devuelve nada</b> → <i>«missing return statement»</i>. Ojo: este error <b>no aparece en la salida anterior</b>; javac trabaja por fases (sintaxis → atribución → flujo) y se detiene antes de llegar al cuerpo de los métodos. Compila de nuevo tras arreglar ① y ② y saltará.</li>
+    <li><b>④ El constructor es <code>private</code></b> — lo más grave y lo que <b>no</b> es un error de compilación: <code>Buffer.java</code> compila sin quejas. El problema lo verá el cliente al intentar crear uno: <i>«Buffer(int) has private access in Buffer»</i>. Y como la clase no ofrece ningún método fábrica ni operación que la cree, el TAD queda <b>inutilizable</b>: la visibilidad de un constructor es una decisión de diseño, no de sintaxis.</li>
+  </ul>
+  <p class="muted">Dos apuntes menores: el <code>import java.io.*;</code> sobra por completo (la clase no usa nada de <code>java.io</code> — no es error, solo ruido), y el nombre <code>Long</code> viola la convención de mayúsculas… si algo no debe llamarse como una clase de la API.</p>
+
+  <p><b>Versión corregida</b> — compila limpia y deja usar el TAD:</p>
+  <pre class="code"><span class="kw">public class</span> <span class="tp">Buffer</span>
+{
+    <span class="kw">private char</span> datos[];
+    <span class="kw">private int</span> cursor;
+
+    <span class="kw">public</span> Buffer(<span class="kw">int</span> n)          <span class="cm">// ④ ahora es pública: el cliente sí puede crear Buffer</span>
+    {
+        datos = <span class="kw">new char</span>[n];      <span class="cm">// ① faltaba el ;</span>
+        cursor = <span class="num">0</span>;
+    }
+
+    <span class="kw">public int</span> Long()              <span class="cm">// ② paréntesis y llaves de verdad; sin static</span>
+    {
+        <span class="kw">return</span> cursor;            <span class="cm">//    — y por eso puede leer cursor</span>
+    }
+
+    <span class="kw">public</span> <span class="tp">String</span> contenido()      <span class="cm">// ③ devuelve lo que promete</span>
+    {
+        <span class="kw">return new</span> <span class="tp">String</span>(datos, <span class="num">0</span>, cursor);
+    }
+}</pre>
+
+  <div class="tip"><span class="icon">💡</span><div><b>Para practicar con el libro:</b> el ejercicio <b>2.7</b> acabas de resolverlo en el mini-reto anterior; con el <b>2.8</b> (¿es legal <code>new Punto(25, 15)</code> sin asignarla?) y los <b>2.11</b>-<b>2.13</b> (clase <code>Vector3d</code> y clase <code>Complejo</code>) repasarás el resto de lo visto en esta página.</div></div>
+</section>
+
+<!-- ===================== 16 ===================== -->
+<section id="s16">
+  <div class="eyebrow-sm">16 · Active recall</div>
+  <h2>Ponte a prueba (haz clic en cada pregunta)</h2>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">1. Según la ecuación del capítulo, ¿de qué dos partes se compone un TAD y cuál de ellas ve el programa que lo usa?</div>
+    <div class="a">Se compone de la <b>representación (datos)</b> y de las <b>operaciones</b> que los manipulan: <code>TAD = Representación + Operaciones</code>. El programa que lo usa solo ve la <b>interfaz</b> — las operaciones <code>public</code> —; la representación y los algoritmos quedan ocultos dentro de la clase.</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">2. Tu clase solo tiene el constructor <code>public Punto(int x, int y)</code>. ¿Qué ocurre al compilar <code>Punto p = new Punto();</code>?</div>
+    <div class="a">No compila. Al definir un constructor con argumentos, Java deja de generar el constructor por defecto. Soluciones: escribir tú mismo un constructor sin argumentos, o llamar <code>new Punto(0, 0)</code>.</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">3. ¿Por qué <code>main()</code> no puede hacer <code>precio = 1;</code> si <code>precio</code> es un atributo de la clase?</div>
+    <div class="a">Porque <code>main()</code> es <code>static</code>: no pertenece a ningún objeto, no tiene <code>this</code>, y <code>precio</code> es una variable de instancia que solo existe dentro de un objeto concreto. El compilador da el error <i>«non-static variable … cannot be referenced from a static context»</i>. Hay que crear un objeto y asignar a través de él, o declarar <code>precio</code> como <code>static</code> si debe ser común a todos.</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">4. ¿Cuál es la diferencia entre <code>s1 == s2</code> y <code>s1.equals(s2)</code> cuando ambas variables son <code>String</code>?</div>
+    <div class="a"><code>==</code> compara <b>referencias</b>: solo es <code>true</code> si apuntan al mismo objeto en memoria. <code>equals()</code> compara el <b>contenido</b> de las cadenas. Por eso dos <code>String</code> creados con <code>new String("hola")</code> pueden dar <code>false</code> con <code>==</code> pero <code>true</code> con <code>equals()</code>.</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">5. ¿Qué clase es la superclase de todas las clases de Java y qué dos métodos conviene redefinir en tus clases?</div>
+    <div class="a">La clase <b><code>Object</code></b>. Los dos métodos que casi siempre se redefinen son <b><code>equals(Object)</code></b> (para comparar contenido, en vez de referencias) y <b><code>toString()</code></b> (para devolver una cadena representativa del objeto — es el que usa <code>System.out.println(objeto)</code>).</div>
+  </div>
+
+  <div class="quiz-item" onclick="this.classList.toggle('open')">
+    <div class="q">6. Dos variables apuntan al mismo objeto y haces <code>p1 = null</code>. ¿Se libera la memoria del objeto?</div>
+    <div class="a">No. El objeto <b>sigue vivo</b> mientras <code>p2</code> lo referencie. Java libera un objeto cuando <b>ninguna</b> variable lo referencia; hasta entonces, el recolector de basura no lo toca. Es la diferencia entre perder <i>una</i> referencia y perder <i>todas</i>.</div>
+  </div>
+</section>
+
+</div>
+
+<p class="footer-note">
+  Página elaborada con base en el capítulo 2 (pp. 23-60) de <i>Estructuras de datos en Java</i>, de Luis Joyanes Aguilar e Ignacio Zahonero Martínez · Unidad 0: fundamentos de programación
+  <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+</p>
+
+<script>
+/* ============ SIGNATURE: taller de clases ============ */
+var objs = [];        // objetos creados: {ref, titular, saldo, limite}
+var seq = 0;          // contador de referencias (c1, c2, ...)
+var total = 0;        // CuentaBanco.totalCuentas  (static)
+var sel = -1;         // índice del objeto seleccionado
+var nombres = ['Ana', 'Luis', 'María', 'Pedro', 'Sofía'];
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function log(txt, cls) {
+  var box = document.getElementById('tallerLog');
+  var line = document.createElement('div');
+  line.className = cls || '';
+  line.textContent = txt;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function decir(html) {
+  document.getElementById('tallerExp').innerHTML = html;
+}
+
+function render() {
+  var zone = document.getElementById('objZone');
+  zone.innerHTML = '';
+  if (!objs.length) {
+    var e = document.createElement('div');
+    e.className = 'objs-empty';
+    e.textContent = 'Sin objetos todavía: pulsa "new CuentaBanco()".';
+    zone.appendChild(e);
+  }
+  objs.forEach(function (o, i) {
+    var c = document.createElement('div');
+    c.className = 'obj-card' + (i === sel ? ' sel' : '');
+    c.title = 'referencia: ' + o.ref + ' (clic para seleccionar)';
+    c.innerHTML = '<b>' + o.ref + '</b>'
+                + '<span class="ln">titular: "' + esc(o.titular) + '"</span>'
+                + '<span class="ln">saldo: <span class="val">' + o.saldo.toFixed(1) + '</span></span>';
+    c.onclick = function () { sel = i; render(); };
+    zone.appendChild(c);
+  });
+  document.getElementById('staticVal').textContent = 'CuentaBanco.totalCuentas = ' + total;
+  var ra = document.getElementById('refAcceso');
+  if (ra) { ra.textContent = objs.length ? objs[sel].ref : 'c1'; }
+}
+
+function crearObjeto() {
+  var inp = document.getElementById('inTitular');
+  var t = (inp.value || '').trim();
+  if (!t) { t = nombres[seq % nombres.length]; }
+  seq++;
+  var ref = 'c' + seq;
+  objs.push({ ref: ref, titular: t, saldo: 500.0, limite: 1500.0 });
+  total++;
+  sel = objs.length - 1;
+  log(ref + ' = new CuentaBanco("' + t + '", 500.0);   → constructor ejecutado', 'dim');
+  log('CuentaBanco.totalCuentas = ' + total, 'info');
+  render();
+  decir('El operador <b>new</b> creó un objeto nuevo y devolvió su <b>referencia</b> (<b>' + ref
+      + '</b>), que ahora guarda la variable. Fíjate en el contador de abajo: <b>totalCuentas</b> es '
+      + '<b>static</b>, pertenece a la clase y lo comparten todos los objetos. Pulsa un miembro del plano izquierdo.');
+}
+
+function depositarObjeto() {
+  if (!objs.length) {
+    log('✗ no hay objetos: pulsa "new CuentaBanco()" primero', 'bad');
+    decir('Los métodos públicos sí se pueden llamar desde fuera… pero necesitan un objeto receptor: <b>ref.metodo()</b>.');
+    return;
+  }
+  var o = objs[sel];
+  o.saldo += 100;
+  log(o.ref + '.depositar(100);   → this.saldo = ' + o.saldo.toFixed(1), 'ok');
+  render();
+  decir('Solo ha cambiado el saldo de <b>' + o.ref + '</b>: cada objeto tiene <b>su propia copia</b> de los atributos. Los demás objetos no se han enterado (selecciona otra tarjeta y compárala).');
+}
+
+function liberarObjeto() {
+  if (!objs.length) {
+    log('no hay objetos que liberar.', 'dim');
+    decir('Primero crea un objeto con <b>new CuentaBanco()</b> y luego suéltalo con <b>null</b>.');
+    return;
+  }
+  var o = objs.splice(sel, 1)[0];
+  total--;
+  if (sel >= objs.length) { sel = objs.length - 1; }
+  log(o.ref + ' = null;   → la referencia desaparece', 'dim');
+  log('System.gc()  →  finalize()  →  memoria liberada', 'ok');
+  log('CuentaBanco.totalCuentas = ' + total, 'info');
+  render();
+  decir('El objeto no lo destruyó el <b>null</b>: solo perdiste la <b>referencia</b>. Cuando <b>ninguna</b> variable lo referencia, el <b>garbage collector</b> lo libera (y ejecutaría <b>finalize()</b> justo antes). Por eso no existe <code>delete</code> en Java.');
+}
+
+function accesoDirecto() {
+  var v = document.getElementById('vistaAcceso').value;
+  if (!objs.length) {
+    log('✗ no hay objetos: pulsa "new CuentaBanco()" primero', 'bad');
+    decir('El intento necesita una referencia sobre la que escribir. Crea un objeto y prueba de nuevo.');
+    return;
+  }
+  var o = objs[sel];
+  if (v === 'dentro') {
+    log(o.ref + '.saldo = 9999;', 'info');
+    log('  → compila y ejecuta: dentro de la clase todo es legal', 'info');
+    o.saldo = 9999;
+    render();
+    decir('Dentro de la propia clase <b>no hay nadie que te frene</b>: <b>this.saldo = 9999</b> compila perfectamente y rompe cualquier invariante que hayas prometido mantener. Por eso el buen diseño deja los métodos cortos y toca los datos solo por la interfaz pública.');
+  } else {
+    log(o.ref + '.saldo = 9999;', 'bad');
+    log('Cliente.java:1: error: saldo has private access in CuentaBanco', 'bad');
+    log('    ' + o.ref + '.saldo = 9999;', 'bad');
+    log('        ^', 'bad');
+    decir(v === 'paquete'
+      ? 'Mismo paquete y sigue sin poder: los <b>private</b> no se abren ni por paquete. Ese es el mensaje literal de <b>javac</b> (<i>«saldo has private access in CuentaBanco»</i>). La vía legal es <b>' + o.ref + '.depositar(...)</b> o leer con <b>' + o.ref + '.getSaldo()</b>.'
+      : 'Este es el <b>mensaje literal de javac</b> que verás en NetBeans: <i>«saldo has private access in CuentaBanco»</i>. Ni con <code>==</code> ni con cast se esquiva: la única vía legal es el método público <b>' + o.ref + '.depositar(...)</b> (o leer con <b>getSaldo()</b>). Prueba ahora desde <b>dentro de la clase</b> y compara.');
+  }
+}
+
+function reiniciarTaller() {
+  objs = []; seq = 0; total = 0; sel = -1;
+  document.getElementById('inTitular').value = '';
+  document.getElementById('vistaAcceso').value = 'fuera';
+  document.getElementById('tallerLog').innerHTML = '';
+  document.querySelectorAll('.bp .mem').forEach(function (r) { r.classList.remove('act'); });
+  log('Taller reiniciado: clase CuentaBanco cargada, 0 objetos.', 'info');
+  log('Pulsa "new CuentaBanco()" o un miembro del plano.', 'dim');
+  render();
+  decir('Estás en <b>otra clase de otro paquete</b> (y sin heredar): solo se ven los miembros <b>public</b>. Pulsa <b>titular</b> (private) o <b>limite</b> (protected) y mira qué responde el compilador.');
+}
+
+function cambiarVista() {
+  var v = document.getElementById('vistaAcceso').value;
+  if (v === 'dentro') {
+    decir('Estás <b>dentro de la clase CuentaBanco</b>: los miembros <b>private</b> son accesibles desde aquí (son los que toca <b>this.</b>). Prueba a pulsar <b>titular</b>, <b>saldo</b> o <b>limite</b>.');
+  } else if (v === 'paquete') {
+    decir('Estás en <b>otra clase del mismo paquete</b>: aquí lo <b>public</b> y lo <b>protected</b> sí pasan, pero lo <b>private</b> sigue cerrado — el paquete no abre privados. Es la columna «Mismo paquete» de la tabla 2.1.');
+  } else {
+    decir('Estás en <b>otra clase de otro paquete</b> (sin heredar de CuentaBanco): solo <b>public</b>. Lo <b>protected</b> también se niega aquí, porque en otro paquete solo pasa <i>a través de una subclase</i> — la fila más traicionera de la tabla 2.1. Prueba con <b>limite</b>.');
+  }
+}
+
+function tocarMiembro(m, el) {
+  document.querySelectorAll('.bp .mem').forEach(function (r) { r.classList.remove('act'); });
+  el.classList.add('act');
+
+  var v = document.getElementById('vistaAcceso').value;
+  var o = objs.length ? objs[sel] : null;
+
+  if (m === 'titular' || m === 'saldo') {
+    if (v !== 'dentro') {
+      log('✗ error de compilación: ' + m + ' tiene acceso privado en CuentaBanco', 'bad');
+      decir(v === 'paquete'
+        ? 'Estás en <b>otra clase del mismo paquete</b>: los miembros <b>private</b> no se ven ni siquiera aquí — el paquete solo hereda lo que no está marcado como privado. Para consultar el saldo usa el método público <b>getSaldo()</b>.'
+        : 'Estás en <b>otra clase</b>: los miembros <b>private</b> no se ven desde fuera. Eso es el <b>encapsulamiento</b> — para consultar el saldo usa el método público <b>getSaldo()</b>. Cambia «ver desde» a <b>dentro de CuentaBanco</b> y vuelve a pulsar.');
+    } else if (!o) {
+      log('aún no hay objetos: pulsa "new CuentaBanco()"', 'dim');
+      decir('Dentro de la clase los privados sí son accesibles, pero necesitas un objeto que contenga esos valores.');
+    } else {
+      var val = (m === 'titular') ? '"' + o.titular + '"' : o.saldo.toFixed(1);
+      log('this.' + m + ' de ' + o.ref + ' = ' + val, 'ok');
+      decir('Dentro de la clase, el nombre <b>' + m + '</b> se interpreta como <b>this.' + m + '</b>: la variable de instancia del objeto que está ejecutando el código, aquí <b>' + o.ref + '</b>. Por eso cada objeto ve el suyo.');
+    }
+    return;
+  }
+
+  if (m === 'limite') {
+    if (v === 'fuera') {
+      log('✗ error de compilación: limite tiene acceso protected en CuentaBanco', 'bad');
+      decir('Aquí está la trampa de la <b>tabla 2.1</b>: <b>protected</b> en «otro paquete» <i>sí está denegado</i> para una clase que no hereda. Solo pasa <b>a través de una subclase</b> (<code>class Alumno extends CuentaBanco</code>). Cámbialo a <b>mismo paquete</b> y pulsa otra vez: el mismo miembro pasa.');
+    } else if (!o) {
+      log('aún no hay objetos: pulsa "new CuentaBanco()"', 'dim');
+      decir('El valor de <b>limite</b> vive dentro de un objeto: sin <b>new</b> no hay dónde leerlo.');
+    } else {
+      log(v === 'dentro'
+        ? 'this.limite de ' + o.ref + ' = ' + o.limite.toFixed(1)
+        : o.ref + '.limite = ' + o.limite.toFixed(1), 'ok');
+      decir(v === 'paquete'
+        ? '<b>Protected + mismo paquete = permitido.</b> No hace falta heredar: cualquier clase del paquete <b>ve lo protected</b> como si fuera público. (Y si además hereda, también en otro paquete — por eso la tabla distingue esas dos columnas.)'
+        : '<b>Dentro de la clase todo es tuyo:</b> <b>private</b>, <b>protected</b> y lo <b>public</b> se leen igual, siempre como <b>this.limite</b>.');
+    }
+    return;
+  }
+
+  if (m === 'total') {
+    log('CuentaBanco.totalCuentas = ' + total + '   → un único valor, compartido', 'info');
+    decir('<b>static</b> no pertenece a ningún objeto: es de la <b>clase</b>. Se lee como <b>CuentaBanco.totalCuentas</b> y todos los objetos ven el mismo número. Es el contador del ejercicio 2.3 del libro.');
+    return;
+  }
+
+  if (m === 'ctor') {
+    log('new CuentaBanco(titular, saldo)   → el constructor se ejecuta solo al crear', 'info');
+    decir('El constructor tiene <b>el mismo nombre que la clase</b>, <b>no devuelve nada</b> y solo se invoca con <b>new</b>. Se puede <b>sobrecargar</b>: varias versiones con distinto número de parámetros (sección 08).');
+    return;
+  }
+
+  if (!o) {
+    log('✗ no hay objetos: pulsa "new CuentaBanco()" antes de llamar a ' + m + '()', 'bad');
+    decir('Un método público se puede llamar desde cualquier clase, pero siempre sobre un objeto: <b>ref.metodo()</b>.');
+    return;
+  }
+
+  if (m === 'depositar') {
+    o.saldo += 100;
+    log(o.ref + '.depositar(100);   → this.saldo = ' + o.saldo.toFixed(1), 'ok');
+    render();
+    decir('<b>depositar()</b> es público, así que desde fuera puedes llamarlo — y fíjate lo que hace: modifica el saldo <b>privado</b> del objeto <b>' + o.ref + '</b> por dentro. Esa es la idea: los datos privados solo se tocan a través de la interfaz pública.');
+  } else if (m === 'getSaldo') {
+    log(o.ref + '.getSaldo()   → ' + o.saldo.toFixed(1), 'ok');
+    decir('<b>getSaldo()</b> devuelve el valor sin exponer la variable. El cliente puede <b>leer</b> el saldo, pero no escribir <b>' + o.ref + '.saldo = 9999</b>: eso no compila porque <b>saldo</b> es private. Púlsalo de verdad con el botón <b>' + o.ref + '.saldo = 9999</b> del panel y lee el error de javac.');
+  }
+}
+
+/* estado inicial */
+log('Taller listo: clase CuentaBanco cargada.', 'info');
+log('Pulsa "new CuentaBanco()" o un miembro del plano.', 'dim');
+render();
+</script>
+
+</body>
+</html>
