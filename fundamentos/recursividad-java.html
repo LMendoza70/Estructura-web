@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recursividad en Java: métodos que se llaman a sí mismos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1F2B; --ink-2:#242A3B; --card:#F5F1E8; --card-line:#DED6C2;
+    --text:#E4E7ED; --text-dim:#9AA1B4; --amber:#E8A33D; --teal:#4FB0AE; --rose:#E06C75;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink); color:var(--text); font-family:'Inter',sans-serif; line-height:1.6;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
+  code,pre,.mono{font-family:'JetBrains Mono',monospace;}
+  p code,li code,.quiz-item code,.pitfall code,.key-point code,.tip code,.warn code{background:rgba(232,163,61,.12); border:1px solid rgba(232,163,61,.28); color:var(--amber); padding:.5px 5px; border-radius:4px; font-size:.86em;}
+  .wrap{max-width:900px; margin:0 auto; padding:0 24px 90px;}
+
+  /* HERO */
+  .hero{padding:56px 24px 30px; text-align:center; border-bottom:1px solid #2E3549;}
+  .hero .badge{color:var(--amber); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem; font-weight:700; margin-bottom:10px;}
+  .hero h1{font-size:1.95rem; margin:0 0 10px; color:#fff;}
+  .hero p{color:var(--text-dim); max-width:680px; margin:0 auto; font-size:.98rem;}
+  .hero .src{margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.74rem; color:var(--text-dim);}
+  .hero .src b{color:var(--teal); font-weight:500;}
+
+  /* navegación de regreso */
+  .top-nav{max-width:900px; margin:0 auto; padding:20px 24px 0;}
+  .top-nav a{display:inline-block; color:var(--teal); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:.82rem; border:1px solid #2E3549; padding:7px 13px; border-radius:6px; background:var(--ink-2); transition:border-color .15s, color .15s;}
+  .top-nav a:hover{border-color:var(--teal); color:var(--amber);}
+
+  /* NAV de saltos rápidos */
+  .nav{max-width:960px; margin:22px auto 0; padding:0 24px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .nav a{text-decoration:none; color:var(--text); background:var(--ink-2); border:1px solid #2E3549; padding:6px 13px; border-radius:16px; font-size:.76rem; font-family:'JetBrains Mono',monospace;}
+  .nav a:hover{border-color:var(--amber); color:var(--amber);}
+
+  /* PESTAÑAS */
+  .tab-picker{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:18px 0;}
+  .tab-btn{background:transparent; border:1px solid #3C4459; color:var(--text); padding:8px 16px; border-radius:20px; font-family:'JetBrains Mono',monospace; font-size:.8rem; cursor:pointer;}
+  .tab-btn.active{background:var(--amber); color:var(--ink); border-color:var(--amber); font-weight:700;}
+
+  /* SECCIONES */
+  section{padding:42px 0; border-bottom:1px solid #2E3549;}
+  section:last-child{border-bottom:none;}
+  .eyebrow-sm{color:var(--amber); text-transform:uppercase; font-size:.72rem; letter-spacing:.12em; font-weight:600;}
+  h2{font-size:1.45rem; margin:6px 0 14px; color:#fff;}
+  h3.sub{font-size:1.05rem; color:#fff; margin:24px 0 6px;}
+  p{font-size:.96rem; color:var(--text);}
+  .muted{color:var(--text-dim); font-size:.92rem;}
+
+  /* ANALOGÍA */
+  .analogy{background:var(--ink-2); border-left:3px solid var(--teal); padding:16px 20px; border-radius:0 8px 8px 0; margin:16px 0; color:var(--text-dim); font-size:.95rem;}
+  .analogy b{color:var(--teal);}
+
+  /* CÓDIGO */
+  pre.code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; overflow-x:auto; font-size:.84rem; line-height:1.55; color:#D6D9E0; margin:10px 0;}
+  .kw{color:#E8A33D;} .tp{color:#4FB0AE;} .cm{color:#6A7086;} .num{color:#E06C75;} .str{color:#E8A33D;} .an{color:#B5541A; font-weight:700;} .tv{color:#B5541A; font-weight:700;}
+  pre.out{background:#12151E; border:1px dashed #3C4459; border-radius:8px; padding:12px 16px; font-size:.82rem; color:var(--teal); margin:6px 0 14px; white-space:pre-wrap;}
+  pre.tree{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 16px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:.76rem; line-height:1.5; color:var(--text-dim); margin:10px 0;}
+
+  /* Grids de 2 columnas */
+  .traits,.uses{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px;}
+  @media (max-width:600px){.traits,.uses{grid-template-columns:1fr;}}
+  .traits .box,.uses .box{background:var(--ink-2); border-radius:8px; padding:16px 18px; border:1px solid #2E3549;}
+  .traits .box h3{margin:0 0 6px; font-size:1rem; color:var(--teal);}
+  .uses .box h3{margin:0 0 6px; font-size:.98rem; color:#fff;}
+  .traits .box p,.uses .box p{margin:0; font-size:.9rem; color:var(--text-dim);}
+  .uses .box a{color:var(--amber); text-decoration:none; border-bottom:1px dotted rgba(232,163,61,.5);}
+
+  /* Tabla comparativa */
+  table.cmp{width:100%; border-collapse:collapse; margin-top:12px; font-size:.86rem;}
+  table.cmp th,table.cmp td{border:1px solid #2E3549; padding:9px 11px; text-align:left; vertical-align:top;}
+  table.cmp th{background:var(--ink-2); color:var(--amber);}
+  table.cmp td{color:var(--text-dim);}
+  table.cmp td code,table.cmp td b{color:#fff;}
+
+  /* Errores frecuentes y avisos */
+  .pitfall{display:flex; gap:12px; margin:14px 0; align-items:flex-start;}
+  .pitfall .icon{color:var(--rose); font-size:1.2rem; line-height:1.4;}
+  .pitfall .body b{color:#fff;}
+  .warn{display:flex; gap:10px; background:rgba(224,108,117,.08); border:1px solid rgba(224,108,117,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .warn .icon{color:var(--rose);}
+  .tip{display:flex; gap:10px; background:rgba(79,176,174,.08); border:1px solid rgba(79,176,174,.3); border-radius:8px; padding:12px 14px; margin:14px 0; font-size:.88rem; color:var(--text-dim);}
+  .tip .icon{color:var(--teal);}
+  .key-point{background:var(--ink-2); border-left:3px solid var(--rose); border-radius:0 8px 8px 0; padding:12px 16px; margin-top:14px; font-size:.88rem; color:var(--text-dim);}
+  .key-point b{color:#fff;}
+  .tip a{color:var(--amber);}
+
+  /* Checklist Pareto */
+  .checklist{list-style:none; padding:0; margin:18px 0;}
+  .checklist li{display:flex; gap:10px; padding:10px 0; border-bottom:1px dashed #2E3549; font-size:.95rem;}
+  .checklist li::before{content:"\2192"; color:var(--amber); font-weight:700;}
+
+  /* Active recall */
+  .quiz-item{background:var(--ink-2); border:1px solid #2E3549; border-radius:8px; padding:16px 18px; margin-bottom:12px;}
+  .quiz-item .q{font-weight:600; color:#fff; cursor:pointer;}
+  .quiz-item .a{display:none; margin-top:10px; color:var(--text-dim); font-size:.92rem; border-top:1px dashed #3C4459; padding-top:10px;}
+  .quiz-item.open .a{display:block;}
+
+  .footer-note{color:var(--text-dim); font-size:.85rem; text-align:center; padding:48px 24px 0; border-top:1px solid #2E3549; margin-top:50px;}
+  .footer-note .name{color:#fff; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; margin-top:6px; display:block;}
+
+  /* SIGNATURE: trazador de la pila de llamadas */
+  .sig{max-width:960px; margin:30px auto 0; padding:0 24px;}
+  .sig-zone{background:var(--ink-2); border:1px solid #2E3549; border-radius:12px; padding:20px 22px 22px;}
+  .sig-title{font-family:'Fraunces',serif; font-size:1.2rem; color:#fff; font-weight:600;}
+  .sig-sub{color:var(--text-dim); font-size:.9rem; margin:6px 0 0;}
+  .sig-sub b{color:#fff; font-weight:600;}
+  .sig-controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; margin-top:16px; padding:14px; background:#1B1F2B; border:1px solid #2E3549; border-radius:8px;}
+  .sig-controls button{background:var(--amber); border:1px solid var(--amber); color:#1B1F2B; font-family:'JetBrains Mono',monospace; font-size:.8rem; font-weight:700; padding:8px 15px; border-radius:6px; cursor:pointer; transition:background .15s;}
+  .sig-controls button:hover{background:#F3B657;}
+  .sig-controls button.ghost{background:transparent; color:var(--text-dim); border-color:#3C4459; font-weight:400;}
+  .sig-controls button.ghost:hover{color:#fff; border-color:var(--teal);}
+  .sig-pos{font-family:'JetBrains Mono',monospace; font-size:.74rem; color:var(--text-dim);}
+  .sig-field{font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--text-dim); display:flex; align-items:center; gap:7px;}
+  .sig-field input[type=text]{width:76px; background:#12151E; border:1px solid #3C4459; color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.84rem; padding:7px 9px; border-radius:6px;}
+  .sig-field input:focus{outline:none; border-color:var(--amber);}
+  .sig-grid{display:grid; grid-template-columns:1.1fr 1fr; gap:16px; margin-top:16px;}
+  @media (max-width:760px){.sig-grid{grid-template-columns:1fr;}}
+  .sig-code{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:14px 10px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:.78rem; line-height:1.7; color:#D6D9E0;}
+  .sim-panel{display:none;}
+  .sim-panel.active{display:block;}
+  .sim-panel .cl{display:block; white-space:pre-wrap; overflow-wrap:anywhere; padding:0 8px; border-left:3px solid transparent; border-radius:0 4px 4px 0; transition:background .2s, border-color .2s;}
+  .sim-panel .cl.hit{border-left-color:var(--teal); background:rgba(79,176,174,.12);}
+  .ev{display:inline-block; margin-left:8px; font-size:.66rem; padding:1px 7px; border-radius:10px; border:1px solid #3C4459; color:var(--text-dim); opacity:.28; vertical-align:middle; transition:.2s;}
+  .ev.on{opacity:1;}
+  .ev.t{background:rgba(79,176,174,.18); border-color:rgba(79,176,174,.55); color:var(--teal);}
+  .ev.f{background:rgba(224,108,117,.16); border-color:rgba(224,108,117,.55); color:var(--rose);}
+
+  .stack-head{display:flex; justify-content:space-between; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin-bottom:7px;}
+  .stack-head b{color:var(--amber); font-weight:700;}
+  .stack-\boxed{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:10px; min-height:170px; max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;}
+  .fr{display:flex; justify-content:space-between; gap:8px; align-items:baseline; background:#1B1F2B; border:1px solid #3C4459; border-left:3px solid #3C4459; border-radius:6px; padding:7px 10px; font-family:'JetBrains Mono',monospace; font-size:.73rem; animation:frIn .22s ease;}
+  @keyframes frIn{from{opacity:0; transform:translateY(-7px);} to{opacity:1; transform:none;}}
+  .fr.act{border-left-color:var(--amber); background:rgba(232,163,61,.10);}
+  .fr.act .fr-fn{color:#fff;}
+  .fr.wait{opacity:.55;}
+  .fr.ret{border-left-color:var(--teal); background:rgba(79,176,174,.12);}
+  .fr.ret .fr-fn{color:var(--teal);}
+  .fr-fn{color:var(--text-dim); overflow-wrap:anywhere;}
+  .fr-ret{color:var(--amber); font-weight:700; white-space:nowrap;}
+  .fr-empty{color:#6A7086; font-size:.76rem; font-family:'JetBrains Mono',monospace; text-align:center; padding:34px 6px;}
+  .var-strip{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .var{display:flex; align-items:baseline; gap:6px; background:#12151E; border:1px solid #2E3549; border-radius:6px; padding:6px 10px; font-family:'JetBrains Mono',monospace; font-size:.75rem;}
+  .var i{color:var(--text-dim); font-style:normal;}
+  .var b{color:var(--amber); font-weight:700;}
+  .var.flash{animation:varflash .6s ease;}
+  @keyframes varflash{0%{background:rgba(232,163,61,.4); border-color:var(--amber); transform:translateY(-2px);}100%{background:#12151E; border-color:#2E3549; transform:none;}}
+  .sim-console{background:#12151E; border:1px solid #2E3549; border-radius:8px; padding:12px 14px; margin-top:10px; min-height:96px; max-height:170px; overflow-y:auto; font-family:'JetBrains Mono',monospace; font-size:.76rem; line-height:1.7; color:#D6D9E0; white-space:pre-wrap;}
+  .sim-console .dim{color:#6A7086;}
+  .sim-console .ok{color:var(--teal);}
+  .sim-console .bad{color:var(--rose);}
+  .sig-explain{background:#1B1F2B; border-left:3px solid var(--amber); border-radius:0 6px 6px 0; padding:11px 14px; font-size:.86rem; color:var(--text-dim); min-height:74px; margin-top:12px;}
+  .sig-explain b{color:var(--amber);}
+  .sig-alert{display:none; margin-top:10px; background:rgba(224,108,117,.1); border:1px solid rgba(224,108,117,.45); border-radius:8px; padding:10px 13px; font-size:.85rem; color:#EEB2B7;}
+  .sig-alert.show{display:block;}
+  .sig-alert b{color:#fff;}
+
+  /* Fractal interactivo */
+  .frac-box{background:var(--ink-2); border:1px solid #2E3549; border-radius:12px; padding:18px 20px; margin-top:16px;}
+  .frac-box .sig-title{font-size:1.05rem;}
+  .frac-btns{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px;}
+  .frac-svg{width:100%; height:auto; display:block; background:#12151E; border:1px solid #2E3549; border-radius:8px; margin-top:12px;}
+  .frac-cap{margin-top:10px; font-size:.85rem; color:var(--text-dim); text-align:center;}
+  .frac-cap b{color:var(--amber);}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="../index.html">&#8592; Volver al índice · Unidad 0</a>
+  <a href="instrucciones-control-repetitivas-java.html">Ver también: ciclos (iteración) &#8594;</a>
+</nav>
+
+<div class="hero">
+  <div class="badge">Unidad 0 · Fundamentos de programación</div>
+  <h1>Recursividad: métodos que se llaman a sí mismos</h1>
+  <p>Casos base, paso recursivo, la pila de llamadas que nadie ve, la diferencia real entre un ciclo y una llamada recursiva, y cinco problemas clásicos resueltos con recursión: <b>factoriales</b>, <b>Fibonacci</b>, <b>torres de Hanoi</b>, <b>fractales</b> y la <b>vuelta atrás</b> (backtracking) de los laberintos.</p>
+  <div class="src">Base bibliográfica: <b>Deitel — Cómo programar en Java, 7ma edición</b> · Cap. 15 «Recursividad» (pp. 653-676)</div>
+</div>
+
+<!-- ============ SIGNATURE: trazador de la pila de llamadas ============ -->
+<div class="sig">
+  <div class="sig-zone">
+    <div class="sig-title">Trazador de la pila de llamadas · avanza la ejecución una llamada a la vez</div>
+    <p class="sig-sub">Elige un ejemplo y pulsa <b>Paso</b>. A la izquierda se ilumina la línea que se ejecuta; a la derecha verás <b>la pila de llamadas crecer y encogerse</b>: cada tarjeta es una copia activa del método con su propia variable. <b style="color:#E8A33D">Ámbar</b> = la copia que trabaja ahora, <b style="color:#9AA1B4">gris apagado</b> = las que esperan en pausa, <b style="color:#4FB0AE">turquesa</b> = las que ya devolvieron su valor.</p>
+
+    <div class="tab-picker" id="simTabs">
+      <button class="tab-btn active" data-tab="fact" onclick="pickSim('fact')">factorial</button>
+      <button class="tab-btn" data-tab="fib" onclick="pickSim('fib')">fibonacci</button>
+      <button class="tab-btn" data-tab="hanoi" onclick="pickSim('hanoi')">torres de hanoi</button>
+      <button class="tab-btn" data-tab="rota" onclick="pickSim('rota')">caso erróneo</button>
+    </div>
+
+    <div class="sig-controls">
+      <button onclick="simStep()">&#9654; Paso</button>
+      <button class="ghost" onclick="simEnd()">&#9654;&#9654; Hasta el final</button>
+      <button class="ghost" onclick="simReset()">&#8634; Reiniciar</button>
+      <label class="sig-field"><span id="lblN">n =</span><input type="text" id="inN" value="5" spellcheck="false" onchange="simReset()"></label>
+      <span class="sig-pos" id="simPos">listo</span>
+    </div>
+
+    <div class="sig-grid">
+      <div class="sig-code" id="sigCode">
+
+<div class="sim-panel active" data-mode="fact">
+<div class="cl" data-id="fa1"><span class="kw">public</span> <span class="tp">long</span> factorial( <span class="tp">long</span> numero )</div>
+<div class="cl" data-id="fa2">{</div>
+<div class="cl" data-id="fa3">    <span class="kw">if</span> ( numero &lt;= <span class="num">1</span> )      <span class="cm">// evalúa el CASO BASE</span><span class="ev" data-ev="kb"></span></div>
+<div class="cl" data-id="fa4">        <span class="kw">return</span> <span class="num">1</span>;              <span class="cm">// 0! = 1 y 1! = 1</span></div>
+<div class="cl" data-id="fa5">    <span class="kw">else</span>                          <span class="cm">// paso recursivo</span></div>
+<div class="cl" data-id="fa6">        <span class="kw">return</span> numero * factorial( numero - <span class="num">1</span> );</div>
+<div class="cl" data-id="fa7">}</div>
+<div class="cl" data-id="fa8"> </div>
+<div class="cl" data-id="fa9"><span class="cm">// en main:</span></div>
+<div class="cl" data-id="fa0">System.out.printf( <span class="str">"%d! = %d%n"</span>, <span class="num" id="faN">5</span>, factorial( <span class="num" id="faN2">5</span> ) );</div>
+</div>
+
+<div class="sim-panel" data-mode="fib">
+<div class="cl" data-id="fb1"><span class="kw">public</span> <span class="tp">long</span> fibonacci( <span class="tp">long</span> numero )</div>
+<div class="cl" data-id="fb2">{</div>
+<div class="cl" data-id="fb3">    <span class="kw">if</span> ( ( numero == <span class="num">0</span> ) || ( numero == <span class="num">1</span> ) ) <span class="cm">// DOS casos base</span><span class="ev" data-ev="kb"></span></div>
+<div class="cl" data-id="fb4">        <span class="kw">return</span> numero;</div>
+<div class="cl" data-id="fb5">    <span class="kw">else</span>                             <span class="cm">// paso recursivo</span></div>
+<div class="cl" data-id="fb6">        <span class="kw">return</span> fibonacci( numero - <span class="num">1</span> ) + fibonacci( numero - <span class="num">2</span> );</div>
+<div class="cl" data-id="fb7">}</div>
+<div class="cl" data-id="fb8"> </div>
+<div class="cl" data-id="fb9"><span class="cm">// en main:</span></div>
+<div class="cl" data-id="fb0">System.out.printf( <span class="str">"Fibonacci de %d es: %d%n"</span>, <span class="num" id="fbN">5</span>, fibonacci( <span class="num" id="fbN2">5</span> ) );</div>
+</div>
+
+<div class="sim-panel" data-mode="hanoi">
+<div class="cl" data-id="h1"><span class="kw">public</span> <span class="tp">void</span> resolverTorres( <span class="tp">int</span> discos, <span class="tp">int</span> agujaOrigen,</div>
+<div class="cl" data-id="h2">                             <span class="tp">int</span> agujaDestino, <span class="tp">int</span> agujaTemp )</div>
+<div class="cl" data-id="h3">{</div>
+<div class="cl" data-id="h4">    <span class="cm">// CASO BASE: mover un solo disco</span></div>
+<div class="cl" data-id="h5">    <span class="kw">if</span> ( discos == <span class="num">1</span> )<span class="ev" data-ev="kb"></span></div>
+<div class="cl" data-id="h6">    {</div>
+<div class="cl" data-id="h7">        System.out.printf( <span class="str">"%d --&gt; %d%n"</span>, agujaOrigen, agujaDestino );</div>
+<div class="cl" data-id="h8">        <span class="kw">return</span>;</div>
+<div class="cl" data-id="h9">    }</div>
+<div class="cl" data-id="h10"> </div>
+<div class="cl" data-id="h11">    resolverTorres( discos - <span class="num">1</span>, agujaOrigen, agujaTemp, agujaDestino );</div>
+<div class="cl" data-id="h12"> </div>
+<div class="cl" data-id="h13">    System.out.printf( <span class="str">"%d --&gt; %d%n"</span>, agujaOrigen, agujaDestino );</div>
+<div class="cl" data-id="h14"> </div>
+<div class="cl" data-id="h15">    resolverTorres( discos - <span class="num">1</span>, agujaTemp, agujaDestino, agujaOrigen );</div>
+<div class="cl" data-id="h16">}</div>
+<div class="cl" data-id="h17"> </div>
+<div class="cl" data-id="h18"><span class="cm">// en main:</span></div>
+<div class="cl" data-id="h0">torres.resolverTorres( <span class="num" id="hN">3</span>, <span class="num">1</span>, <span class="num">3</span>, <span class="num">2</span> );</div>
+</div>
+
+<div class="sim-panel" data-mode="rota">
+<div class="cl" data-id="i1"><span class="kw">public</span> <span class="tp">long</span> factorialMal( <span class="tp">long</span> numero )</div>
+<div class="cl" data-id="i2">{</div>
+<div class="cl" data-id="i3">    <span class="kw">if</span> ( numero == <span class="num">1</span> )   <span class="cm">// ¿caso base? sólo si numero llega a 1</span><span class="ev" data-ev="kb"></span></div>
+<div class="cl" data-id="i4">        <span class="kw">return</span> <span class="num">1</span>;</div>
+<div class="cl" data-id="i5">    <span class="kw">else</span></div>
+<div class="cl" data-id="i6">        <span class="kw">return</span> numero * factorialMal( numero - <span class="num">1</span> );</div>
+<div class="cl" data-id="i7">}</div>
+<div class="cl" data-id="i8"> </div>
+<div class="cl" data-id="i9"><span class="cm">// en main:</span></div>
+<div class="cl" data-id="i0">System.out.println( factorialMal( <span class="num" id="iN">0</span> ) );</div>
+</div>
+
+      </div>
+
+      <div class="sig-side">
+        <div class="stack-head"><span>pila de llamadas (UEPS)</span><b>&uarr; arriba = lo que corre</b></div>
+        <div class="stack-box" id="stackBox"><div class="fr-empty">la pila está vacía: ninguna llamada activa</div></div>
+        <div class="var-strip" id="varStrip"></div>
+        <div class="sim-console" id="simConsole"></div>
+      </div>
+    </div>
+
+    <div class="sig-explain" id="simExplain"></div>
+    <div class="sig-alert" id="simAlert"></div>
+  </div>
+</div>
+
+<div class="nav">
+  <a href="#s01">concepto</a>
+  <a href="#s02">anatomía</a>
+  <a href="#s03">factoriales</a>
+  <a href="#s04">fibonacci</a>
+  <a href="#s05">pila de llamadas</a>
+  <a href="#s06">recursión vs ciclo</a>
+  <a href="#s07">torres de hanoi</a>
+  <a href="#s08">fractales</a>
+  <a href="#s09">vuelta atrás</a>
+  <a href="#s10">dónde se usa</a>
+  <a href="#s11">errores frecuentes</a>
+  <a href="#s12">pareto</a>
+  <a href="#s13">quiz</a>
+</div>
+
+<div class="wrap">
+
+<section id="s01">
+  <div class="eyebrow-sm">01 · Concepto</div>
+  <h2>¿Qué significa que un método «se llame a sí mismo»?</h2>
+
+  <p>Hasta ahora tus programas son métodos que se llaman <b>entre sí</b>, en una jerarquía ordenada: <code>main</code> llama a <code>calcularPromedio()</code>, éste llama a <code>Math.sqrt()</code> y nadie se confunde. Pero hay problemas en los que lo más natural es que un método se llame <b>a sí mismo</b>. A ese método se le llama <b>método recursivo</b> y a la técnica, <b>recursividad</b>.</p>
+
+  <div class="analogy">
+    <b>Analogía (Feynman): las muñecas rusas.</b> Tienes una muñeca grande; al abrirla hay otra igual pero más chica dentro, y así sucesivamente hasta la más pequeña, que ya no abre. Tu tarea es encontrar el papelito. ¿Qué haces? Aplicas <i>la misma operación</i> —«abrir muñeca»— una y otra vez, y <b>guardas las demás muñecas a un lado</b> mientras trabajas. Cuando llegas a la muñeca que no abre (eso es el <b>caso base</b>), resuelves el problema fácil: sacas el papelito. Después <b>vas regresando</b> muñeca por muñeca hasta terminar con la grande. Si te olvidaras de parar en la más chica, seguirías «abriendo» para siempre: eso es la <b>recursividad infinita</b>.
+  </div>
+
+  <p>El libro ilustra el concepto con algo que ya hiciste alguna vez en la computadora: <b>listar todos los archivos de un directorio</b>. El directorio puede contener archivos y otros directorios (subdirectorios), y cada uno de esos, a su vez, más archivos y más subdirectorios. Un método lee primero los archivos del directorio actual y luego se llama <b>a sí mismo</b> para listar los de cada subdirectorio. El caso base se alcanza cuando se llega a un directorio que <b>no tiene subdirectorios</b>: ahí ya no hace falta seguir llamando.</p>
+
+  <div class="traits">
+    <div class="box"><h3>Recursividad directa</h3><p>El método se llama a sí mismo: <code>factorial()</code> llama a <code>factorial()</code>. Es el caso que vas a escribir el 95 % de las veces.</p></div>
+    <div class="box"><h3>Recursividad indirecta</h3><p>El método <code>A</code> llama a <code>B</code>, y <code>B</code> llama de vuelta a <code>A</code>. Sigue siendo recursión porque la <b>primera</b> llamada a <code>A</code> <b>no ha terminado</b>: está esperando el resultado de <code>B</code>.</p></div>
+  </div>
+
+  <div class="key-point"><b>La idea que hay que grabar:</b> cada llamada recursiva es una <b>copia nueva</b> del método, con su propia variable <code>numero</code> y su propio lugar en memoria. <b>No es un ciclo</b>: mientras la copia hija trabaja, la copia padre queda <b>congelada en pausa</b>, esperando el valor que el hijo le devuelva. Ese «paquete de lo que la copia padre estaba haciendo» es justamente lo que guarda la pila (sección 05).</div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>La <b>instrucción de selección múltiple <code>switch</code></b> (secc. 5.6, pp. 176-181) <b>no se incluye</b> en esta guía: ya se vio en la unidad anterior. Sí se conserva —porque el capítulo 15 lo usa— la idea de que la recursión se apoya en una instrucción de <b>selección</b> (<code>if</code> / <code>if...else</code>) y no de repetición.</span></div>
+</section>
+
+<section id="s02">
+  <div class="eyebrow-sm">02 · Componentes (Cap. 15, secc. 15.2)</div>
+  <h2>Las dos piezas obligatorias: caso base y paso recursivo</h2>
+
+  <p>Cuando se llama a un método recursivo con un problema <b>complejo</b>, éste en realidad sólo sabe resolver los <b>casos más simples</b>. Así que divide el problema en dos piezas conceptuales: una que <b>sí</b> sabe resolver y otra que <b>no</b>. Para que la recursión funcione, esa segunda pieza debe ser <b>una versión ligeramente más pequeña</b> del mismo problema —ni más grande, ni distinta—.</p>
+
+  <div class="traits">
+    <div class="box"><h3>1 · Caso base</h3><p>El problema <b>más pequeño</b> que el método sabe resolver sin ayuda de nadie. Se resuelve con una instrucción común —normalmente un <code>return</code>— y <b>no</b> hace ninguna llamada recursiva. Sin él: recursividad infinita.</p></div>
+    <div class="box"><h3>2 · Paso recursivo</h3><p>Divide el problema y se llama a sí mismo con la versión más pequeña. Casi siempre va dentro de un <code>return</code>, porque su resultado se combina con la parte que el método sí supo resolver.</p></div>
+    <div class="box"><h3>3 · Convergencia</h3><p>La sucesión de problemas cada vez más pequeños <b>debe</b> terminar en el caso base. Si el paso recursivo no reduce el argumento (o lo hace mal), la cadena nunca termina.</p></div>
+    <div class="box"><h3>4 · Regreso (los retornos)</h3><p>Al llegar al caso base, el método devuelve un resultado a la copia anterior; después se origina una <b>cadena de retornos</b> hasta que la llamada original entrega el resultado final a quien la invocó.</p></div>
+  </div>
+
+  <h3 class="sub">El esqueleto, anotado</h3>
+<pre class="code"><span class="cm">// Relación que hace posible la recursión:  n! = n × (n - 1)!</span>
+<span class="kw">public</span> <span class="tp">long</span> factorial( <span class="tp">long</span> numero )
+{
+    <span class="kw">if</span> ( numero &lt;= <span class="num">1</span> )                   <span class="cm">// CASO BASE: lo único que sé resolver solo</span>
+        <span class="kw">return</span> <span class="num">1</span>;                        <span class="cm">// 0! = 1 y 1! = 1</span>
+    <span class="kw">else</span>                                  <span class="cm">// PASO RECURSIVO: versión más pequeña</span>
+        <span class="kw">return</span> numero * factorial( numero - <span class="num">1</span> );   <span class="cm">// 5! = 5 × 4!</span>
+}                                         <span class="cm">// el -1 es lo que garantiza la convergencia</span></pre>
+
+  <div class="key-point"><b>«Divide y vencerás»:</b> separar el problema en porciones más pequeñas es la misma estrategia que se vio en el capítulo 6. La diferencia es que aquí <b>quién lo divide es el propio método</b>, llamándose a sí mismo, y no un ciclo que avanza un contador.</div>
+
+  <h3 class="sub">Receta de 4 pasos para escribir cualquier método recursivo</h3>
+  <table class="cmp">
+    <thead>
+      <tr><th>Paso</th><th>Qué haces</th><th>Aplicado a <code>factorial</code></th></tr>
+    </thead>
+    <tbody>
+      <tr><td><b>1</b></td><td>Escribe la <b>relación matemática</b> (o la definición) del problema en términos de sí mismo.</td><td><code>n! = n × (n - 1)!</code> con <code>0! = 1</code></td></tr>
+      <tr><td><b>2</b></td><td>Define el <b>caso base</b>: el caso más pequeño posible.</td><td><code>numero &lt;= 1</code> → <code>return 1</code></td></tr>
+      <tr><td><b>3</b></td><td>Escribe el <b>paso recursivo</b> usando la relación, con una llamada al mismo método.</td><td><code>return numero * factorial( numero - 1 )</code></td></tr>
+      <tr><td><b>4</b></td><td>Comprueba la <b>convergencia</b>: ¿el argumento avanza hacia el caso base con <b>cualquier</b> entrada válida?</td><td><code>numero - 1</code> baja hasta 1; con <code>numero = 0</code> ya es base gracias al <code>&lt;=</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Truco de depuración:</b> prueba siempre primero el caso base (<code>factorial(1)</code>), luego el más pequeño que sí recursa (<code>factorial(2)</code>) y sólo al final valores grandes. Si falla con 2, fallará con 500… pero tardarás mucho más en darte cuenta.</span></div>
+</section>
+
+<section id="s03">
+  <div class="eyebrow-sm">03 · Ejemplo 1 (secc. 15.3)</div>
+  <h2>Factoriales: el «Hola Mundo» de la recursividad</h2>
+
+  <p>El factorial de un entero positivo <code>n</code>, escrito <code>n!</code>, es el producto de todos los enteros de <code>n</code> hasta 1:</p>
+
+<pre class="out">n! = n × (n - 1) × (n - 2) × ... × 1
+donde  1! = 1  y  0! = 1   (definición: no es un producto vacío)
+
+5! = 5 × 4 × 3 × 2 × 1 = 120
+5! = 5 × (4 × 3 × 2 × 1) = 5 × 4!   →   5! = 5 × 4!</pre>
+
+  <p>Esa última línea es <b>todo el secreto</b>: <code>n! = n × (n-1)!</code>. Escrita en Java es idéntica al código. El programa <code>CalculoFactorial</code> calcula e imprime los factoriales del 0 al 10:</p>
+
+<pre class="code"><span class="kw">public class</span> <span class="tp">CalculoFactorial</span>
+{
+    <span class="cm">// declaración recursiva del método factorial</span>
+    <span class="kw">public</span> <span class="tp">long</span> factorial( <span class="tp">long</span> numero )
+    {
+        <span class="kw">if</span> ( numero &lt;= <span class="num">1</span> )                          <span class="cm">// evalúa el caso base</span>
+            <span class="kw">return</span> <span class="num">1</span>;                              <span class="cm">// casos base: 0! = 1 y 1! = 1</span>
+        <span class="kw">else</span>                                        <span class="cm">// paso recursivo</span>
+            <span class="kw">return</span> numero * factorial( numero - <span class="num">1</span> );
+    }  <span class="cm">// fin del método factorial</span>
+
+    <span class="cm">// imprime los factoriales de los valores del 0 al 10</span>
+    <span class="kw">public</span> <span class="tp">void</span> mostrarFactoriales()
+    {
+        <span class="kw">for</span> ( <span class="tp">int</span> contador = <span class="num">0</span>; contador &lt;= <span class="num">10</span>; contador++ )
+            System.out.printf( <span class="str">"%d! = %d\n"</span>, contador, factorial( contador ) );
+    }  <span class="cm">// fin del método mostrarFactoriales</span>
+}  <span class="cm">// fin de la clase CalculoFactorial</span></pre>
+
+<pre class="code"><span class="kw">public class</span> <span class="tp">PruebaFactorial</span>
+{
+    <span class="kw">public static void</span> main( <span class="tp">String</span>[] args )
+    {
+        <span class="tp">CalculoFactorial</span> calculoFactorial = <span class="kw">new</span> <span class="tp">CalculoFactorial</span>();
+        calculoFactorial.mostrarFactoriales();   <span class="cm">// 1ª llamada: NO es recursiva</span>
+    }
+}</pre>
+
+<pre class="out">0! = 1
+1! = 1
+2! = 2
+3! = 6
+4! = 24
+5! = 120
+6! = 720
+7! = 5040
+8! = 40320
+9! = 362880
+10! = 3628800</pre>
+
+  <div class="traits">
+    <div class="box"><h3>Fase 1 · las llamadas bajan</h3><p><code>5! → 5 × 4! → 5 × (4 × 3!) → ... → 1</code>. Cada llamada queda <b>en pausa</b> esperando a la siguiente. La más profunda es la que llega al caso base.</p></div>
+    <div class="box"><h3>Fase 2 · los valores suben</h3><p><code>1! = 1 → 2! = 2 → 3! = 6 → 4! = 24 → 5! = 120</code>. Cada copia recupera el resultado de su hija, multiplica y devuelve. La pila se vacía.</p></div>
+  </div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>Sube al <b>trazador</b> y recorre <code>factorial(5)</code> paso a paso: verás exactamente esas dos fases — primero la pila crece hasta <b>6 tarjetas</b> (la de <code>main</code> más 5 copias de <code>factorial</code>) y después se vacía devolviendo <code>1 → 2 → 6 → 24 → 120</code>.</span></div>
+
+  <div class="pitfall"><span class="icon">&#9888;</span><span class="body"><b>Error común 15.1 — recursividad infinita:</b> si se <b>omite el caso base</b> o el paso recursivo está escrito de forma que <b>no converge</b> en él, el método se llama a sí mismo continuamente hasta agotar la memoria. Es el análogo exacto del ciclo infinito de la página de repetición: misma enfermedad, distinto síntoma (<code>java.lang.StackOverflowError</code> en vez de un programa que nunca sale).</span></div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Los números se acaban antes que la recursión:</b> se usa <code>long</code> porque da «enteros grandes», pero <code>20!</code> (2.43 × 10<sup>18</sup>) ya está al límite y <code>21!</code> (5.1 × 10<sup>19</sup>) <b>desborda</b> el máximo de <code>long</code> (9.22 × 10<sup>18</sup>): el método sigue siendo correcto, pero el resultado sale negativo o con basura. Para factoriales grandes, Java trae <code>java.math.BigInteger</code> (precisión arbitraria), como apunta el libro.</span></div>
+</section>
+
+<section id="s04">
+  <div class="eyebrow-sm">04 · Ejemplo 2 (secc. 15.4)</div>
+  <h2>Fibonacci: cuando la recursión se pone cara</h2>
+
+  <p>La serie de Fibonacci empieza con 0 y 1, y cada número es la suma de los dos anteriores:</p>
+
+<pre class="out">0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...</pre>
+
+  <p>Su definición recursiva tiene <b>dos</b> casos base —y eso es legal: un método puede tener tantos como necesite—:</p>
+
+<pre class="out">fibonacci(0) = 0
+fibonacci(1) = 1
+fibonacci(n) = fibonacci(n - 1) + fibonacci(n - 2)    para n &gt; 1</pre>
+
+  <p>Dato del libro: la proporción de números sucesivos converge en <b>1.618…</b>, la <b>media dorada</b> o proporción áurea, que arquitectos y artistas usan por su estética; aparece en caracolas, en galaxias y en la relación largo-ancho de muchas ventanas y cuadros.</p>
+
+<pre class="code"><span class="kw">public class</span> <span class="tp">CalculoFibonacci</span>
+{
+    <span class="cm">// declaración recursiva del método fibonacci</span>
+    <span class="kw">public</span> <span class="tp">long</span> fibonacci( <span class="tp">long</span> numero )
+    {
+        <span class="kw">if</span> ( ( numero == <span class="num">0</span> ) || ( numero == <span class="num">1</span> ) )   <span class="cm">// casos base</span>
+            <span class="kw">return</span> numero;
+        <span class="kw">else</span>                                        <span class="cm">// paso recursivo</span>
+            <span class="kw">return</span> fibonacci( numero - <span class="num">1</span> ) + fibonacci( numero - <span class="num">2</span> );
+    }  <span class="cm">// fin del método fibonacci</span>
+
+    <span class="kw">public</span> <span class="tp">void</span> mostrarFibonacci()
+    {
+        <span class="kw">for</span> ( <span class="tp">int</span> contador = <span class="num">0</span>; contador &lt;= <span class="num">10</span>; contador++ )
+            System.out.printf( <span class="str">"Fibonacci de %d es: %d\n"</span>, contador,
+                               fibonacci( contador ) );
+    }
+}</pre>
+
+<pre class="out">Fibonacci de 0 es: 0
+Fibonacci de 1 es: 1
+Fibonacci de 2 es: 1
+Fibonacci de 3 es: 2
+Fibonacci de 4 es: 3
+Fibonacci de 5 es: 5
+Fibonacci de 6 es: 8
+Fibonacci de 7 es: 13
+Fibonacci de 8 es: 21
+Fibonacci de 9 es: 34
+Fibonacci de 10 es: 55</pre>
+
+  <h3 class="sub">El árbol de llamadas de fibonacci(3) (figs. 15.7 y 15.8)</h3>
+<pre class="tree">                            A  fibonacci( 3 )
+                           /                  \
+                 B  fibonacci( 2 )       E  fibonacci( 1 )
+                  /             \               |
+        C  fibonacci( 1 )   D  fibonacci( 0 )    1
+                |                |
+                1                0</pre>
+
+  <p>Cinco llamadas para obtener <code>fibonacci(3) = 2</code>. Observa dos cosas: (1) <b>C</b> y <b>E</b> resuelven exactamente lo mismo —<code>fibonacci(1)</code>— y lo hacen <b>dos veces</b>: nadie recuerda el resultado anterior; (2) Java evalúa los operandos <b>de izquierda a derecha</b>, por eso se llama primero a <code>fibonacci(n - 1)</code> y sólo después a <code>fibonacci(n - 2)</code>.</p>
+
+<pre class="tree">  Retornos:   C devuelve 1  ─┐
+                             ├→  B = 1 + 0 = 1  ─┐
+             D devuelve 0  ─┘                    ├→  A = 1 + 1 = 2
+             E devuelve 1  ──────────────────────┘   →  fibonacci(3) = 2</pre>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Tip de rendimiento 15.1 — la explosión exponencial:</b> cada llamada que no es caso base produce <b>dos</b> llamadas más, así que el número de llamadas se dispara. La fórmula exacta es <code>llamadas(n) = 2 × F(n+1) − 1</code>, donde <code>F</code> es el propio número de Fibonacci.</span></div>
+
+  <table class="cmp">
+    <thead>
+      <tr><th>Quiero calcular</th><th>Llamadas a <code>fibonacci</code></th><th>Comentario</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>fibonacci(10)</code></td><td>177</td><td>imperceptible</td></tr>
+      <tr><td><code>fibonacci(20)</code></td><td><b>21 891</b></td><td>ya se siente lento</td></tr>
+      <tr><td><code>fibonacci(30)</code></td><td><b>2 692 537</b></td><td>millones de llamadas</td></tr>
+      <tr><td><code>fibonacci(31)</code></td><td>4 356 617</td><td>+1 664 080 de un paso al siguiente</td></tr>
+      <tr><td><code>fibonacci(32)</code></td><td>7 049 155</td><td>+2 692 538: el salto crece más rápido que el valor</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>En el trazador, pon <b>n = 5</b> en la pestaña <b>fibonacci</b> y usa <b>Hasta el final</b>: el contador <b>llamadas</b> se queda en <b>15</b> para un resultado que podrías obtener con 4 sumas dentro de un ciclo. Ahí se ve el problema sin necesidad de creerle a la tabla.</span></div>
+
+  <p class="muted">Soluciones habituales, que verás en cursos posteriores: la <b>versión iterativa</b> con dos acumuladores, o la <b>memoización</b> —guardar cada resultado calculado para no repetir el trabajo—, que baja el problema de exponencial a lineal.</p>
+</section>
+
+<section id="s05">
+  <div class="eyebrow-sm">05 · Anatomía (secc. 15.5)</div>
+  <h2>Lo que pasa «detrás de cámaras»: la pila de llamadas</h2>
+
+  <p>Ya conoces las pilas: estructuras <b>UEPS</b> (último en entrar, primero en salir) donde sólo se agrega o se quita por la <b>parte superior</b> —como el montón de platos—. Java usa una pila especial, la <b>pila de ejecución del programa</b> (también llamada <b>pila de llamadas a métodos</b>), para que cada llamada sepa a dónde regresar.</p>
+
+  <div class="traits">
+    <div class="box"><h3>Registro de activación</h3><p>Cada llamada deja en la pila un bloque con sus <b>variables locales</b> y parámetros. También se le llama <b>marco de pila</b> («stack frame»). Es la tarjeta que ves crecer en el trazador.</p></div>
+    <div class="box"><h3>La regla de oro</h3><p><b>El método en ejecución es siempre el que tiene su registro en la parte superior de la pila.</b> Si está arriba, corre; si no, está esperando (congelado) a que su hija termine.</p></div>
+    <div class="box"><h3>Al entrar: <code>push</code></h3><p>Se <b>mete</b> el registro de la nueva llamada <b>encima</b> del anterior, que sigue ahí porque todavía no ha terminado.</p></div>
+    <div class="box"><h3>Al salir: <code>pop</code></h3><p>Al ejecutar <code>return</code>, el registro se <b>saca</b> de la parte superior y el valor se entrega a quien estaba esperando: la copia que quedó abajo.</p></div>
+  </div>
+
+  <h3 class="sub">La pila completa de fibonacci(3) (figs. 15.8 y 15.9)</h3>
+  <table class="cmp">
+    <thead>
+      <tr><th>#</th><th>Llamada</th><th>Acción</th><th>Contenido de la pila (de abajo ↑)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><b>A</b> <code>fibonacci(3)</code></td><td>se mete A</td><td><code>[ A ]</code></td></tr>
+      <tr><td>2</td><td><b>B</b> <code>fibonacci(2)</code></td><td>se mete B (A sigue activa)</td><td><code>[ A, B ]</code></td></tr>
+      <tr><td>3</td><td><b>C</b> <code>fibonacci(1)</code></td><td>se mete C</td><td><code>[ A, B, C ]</code></td></tr>
+      <tr><td>4</td><td>C devuelve <b>1</b></td><td>se saca C</td><td><code>[ A, B ]</code></td></tr>
+      <tr><td>5</td><td><b>D</b> <code>fibonacci(0)</code></td><td>se mete D</td><td><code>[ A, B, D ]</code></td></tr>
+      <tr><td>6</td><td>D devuelve <b>0</b></td><td>se saca D</td><td><code>[ A, B ]</code></td></tr>
+      <tr><td>7</td><td>B devuelve <b>1</b></td><td>se saca B</td><td><code>[ A ]</code></td></tr>
+      <tr><td>8</td><td><b>E</b> <code>fibonacci(1)</code></td><td>se mete E</td><td><code>[ A, E ]</code></td></tr>
+      <tr><td>9</td><td>E devuelve <b>1</b></td><td>se saca E</td><td><code>[ A ]</code></td></tr>
+      <tr><td>10</td><td>A devuelve <b>2</b></td><td>se saca A</td><td><code>[ ]</code> vacía</td></tr>
+    </tbody>
+  </table>
+
+  <div class="key-point"><b>Desbordamiento de pila (<code>StackOverflowError</code>):</b> si hay más llamadas recursivas (o anidadas) de las que caben en la pila de ejecución, ésta se desborda y Java lanza el error. No es un capricho del compilador: es el síntoma visible de una recursión que nunca encontró su caso base. Puedes verlo en vivo en la pestaña <b>caso erróneo</b> del trazador.</div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>Cruce con el curso: la estructura <b>pila</b> es la misma que estudiamos en <a href="../pilas-java-explicacion.html">Pilas</a>; la única diferencia es que aquí la pila la <b>administra la JVM</b> y no tú. Por eso el desbordamiento se llama <i>de pila</i>: se llena <b>esa</b> pila.</span></div>
+</section>
+
+<section id="s06">
+  <div class="eyebrow-sm">06 · Comparación (secc. 15.6)</div>
+  <h2>¿Recursión o ciclo? Cómo elegir</h2>
+
+  <p>La iteración y la recursividad son dos caras de la misma moneda: ambas repiten, ambas necesitan una prueba de terminación y ambas pueden quedarse loops eternos. Lo que cambia es <b>cómo</b> lo hacen.</p>
+
+  <table class="cmp">
+    <thead>
+      <tr><th>Aspecto</th><th>Iteración (ciclo)</th><th>Recursividad</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Instrucción de control</td><td>de <b>repetición</b>: <code>for</code>, <code>while</code>, <code>do...while</code></td><td>de <b>selección</b>: <code>if</code>, <code>if...else</code></td></tr>
+      <tr><td>Cómo repite</td><td>repite <b>explícitamente</b> el cuerpo del ciclo</td><td>repite por <b>llamadas repetidas</b> al mismo método</td></tr>
+      <tr><td>Prueba de terminación</td><td>cuando <b>falla la condición</b> de continuación</td><td>cuando se <b>llega al caso base</b></td></tr>
+      <tr><td>Camino hasta terminar</td><td>modifica un <b>contador</b> hasta el valor límite</td><td>produce <b>versiones más pequeñas</b> del problema</td></tr>
+      <tr><td>Fallo infinito</td><td>ciclo infinito</td><td>recursividad infinita (+ <code>StackOverflowError</code>)</td></tr>
+      <tr><td>Costo</td><td>todo ocurre <b>dentro</b> de un método: sin llamadas ni memoria extra</td><td>cada llamada crea un <b>registro de activación</b> (tiempo + memoria)</td></tr>
+      <tr><td>Cuándo elegirla</td><td>alto rendimiento, lógica lineal y predecible</td><td>cuando <b>refleja el problema con naturalidad</b> y se entiende/depura mejor</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub">El mismo factorial, resuelto con un ciclo (fig. 15.10)</h3>
+<pre class="code"><span class="kw">public</span> <span class="tp">long</span> factorial( <span class="tp">long</span> numero )
+{
+    <span class="tp">long</span> resultado = <span class="num">1</span>;
+
+    <span class="cm">// declaración iterativa del método factorial</span>
+    <span class="kw">for</span> ( <span class="tp">long</span> i = numero; i &gt;= <span class="num">1</span>; i-- )
+        resultado *= i;             <span class="cm">// la prueba de terminación es i &gt;= 1</span>
+
+    <span class="kw">return</span> resultado;
+}</pre>
+
+  <p class="muted">Compara: la versión recursiva evalúa el caso base en el <code>if</code>; la iterativa lo hace con la condición <code>i &gt;= 1</code> del <code>for</code>. Una busca versiones más pequeñas del problema, la otra avanza un contador. Ambas producen <b>exactamente la misma salida</b> —la tabla de la sección 03—.</p>
+
+  <div class="tip"><span class="icon">&#10003;</span><span><b>Observación de ingeniería 15.1:</b> cualquier problema que se resuelve con recursión también se puede resolver con iteración. Se prefiere el método recursivo cuando <b>refleja el problema con más naturalidad</b>, produce un programa más fácil de entender y depurar, suele caber en menos líneas… o cuando la solución iterativa simplemente <b>no es aparente</b>. Ahí es donde la recursión gana de verdad: en <i>Hanoi</i>, en los <i>laberintos</i> y en los <i>árboles</i>.</span></div>
+
+  <div class="warn"><span class="icon">&#9888;</span><span><b>Tip de rendimiento 15.2 + Error común 15.2:</b> evita la recursión cuando el rendimiento sea crítico (llamadas = tiempo y memoria). Y cuidado con la <b>llamada accidental a sí mismo</b>: si dos métodos cualesquiera se llaman mutuamente sin caso base, producen recursividad infinita aunque tú nunca escribieras la palabra «recursivo» en el código.</span></div>
+</section>
+
+<section id="s07">
+  <div class="eyebrow-sm">07 · Ejemplo 3 (secc. 15.7)</div>
+  <h2>Las torres de Hanoi: donde la recursión brilla</h2>
+
+  <p>Cuenta la leyenda que en un templo del Lejano Oriente, los sacerdotes intentan mover una pila de 64 discos dorados de una aguja a otra, con estas <b>tres restricciones</b>:</p>
+
+  <div class="traits">
+    <div class="box"><h3>Restricción 1</h3><p>Sólo se puede mover <b>un disco a la vez</b>.</p></div>
+    <div class="box"><h3>Restricción 2</h3><p><b>Nunca</b> puede colocarse un disco más <b>grande</b> encima de uno más <b>pequeño</b>.</p></div>
+    <div class="box"><h3>Restricción 3</h3><p>Hay <b>tres agujas</b>: origen, destino y una <b>temporal</b> donde apoyar discos en tránsito.</p></div>
+    <div class="box"><h3>Objetivo</h3><p>Mover toda la pila de la aguja 1 a la aguja 3 e imprimir la secuencia exacta de transferencias.</p></div>
+  </div>
+
+  <p>Una solución <b>iterativa</b> te deja «atado» entre los discos. La recursiva, en cambio, se explica en tres líneas de idea: mover <code>n</code> discos equivale a mover <code>n - 1</code> discos, una vez, y luego el más grande, y otra vez los <code>n - 1</code>:</p>
+
+  <table class="cmp">
+    <thead>
+      <tr><th>Paso</th><th>Acción</th><th>¿Cuántos discos?</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><b>1</b></td><td>Mover <code>n - 1</code> discos de la <b>aguja 1</b> a la <b>aguja 2</b>, usando la 3 como temporal</td><td>recursivo</td></tr>
+      <tr><td><b>2</b></td><td>Mover el <b>último disco</b> (el más grande) de la <b>aguja 1</b> a la <b>aguja 3</b></td><td>1 (caso base)</td></tr>
+      <tr><td><b>3</b></td><td>Mover los <code>n - 1</code> discos de la <b>aguja 2</b> a la <b>aguja 3</b>, usando la 1 como temporal</td><td>recursivo</td></tr>
+    </tbody>
+  </table>
+
+  <p>El proceso termina cuando la tarea implica mover <b>n = 1</b> disco: ese es el caso base, y se resuelve con sólo moverlo, sin necesidad de aguja temporal.</p>
+
+<pre class="code"><span class="kw">public class</span> <span class="tp">TorresDeHanoi</span>
+{
+    <span class="kw">private</span> <span class="tp">int</span> numDiscos;   <span class="cm">// número de discos a mover</span>
+
+    <span class="kw">public</span> TorresDeHanoi( <span class="tp">int</span> discos )
+    {
+        numDiscos = discos;
+    }
+
+    <span class="cm">// mueve discos de una torre a otra, de manera recursiva</span>
+    <span class="kw">public</span> <span class="tp">void</span> resolverTorres( <span class="tp">int</span> discos, <span class="tp">int</span> agujaOrigen, <span class="tp">int</span> agujaDestino,
+                                <span class="tp">int</span> agujaTemp )
+    {
+        <span class="cm">// CASO BASE: sólo hay que mover un disco</span>
+        <span class="kw">if</span> ( discos == <span class="num">1</span> )
+        {
+            System.out.printf( <span class="str">"%d --&gt; %d\n"</span>, agujaOrigen, agujaDestino );
+            <span class="kw">return</span>;
+        }
+
+        <span class="cm">// paso recursivo 1: mueve (discos - 1) de origen a temporal,</span>
+        <span class="cm">// usando el destino como aguja de apoyo</span>
+        resolverTorres( discos - <span class="num">1</span>, agujaOrigen, agujaTemp, agujaDestino );
+
+        <span class="cm">// mueve el disco más grande de origen a destino</span>
+        System.out.printf( <span class="str">"%d --&gt; %d\n"</span>, agujaOrigen, agujaDestino );
+
+        <span class="cm">// paso recursivo 2: mueve (discos - 1) de temporal a destino,</span>
+        <span class="cm">// usando el origen como aguja de apoyo</span>
+        resolverTorres( discos - <span class="num">1</span>, agujaTemp, agujaDestino, agujaOrigen );
+    }
+}  <span class="cm">// fin de la clase TorresDeHanoi</span></pre>
+
+<pre class="code"><span class="kw">public class</span> <span class="tp">PruebaTorresDeHanoi</span>
+{
+    <span class="kw">public static void</span> main( <span class="tp">String</span>[] args )
+    {
+        <span class="tp">int</span> agujaInicial = <span class="num">1</span>;
+        <span class="tp">int</span> agujaFinal   = <span class="num">3</span>;
+        <span class="tp">int</span> agujaTemp    = <span class="num">2</span>;
+        <span class="tp">int</span> totalDiscos  = <span class="num">3</span>;
+
+        <span class="tp">TorresDeHanoi</span> torresDeHanoi = <span class="kw">new</span> <span class="tp">TorresDeHanoi</span>( totalDiscos );
+
+        <span class="cm">// llamada NO recursiva inicial: mueve todos los discos</span>
+        torresDeHanoi.resolverTorres( totalDiscos, agujaInicial, agujaFinal, agujaTemp );
+    }
+}</pre>
+
+<pre class="out">1 --&gt; 3
+1 --&gt; 2
+3 --&gt; 2
+1 --&gt; 3
+2 --&gt; 1
+2 --&gt; 3
+1 --&gt; 3</pre>
+
+  <div class="traits">
+    <div class="box"><h3>7 movimientos = 2³ − 1</h3><p>Para <code>n</code> discos hacen falta <code>2<sup>n</sup> − 1</code> movimientos. Con 3 discos: 7; con 10: 1023; con <b>64 discos</b> (la leyenda): 18 446 744 073 709 551 615 movimientos… a un segundo cada uno, unos 585 mil millones de años.</p></div>
+    <div class="box"><h3>Qué mirar en el trazador</h3><p>En la pestaña <b>torres de hanoi</b> con 3 discos verás <b>7 llamadas</b> a <code>resolverTorres</code> —<b>4</b> que llegan al caso base (<code>discos = 1</code>) y <b>3</b> que sólo reparten el trabajo—, y la consola acumulando exactamente las <b>7</b> transferencias de arriba. Cada llamada imprime un movimiento: <code>llamadas = movimientos = 2<sup>n</sup> − 1</code>.</p></div>
+  </div>
+</section>
+
+<section id="s08">
+  <div class="eyebrow-sm">08 · Ejemplo 4 (secc. 15.8)</div>
+  <h2>Fractales: dibujar repitiendo un patrón, para siempre</h2>
+
+  <p>Un <b>fractal</b> es una figura geométrica generada a partir de un patrón que se aplica <b>recursivamente</b>: se toma la figura, se le aplica el patrón, y a cada pieza nueva se le vuelve a aplicar. Cada repetición se llama <b>nivel</b> (también profundidad u orden). La propiedad clave es la <b>auto-similitud</b>: si amplías una porción, se ve <b>igual</b> que la figura completa. El término lo acuñó Benoit Mandelbrot en los años 70, y hoy se usan para modelar montañas, nubes, costas, pliegues del cerebro y agrupaciones de galaxias.</p>
+
+  <div class="traits">
+    <div class="box"><h3>Caso base = nivel 0</h3><p>Una <b>línea recta</b> entre dos puntos A y B. Ahí el dibujo termina: no se subdividió nada.</p></div>
+    <div class="box"><h3>Paso recursivo = aplicar el patrón</h3><p>Se calcula el punto medio <code>C</code> y un punto <code>D</code>, se reemplaza la línea por tres segmentos nuevos y se llama al método <b>tres veces</b>, una por segmento, con <code>nivel - 1</code>.</p></div>
+    <div class="box"><h3>3<sup>nivel</sup> segmentos</h3><p>1 → 3 → 9 → 27 → 81 → 243… El número de llamadas crece rápido, pero <b>terminan todas</b> porque en cada salto <code>nivel</code> baja de a 1 hasta llegar a 0.</p></div>
+    <div class="box"><h3>La curva de Koch</h3><p>El ejemplo clásico del libro (fig. 15.15): se elimina la tercera parte media de cada línea y se sustituye por dos que formarían un triángulo equilátero. Empieza con una línea; el copo de nieve empieza con un triángulo.</p></div>
+  </div>
+
+  <p class="muted">El libro dibuja el «fractal Lo», así llamado por un colega de Deitel, que a partir de una sola línea termina pareciéndose a <b>la mitad de una pluma</b>. Su método recursivo recibe el nivel, cuatro coordenadas y el objeto <code>Graphics</code>:</p>
+
+<pre class="code"><span class="an">import</span> java.awt.Graphics;
+<span class="an">import</span> javax.swing.JPanel;
+
+<span class="kw">public class</span> <span class="tp">FractalJPanel</span> <span class="kw">extends</span> JPanel
+{
+    <span class="kw">private</span> <span class="tp">Color</span> color;
+    <span class="kw">private</span> <span class="tp">int</span> nivel;
+
+    <span class="cm">// dibuja el fractal de forma recursiva</span>
+    <span class="kw">public</span> <span class="tp">void</span> dibujarFractal( <span class="tp">int</span> nivel, <span class="tp">int</span> xA, <span class="tp">int</span> yA, <span class="tp">int</span> xB, <span class="tp">int</span> yB,
+                                <span class="tp">Graphics</span> g )
+    {
+        <span class="cm">// CASO BASE: dibuja la línea que conecta los dos puntos</span>
+        <span class="kw">if</span> ( nivel == <span class="num">0</span> )
+            g.drawLine( xA, yA, xB, yB );
+        <span class="kw">else</span>   <span class="cm">// paso recursivo: calcula los nuevos puntos y dibuja el nivel</span>
+        {
+            <span class="cm">// punto medio entre (xA, yA) y (xB, yB)</span>
+            <span class="tp">int</span> xC = ( xA + xB ) / <span class="num">2</span>;
+            <span class="tp">int</span> yC = ( yA + yB ) / <span class="num">2</span>;
+
+            <span class="cm">// punto que forma un triángulo recto isósceles con A y C</span>
+            <span class="tp">int</span> xD = xA + ( xC - xA ) / <span class="num">2</span> - ( yC - yA ) / <span class="num">2</span>;
+            <span class="tp">int</span> yD = yA + ( yC - yA ) / <span class="num">2</span> + ( xC - xA ) / <span class="num">2</span>;
+
+            <span class="cm">// tres llamadas recursivas: un segmento nuevo por llamada</span>
+            dibujarFractal( nivel - <span class="num">1</span>, xD, yD, xA, yA, g );
+            dibujarFractal( nivel - <span class="num">1</span>, xD, yD, xC, yC, g );
+            dibujarFractal( nivel - <span class="num">1</span>, xD, yD, xB, yB, g );
+        }
+    }
+
+    <span class="kw">public</span> <span class="tp">void</span> paintComponent( <span class="tp">Graphics</span> g )
+    {
+        <span class="kw">super</span>.paintComponent( g );
+        g.setColor( color );
+        dibujarFractal( nivel, <span class="num">100</span>, <span class="num">90</span>, <span class="num">290</span>, <span class="num">200</span>, g );  <span class="cm">// llamada inicial</span>
+    }
+}</pre>
+
+  <div class="frac-box">
+    <div class="sig-title">Fractal Lo · sube de nivel y observa el patrón repetirse</div>
+    <p class="sig-sub">Pulsa un nivel: aquí se ejecuta <b>exactamente el mismo algoritmo</b> del código de arriba (mismo cálculo de C y D, mismas tres llamadas) y se vuelve a dibujar la figura.</p>
+    <div class="frac-btns" id="fracBtns">
+      <button class="tab-btn active" data-n="0" onclick="drawLo(0)">nivel 0</button>
+      <button class="tab-btn" data-n="1" onclick="drawLo(1)">nivel 1</button>
+      <button class="tab-btn" data-n="2" onclick="drawLo(2)">nivel 2</button>
+      <button class="tab-btn" data-n="3" onclick="drawLo(3)">nivel 3</button>
+      <button class="tab-btn" data-n="4" onclick="drawLo(4)">nivel 4</button>
+      <button class="tab-btn" data-n="5" onclick="drawLo(5)">nivel 5</button>
+    </div>
+    <svg class="frac-svg" id="loSvg" viewBox="0 0 400 300" role="img" aria-label="Fractal Lo dibujado recursivamente"></svg>
+    <div class="frac-cap" id="loCap"></div>
+  </div>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>La llamada de <code>paintComponent</code> a <code>dibujarFractal</code> <b>no</b> es recursiva —la hizo el sistema gráfico—; todas las llamadas que salen del cuerpo de <code>dibujarFractal</code> <b>sí</b> lo son. En el ejemplo del libro la figura se estabiliza alrededor del <b>nivel 11</b>: a partir de ahí, añadir niveles ya no cambia lo que se ve en pantalla.</span></div>
+</section>
+
+<section id="s09">
+  <div class="eyebrow-sm">09 · Ejemplo 5 (secc. 15.9)</div>
+  <h2>«Vuelta atrás» recursiva (backtracking): intentar, fallar y retroceder</h2>
+
+  <p>Todos los métodos recursivos vistos hasta ahora tenían la misma arquitectura: si llegan al caso base devuelven un resultado; si no, hacen una o más llamadas recursivas. El <b>backtracking</b> es la versión «más completa»: un método que <b>prueba caminos</b> y, cuando uno se traba, <b>regresa al punto donde tomó la decisión</b> y prueba otro.</p>
+
+  <p>El ejemplo del libro es un <b>laberinto</b>: desde la celda de entrada se elige una dirección (arriba, abajo, izquierda o derecha —nunca en diagonal—), se da el paso y se llama recursivamente para resolver <b>el resto</b> del laberinto desde la nueva posición. Si se llega a un punto sin salida, <b>retrocedemos</b> a la ubicación anterior y probamos otra dirección. ¿Cómo se retrocede? De la forma más elegante posible: <b>el método devuelve <code>false</code></b>, y eso por sí solo hace subir la ejecución por la cadena de llamadas hasta la llamada anterior.</p>
+
+  <div class="traits">
+    <div class="box"><h3>Punto de decisión</h3><p>La celda actual: hay 4 direcciones posibles y cada una genera su propia llamada recursiva.</p></div>
+    <div class="box"><h3>Retroceso</h3><p>Una llamada que devuelve <code>false</code> deshace el movimiento: <b>se desmarca</b> la celda y se prueba la siguiente dirección.</p></div>
+    <div class="box"><h3>Solución encontrada</h3><p>La llamada que llega a la salida devuelve <code>true</code>, y ese <code>true</code> <b>sube por toda la cadena</b> sin desmarcar nada: el camino queda impreso.</p></div>
+    <div class="box"><h3>Sin solución</h3><p>Si la vuelta atrás llega hasta la <b>entrada</b> y ya se probaron todas las direcciones, el laberinto no tiene solución.</p></div>
+  </div>
+
+<pre class="code"><span class="kw">public class</span> <span class="tp">Laberinto</span>
+{
+    <span class="kw">private static final</span> <span class="tp">int</span> FILAS = <span class="num">7</span>;
+    <span class="kw">private static final</span> <span class="tp">int</span> COLUMNAS = <span class="num">7</span>;
+
+    <span class="cm">// '1' = pared   ' ' = pasillo   '.' = camino probado   '*' = salida</span>
+    <span class="kw">private</span> <span class="tp">char</span>[][] mapa = {
+        { <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span> },
+        { <span class="str">'1'</span>, <span class="str">' '</span>, <span class="str">' '</span>, <span class="str">' '</span>, <span class="str">'1'</span>, <span class="str">' '</span>, <span class="str">'1'</span> },
+        { <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">' '</span>, <span class="str">'1'</span>, <span class="str">' '</span>, <span class="str">'1'</span> },
+        { <span class="str">'1'</span>, <span class="str">' '</span>, <span class="str">' '</span>, <span class="str">' '</span>, <span class="str">' '</span>, <span class="str">' '</span>, <span class="str">'1'</span> },
+        { <span class="str">'1'</span>, <span class="str">' '</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">' '</span>, <span class="str">'1'</span> },
+        { <span class="str">'1'</span>, <span class="str">' '</span>, <span class="str">' '</span>, <span class="str">' '</span>, <span class="str">'1'</span>, <span class="str">' '</span>, <span class="str">'1'</span> },
+        { <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span>, <span class="str">'1'</span> }
+    };
+
+    <span class="kw">private</span> <span class="tp">int</span> salidaFila    = FILAS - <span class="num">2</span>;   <span class="cm">// = 5</span>
+    <span class="kw">private</span> <span class="tp">int</span> salidaColumna = COLUMNAS - <span class="num">2</span>;  <span class="cm">// = 5</span>
+
+    <span class="kw">public boolean</span> resolver()
+    {
+        <span class="kw">return</span> resolverDesde( <span class="num">1</span>, <span class="num">1</span> );   <span class="cm">// llamada inicial: NO es recursiva</span>
+    }
+
+    <span class="kw">private boolean</span> resolverDesde( <span class="tp">int</span> fila, <span class="tp">int</span> columna )
+    {
+        <span class="cm">// CASO BASE 1: llegamos a la salida</span>
+        <span class="kw">if</span> ( fila == salidaFila &amp;&amp; columna == salidaColumna )
+        {
+            mapa[fila][columna] = <span class="str">'*'</span>;
+            <span class="kw">return true</span>;
+        }
+
+        <span class="cm">// CASO BASE 2: hay muro, fuera de rango o celda ya visitada</span>
+        <span class="kw">if</span> ( mapa[fila][columna] != <span class="str">' '</span> )
+            <span class="kw">return false</span>;
+
+        mapa[fila][columna] = <span class="str">'.'</span>;          <span class="cm">// se marca el intento</span>
+
+        <span class="cm">// PASO RECURSIVO: se prueban las 4 direcciones, una a una</span>
+        <span class="kw">if</span> ( resolverDesde( fila - <span class="num">1</span>, columna ) ) <span class="kw">return true</span>;  <span class="cm">// arriba</span>
+        <span class="kw">if</span> ( resolverDesde( fila + <span class="num">1</span>, columna ) ) <span class="kw">return true</span>;  <span class="cm">// abajo</span>
+        <span class="kw">if</span> ( resolverDesde( fila, columna - <span class="num">1</span> ) ) <span class="kw">return true</span>;  <span class="cm">// izquierda</span>
+        <span class="kw">if</span> ( resolverDesde( fila, columna + <span class="num">1</span> ) ) <span class="kw">return true</span>;  <span class="cm">// derecha</span>
+
+        mapa[fila][columna] = <span class="str">' '</span>;          <span class="cm">// VUELTA ATRÁS: se desmarca</span>
+        <span class="kw">return false</span>;                       <span class="cm">// esta celda no lleva a la solución</span>
+    }
+
+    <span class="kw">public void</span> imprimir()
+    {
+        <span class="kw">for</span> ( <span class="tp">int</span> f = <span class="num">0</span>; f &lt; FILAS; f++ )
+            System.out.println( <span class="kw">new</span> <span class="tp">String</span>( mapa[f] ) );
+    }
+
+    <span class="kw">public static void</span> main( <span class="tp">String</span>[] args )
+    {
+        <span class="tp">Laberinto</span> laberinto = <span class="kw">new</span> <span class="tp">Laberinto</span>();
+
+        <span class="kw">if</span> ( laberinto.resolver() )
+            System.out.println( <span class="str">"Solución encontrada:"</span> );
+        <span class="kw">else</span>
+            System.out.println( <span class="str">"El laberinto no tiene solución."</span> );
+
+        laberinto.imprimir();
+    }
+}</pre>
+
+<pre class="out">Solución encontrada:
+1111111
+1...1 1
+111.1 1
+1  ...1
+1 111.1
+1   1*1
+1111111</pre>
+
+  <p class="muted">Fíjate en el recorrido: el algoritmo se lanza primero hacia la <b>izquierda</b> —celdas que hoy están vacías en la salida—, se topa con un callejón sin salida, <b>desmarca</b> todo ese camino y recién entonces prueba a la derecha. Las únicas celdas que sobreviven son las del camino que lleva a <code>*</code>.</p>
+
+  <div class="tip"><span class="icon">&#10003;</span><span>Para practicar: los ejercicios del libro piden hacer exactamente esto pero <b>imprimiendo</b> el laberinto en vez de marcarlo (15.20), generarlo al azar (15.21), de cualquier tamaño (15.22) y el clásico de las <b>Ocho Reinas</b> (15.15): colocar 8 reinas en un tablero de ajedrez sin que ninguna ataque a otra.</span></div>
+</section>
+
+<section id="s10">
+  <div class="eyebrow-sm">10 · Función práctica</div>
+  <h2>¿Dónde vive la recursión en un programa real?</h2>
+
+  <p class="muted">No se usa «porque sí»: se usa cuando el problema <b>se parece a sí mismo</b> en partes más pequeñas. Estos son los lugares donde la vas a encontrar, y en qué parte del curso ya los tienes (o los vas a tener).</p>
+
+  <div class="uses">
+    <div class="box"><h3>Archivos y directorios</h3><p>Listar todo lo que hay dentro de una carpeta, incluidos los subdirectorios anidados. Caso base: un directorio sin subdirectorios. Es el ejemplo de la sección 15.2 del libro.</p></div>
+    <div class="box"><h3>Árboles binarios</h3><p>Insertar un nodo y recorrer en preorden, inorden y postorden es recursión pura: cada subárbol es el mismo problema, más pequeño. Ya está construido en <a href="../arboles-java-explicacion.html">Árboles en Java</a>.</p></div>
+    <div class="box"><h3>Búsqueda y ordenamiento</h3><p>Búsqueda binaria recursiva, ordenamiento por combinación (merge sort) y quicksort —capítulo 16 del libro—. Ya está en <a href="../algoritmos-ordenamiento-busqueda-java.html">Algoritmos de ordenamiento y búsqueda</a>.</p></div>
+    <div class="box"><h3>Interfaces gráficas y fractales</h3><p>Dibujar figuras auto-similes con <code>Graphics</code>: curva de Koch, copo de nieve, triángulo de Sierpinski y el «fractal Lo» de la sección 08.</p></div>
+    <div class="box"><h3>Laberintos, ajedrez y puzzles</h3><p>Backtracking: laberintos, Ocho Reinas, sudokus, permutaciones de una cadena. Intentar, fallar, retroceder y probar otra cosa (sección 09).</p></div>
+    <div class="box"><h3>Matemáticas y cadenas</h3><p>Elevar a una potencia (ej. 15.9), máximo común divisor (15.11), detectar palíndromos (15.14), imprimir o buscar en un arreglo (15.16-15.18). Todo cabe en 5-6 líneas.</p></div>
+  </div>
+</section>
+
+<section id="s11">
+  <div class="eyebrow-sm">11 · Errores frecuentes</div>
+  <h2>Los tropiezos típicos de este tema</h2>
+
+  <div class="pitfall"><span class="icon">&#9888;</span><span class="body"><b>1 · Caso base ausente o inalcanzable → recursividad infinita.</b> Dos versiones del mismo error: olvidar el <code>if</code> del todo, o escribir una condición que <b>ciertos valores nunca alcanzan</b> (por ejemplo <code>if (numero == 1)</code> cuando alguien llama a <code>factorial(0)</code>: la cuenta baja 0, −1, −2… y nunca pasa por 1). El síntoma es <code>java.lang.StackOverflowError</code>. <b>Corrección:</b> usa <code>&lt;= 1</code> en vez de <code>== 1</code>, y recuerda que <code>0! = 1</code> es un caso base tan válido como <code>1! = 1</code>. Pruébalo en la pestaña <b>caso erróneo</b> del trazador: con <code>numero = 5</code> termina, con <code>numero = 0</code> explota.</span></div>
+
+  <div class="pitfall"><span class="icon">&#9888;</span><span class="body"><b>2 · Llamada accidental a sí mismo (Error común 15.2).</b> Basta con que dos métodos cualesquiera se llamen mutuamente —<code>a()</code> llama a <code>b()</code> y <code>b()</code> llama a <code>a()</code>— sin que ninguno tenga caso base: el resultado es recursividad infinita aunque nunca hayas tenido la intención de ser recursivo. Relacionado: no confundas quién llama a quién. La <b>primera</b> llamada de <code>main</code> a <code>factorial()</code> <b>no</b> es recursiva; lo son únicamente las llamadas hechas <b>desde dentro</b> del propio método.</span></div>
+
+  <div class="pitfall"><span class="icon">&#9888;</span><span class="body"><b>3 · La recursión está bien, pero los datos o el tiempo se acaban.</b> Dos caras del mismo problema: (a) <i>numérico</i> —<code>long</code> no alcanza para <code>21!</code>, aunque el método sea correcto: usa <code>BigInteger</code>; (b) <i>de rendimiento</i> —el Fibonacci recursivo hace <b>21 891</b> llamadas para <code>n = 20</code> y <b>2 692 537</b> para <code>n = 30</code>, porque cada paso abre dos más. <b>Corrección:</b> en situaciones de alto rendimiento usa la versión iterativa o guarda los resultados ya calculados (memoización).</span></div>
+</section>
+
+<section id="s12">
+  <div class="eyebrow-sm">12 · Principio de Pareto</div>
+  <h2>El 20% que produce el 80% de los resultados</h2>
+
+  <ul class="checklist">
+    <li>Todo método recursivo necesita <b>caso base</b> + <b>paso recursivo</b>: el paso debe llamar al mismo método con un argumento <b>más pequeño</b> que <b>converja</b> al caso base. Sin eso → <code>StackOverflowError</code>.</li>
+    <li>La primera llamada (desde <code>main</code> o <code>paintComponent</code>) <b>no es recursiva</b>; las que salen del <b>cuerpo del propio método</b>, sí lo son.</li>
+    <li>Cada llamada deja un <b>registro de activación</b> en la <b>pila de ejecución</b> (UEPS); el método que corre es <b>siempre</b> el de la parte superior, y al hacer <code>return</code> su registro se saca de la pila.</li>
+    <li>Todo lo que resuelve la recursión lo resuelve también la iteración: elige recursión cuando <b>refleja el problema con más naturalidad</b> (Hanoi, laberintos, árboles, fractales) y deja el ciclo para el código lineal y de alto rendimiento.</li>
+    <li>Desconfía de la recursión <b>ramajeada</b>: Fibonacci hace dos llamadas por paso y «explota» (n = 30 → 2.7 millones de llamadas). Mide, y si el costo importa, itera o memoriza.</li>
+  </ul>
+</section>
+
+<section id="s13">
+  <div class="eyebrow-sm">13 · Active recall</div>
+  <h2>Pon a prueba lo aprendido</h2>
+
+  <p class="muted">Responde <b>en voz alta antes de abrir</b> cada respuesta. Si dudaste, vuelve a la sección indicada.</p>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">1. ¿Por qué el caso base de factorial es <code>numero &lt;= 1</code> y no <code>numero == 1</code>? ¿Qué pasaría con <code>factorial(0)</code> en la segunda versión?</div>
+    <div class="a"><p>Porque <b>0! = 1</b> también es un caso base definido, y porque <code>&lt;= 1</code> garantiza que <b>cualesquiera</b> valores menores o iguales a 1 terminan. Con <code>== 1</code> y una llamada <code>factorial(0)</code>, la cuenta baja 0, −1, −2… y <b>nunca</b> alcanza 1: recursividad infinita hasta <code>StackOverflowError</code> (secciones 03 y 11).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">2. ¿Cuántas llamadas a <code>fibonacci</code> se hacen para calcular <code>fibonacci(3)</code> y en qué orden se evalúan los operandos de <code>fibonacci(n-1) + fibonacci(n-2)</code>?</div>
+    <div class="a"><p><b>5 llamadas</b>: A(3) → B(2) → C(1), D(0), y luego E(1). Java evalúa los operandos <b>de izquierda a derecha</b>, así que primero se ejecuta <code>fibonacci(n - 1)</code> y sólo después <code>fibonacci(n - 2)</code>. De paso: C y E calculan lo mismo (<code>fibonacci(1)</code>) y nadie guarda el resultado (sección 04).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">3. ¿Qué contiene la pila de ejecución en cada llamada recursiva y qué ocurre exactamente cuando se ejecuta un <code>return</code>?</div>
+    <div class="a"><p>Un <b>registro de activación</b> (o marco de pila) con las variables locales y parámetros de <b>esa copia</b>. Al ejecutar <code>return</code>, el registro de la copia en la parte superior se <b>saca de la pila</b> y su valor se entrega a la copia que quedó debajo —la que lo había llamado y estaba esperando—. Si las llamadas superan la capacidad de la pila: <b>desbordamiento de pila</b> (sección 05).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">4. ¿Cuál es la diferencia entre la prueba de terminación de un ciclo y la de un método recursivo? ¿Puede un problema resolverse <b>sólo</b> con recursión?</div>
+    <div class="a"><p>El ciclo termina cuando <b>falla la condición de continuación</b> (<code>i &gt;= 1</code>); la recursión termina cuando <b>se llega al caso base</b>. Y no: <b>cualquier</b> problema recursivo también se resuelve con iteración (Observación de ingeniería 15.1). Se prefiere la recursión cuando refleja el problema con más naturalidad, cabe en menos líneas o la versión iterativa no es aparente —Hanoi, laberintos, árboles— (sección 06).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">5. En las torres de Hanoi con 3 discos: ¿qué representa el caso base y cuántos movimientos se imprimen?</div>
+    <div class="a"><p>El caso base es <b>mover un solo disco</b> directo de origen a destino, sin usar la aguja temporal. Se imprimen <b>7 movimientos</b>, porque hacen falta <code>2<sup>n</sup> − 1 = 2³ − 1</code>: <code>1→3, 1→2, 3→2, 1→3, 2→1, 2→3, 1→3</code>. En el trazador son <b>7 llamadas</b> a <code>resolverTorres</code> —una por cada movimiento, porque cada llamada imprime exactamente un paso— (sección 07).</p></div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="q" onclick="this.parentElement.classList.toggle('open')">6. Un compañero dice que <code>paintComponent()</code> «es recursivo porque llama a dibujarFractal, y dibujarFractal se llama a sí mismo». ¿Es correcto?</div>
+    <div class="a"><p>Sólo a medias. La llamada de <code>paintComponent</code> a <code>dibujarFractal</code> <b>no</b> es recursiva —la disparó el sistema gráfico—; <b>sí</b> lo son las tres llamadas que salen del cuerpo de <code>dibujarFractal</code>. Es la misma distinción que en <code>main</code> → <code>factorial()</code>: la primera llamada abre la pila, las demás la van apilando (secciones 08 y 05).</p></div>
+  </div>
+</section>
+
+<p class="footer-note">
+  Página elaborada con base en el capítulo 15 «Recursividad» (pp. 653-676) de <i>Cómo programar en Java</i>, 7ma edición, de P. J. Deitel y H. M. Deitel. Se omitió la instrucción de selección múltiple <code>switch</code> (secc. 5.6), ya vista en unidades anteriores.
+  <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+</p>
+
+</div><!-- /wrap -->
+
+<script>
+'use strict';
+
+/* ==================== TRAZADOR DE LA PILA DE LLAMADAS ==================== */
+var MAXS = 600;   // tope de pasos del trazador
+var MAXF = 13;    // tope de tarjetas (registros de activación) en pantalla
+
+var MODES = {
+  fact:  { n: 5,  min: 0,   max: 10, lbl: 'n =' },
+  fib:   { n: 5,  min: 0,   max: 8,  lbl: 'n =' },
+  hanoi: { n: 3,  min: 1,   max: 6,  lbl: 'discos =' },
+  rota:  { n: 0,  min: -99, max: 10, lbl: 'n =' }
+};
+
+var sim = { mode: 'fact', steps: [], pos: 0, n: 5 };
+
+function $(s){ return document.querySelector(s); }
+
+function setNumSpans(v){
+  var ids = { fact: ['faN','faN2'], fib: ['fbN','fbN2'], hanoi: ['hN'], rota: ['iN'] }[sim.mode];
+  ids.forEach(function(id){ var e = document.getElementById(id); if(e) e.textContent = v; });
+}
+
+function readN(){
+  var m = MODES[sim.mode];
+  var v = parseInt($('#inN').value, 10);
+  if(isNaN(v)) v = m.n;
+  if(v < m.min) v = m.min;
+  if(v > m.max) v = m.max;
+  $('#inN').value = v;
+  return v;
+}
+
+/* ---------- constructores de trazas ---------- */
+
+function traceFact(n){
+  var steps = [], logs = [], calls = 0, ret = '—';
+  var stack = [{ fn:'main()', arg:'', state:'wait', ret:'' }];
+
+  function vars(){
+    var top = stack[stack.length-1];
+    var numero = (top && top.fn.indexOf('factorial') === 0) ? top.arg.replace('numero=','') : '—';
+    return [{k:'numero', v:numero}, {k:'profundidad', v:String(stack.length)},
+            {k:'llamadas', v:String(calls)}, {k:'último return', v:ret}];
+  }
+  function S(line, ev, ex, alert){
+    if(steps.length >= MAXS) return;
+    steps.push({ line:line, ev:ev||null,
+      stack: stack.map(function(f){ return {fn:f.fn, arg:f.arg, state:f.state, ret:f.ret}; }),
+      vars:vars(), explain:ex, alert:alert||null, logs:logs.slice() });
+  }
+  function go(v){
+    if(stack.length >= MAXF){
+      S('fa6', null, 'La pila ya no admite más copias: la recursión nunca encontró su caso base.',
+        '<b>java.lang.StackOverflowError</b> — desbordamiento de pila de ejecución.');
+      logs.push({cls:'bad', t:'java.lang.StackOverflowError'});
+      return;
+    }
+    calls++;
+    stack.push({ fn:'factorial(numero='+v+')', arg:String(v), state:'act', ret:'' });
+    S('fa1', null, 'Se <b>mete</b> en la pila el registro de la copia #' + calls +
+      ': es una copia <b>nueva</b> con su propia variable <b>numero = ' + v + '</b>.');
+    S('fa3', null, 'Cada copia evalúa su <b>propio</b> caso base: <b>numero &lt;= 1</b> con numero = ' + v + '.');
+    if(v <= 1){
+      S('fa3', 't', '<b>true</b> → llegó al CASO BASE (0! y 1! valen 1). Esta copia NO se llama a sí misma.');
+      var t = stack[stack.length-1];
+      t.state = 'ret'; t.ret = '1';
+      S('fa4', null, '<b>return 1;</b> la copia devuelve 1 a quien la llamó.');
+      stack.pop(); ret = '1';
+      logs.push({cls:'ok', t:'factorial('+v+') → 1'});
+      S('fa7', null, 'Registro <b>sacado</b> de la pila (pop). Quedan ' + stack.length + ' en espera.');
+      return;
+    }
+    S('fa3', 'f', '<b>false</b> → no es el caso base: toca el paso recursivo.');
+    var pad = stack[stack.length-1];
+    pad.state = 'wait';
+    S('fa6', null, '<b>return ' + v + ' * factorial(' + (v-1) + ');</b> — la copia queda en <b>PAUSA</b>: no sabe el resultado hasta que su hija se lo devuelva.');
+    go(v-1);
+    var hijo = ret, res = v * hijo;
+    var pa = stack[stack.length-1];
+    pa.state = 'ret'; pa.ret = String(res);
+    S('fa6', null, 'La hija devolvió <b>' + hijo + '</b>. La copia reanuda y calcula: <b>' +
+      v + ' × ' + hijo + ' = ' + res + '</b>.');
+    stack.pop(); ret = String(res);
+    logs.push({cls:'ok', t:'factorial('+v+') → '+res});
+    S('fa7', null, 'pop: el registro se saca de la pila y el valor sigue subiendo por la cadena de retornos.');
+  }
+
+  S('fa0', null, 'La llamada inicial hecha por <b>main</b> <b>NO</b> es recursiva; sólo lo son las que salen del cuerpo del método.');
+  go(n);
+  S('fa0', null, 'main recibe el resultado final: <b>' + n + '! = ' + ret + '</b> y la pila queda <b>vacía</b>.');
+  return steps;
+}
+
+function traceFib(n){
+  var steps = [], logs = [], calls = 0, ret = '—';
+  var stack = [{ fn:'main()', arg:'', state:'wait', ret:'' }];
+
+  function vars(){
+    var top = stack[stack.length-1];
+    var numero = (top && top.fn.indexOf('fibonacci') === 0) ? top.arg.replace('numero=','') : '—';
+    return [{k:'numero', v:numero}, {k:'profundidad', v:String(stack.length)},
+            {k:'llamadas', v:String(calls)}, {k:'último return', v:ret}];
+  }
+  function S(line, ev, ex, alert){
+    if(steps.length >= MAXS) return;
+    steps.push({ line:line, ev:ev||null,
+      stack: stack.map(function(f){ return {fn:f.fn, arg:f.arg, state:f.state, ret:f.ret}; }),
+      vars:vars(), explain:ex, alert:alert||null, logs:logs.slice() });
+  }
+  function go(v){
+    if(stack.length >= MAXF){
+      S('fb6', null, 'Sin caso base alcanzable: la pila no admite más copias.',
+        '<b>java.lang.StackOverflowError</b> — desbordamiento de pila de ejecución.');
+      logs.push({cls:'bad', t:'java.lang.StackOverflowError'});
+      return;
+    }
+    calls++;
+    stack.push({ fn:'fibonacci(numero='+v+')', arg:String(v), state:'act', ret:'' });
+    S('fb1', null, 'Nueva copia de <b>fibonacci</b>: numero = <b>' + v + '</b>.');
+    S('fb3', null, 'Se evalúa la condición con DOS casos base: <b>numero == 0 || numero == 1</b>.');
+    if(v === 0 || v === 1){
+      S('fb3', 't', '<b>true</b> → es un caso base; devuelve el propio valor <b>' + v + '</b>.');
+      var t = stack[stack.length-1];
+      t.state = 'ret'; t.ret = String(v);
+      S('fb4', null, '<b>return numero;</b> devuelve ' + v + '.');
+      stack.pop(); ret = String(v);
+      logs.push({cls:'ok', t:'fibonacci('+v+') → '+v});
+      S('fb7', null, 'pop: la copia entrega ' + v + ' a su padre y sale de la pila.');
+      return;
+    }
+    S('fb3', 'f', '<b>false</b> → tocan <b>dos</b> llamadas recursivas (por eso la explosión).');
+    var pa = stack[stack.length-1];
+    pa.state = 'wait';
+    S('fb6', null, '<b>return fibonacci(' + (v-1) + ') + fibonacci(' + (v-2) + ');</b> Java evalúa los operandos de <b>izquierda a derecha</b>: primero baja con ' + (v-1) + '. La copia queda en PAUSA.');
+    go(v-1);
+    var r1 = parseInt(ret, 10);
+    var p1 = stack[stack.length-1];
+    p1.state = 'wait';
+    S('fb6', null, 'Primer operando listo: <b>fibonacci(' + (v-1) + ') = ' + r1 + '</b>. Ahora falta el segundo.');
+    go(v-2);
+    var r2 = parseInt(ret, 10), suma = r1 + r2;
+    var p2 = stack[stack.length-1];
+    p2.state = 'ret'; p2.ret = String(suma);
+    S('fb6', null, '<b>fibonacci(' + (v-2) + ') = ' + r2 + '</b> → ' + r1 + ' + ' + r2 + ' = <b>' + suma + '</b>. return suma.');
+    stack.pop(); ret = String(suma);
+    logs.push({cls:'ok', t:'fibonacci('+v+') → '+suma});
+    S('fb7', null, 'pop: el resultado sube por la cadena de retornos hasta main.');
+  }
+
+  S('fb0', null, 'La llamada inicial hecha por <b>main</b> <b>NO</b> es recursiva.');
+  go(n);
+  S('fb0', null, 'main recibe <b>Fibonacci de ' + n + ' es: ' + ret + '</b> con <b>' + calls + '</b> ' +
+    (calls === 1 ? 'llamada' : 'llamadas') + ' a fibonacci.');
+  return steps;
+}
+
+function traceHanoi(n){
+  var steps = [], logs = [], calls = 0, mov = 0;
+  var stack = [{ fn:'main()', arg:'', state:'wait', ret:'' }];
+
+  function vars(){
+    var top = stack[stack.length-1];
+    var discos = (top && top.fn.indexOf('resolverTorres') === 0) ? top.arg.split(' ')[0].replace('discos=','') : '—';
+    var ruta   = (top && top.fn.indexOf('resolverTorres') === 0) ? top.arg.split(' ')[1] : '—';
+    return [{k:'discos', v:discos}, {k:'ruta', v:ruta},
+            {k:'profundidad', v:String(stack.length)}, {k:'movimientos', v:String(mov)}];
+  }
+  function S(line, ev, ex, alert){
+    if(steps.length >= MAXS) return;
+    steps.push({ line:line, ev:ev||null,
+      stack: stack.map(function(f){ return {fn:f.fn, arg:f.arg, state:f.state, ret:f.ret}; }),
+      vars:vars(), explain:ex, alert:alert||null, logs:logs.slice() });
+  }
+  function go(d, o, t, p){
+    if(stack.length >= MAXF){
+      S('h15', null, 'Demasiadas llamadas anidadas para la pila.',
+        '<b>java.lang.StackOverflowError</b> — desbordamiento de pila de ejecución.');
+      logs.push({cls:'bad', t:'java.lang.StackOverflowError'});
+      return;
+    }
+    calls++;
+    stack.push({ fn:'resolverTorres(discos='+d+' '+o+'→'+t+')', arg:d+' '+o+'→'+t, state:'act', ret:'' });
+    S('h1', null, 'Nueva copia: mover <b>' + d + '</b> disco(s) de la aguja <b>' + o + '</b> a la <b>' + t +
+      '</b>, usando la ' + p + ' como temporal.');
+    S('h5', null, 'Se evalúa el CASO BASE: <b>discos == 1</b> con discos = ' + d + '.');
+    if(d === 1){
+      S('h5', 't', '<b>true</b> → CASO BASE: con un sólo disco basta con moverlo, sin aguja temporal.');
+      S('h7', null, 'Se imprime la transferencia <b>' + o + ' → ' + t + '</b>.');
+      mov++; logs.push({cls:'ok', t:o+' --> '+t});
+      var t2 = stack[stack.length-1];
+      t2.state = 'ret'; t2.ret = 'ok';
+      S('h8', null, '<b>return;</b> la copia termina y su registro sale de la pila.');
+      stack.pop();
+      return;
+    }
+    S('h5', 'f', '<b>false</b> → hay ' + d + ' discos: tocan los dos pasos recursivos.');
+    var pa = stack[stack.length-1];
+    pa.state = 'wait';
+    S('h11', null, 'Paso 1: mover los <b>' + (d-1) + '</b> discos de encima de ' + o + ' a la aguja temporal <b>' +
+      p + '</b> (apoyo: ' + t + '). Esta copia queda en <b>PAUSA</b>.');
+    go(d-1, o, p, t);
+    var p2 = stack[stack.length-1];
+    p2.state = 'act';
+    S('h13', null, 'Ya sólo quedaba el disco grande: se imprime <b>' + o + ' → ' + t + '</b>.');
+    mov++; logs.push({cls:'ok', t:o+' --> '+t});
+    p2.state = 'wait';
+    S('h15', null, 'Paso 2: mover los <b>' + (d-1) + '</b> discos de <b>' + p + '</b> a la aguja <b>' + t +
+      '</b> (apoyo: ' + o + ').');
+    go(d-1, p, t, o);
+    var p3 = stack[stack.length-1];
+    p3.state = 'ret'; p3.ret = 'ok';
+    S('h16', null, 'Todo llegó a la aguja ' + t + ': la copia termina y su registro se saca de la pila.');
+    stack.pop();
+  }
+
+  S('h0', null, 'main llama a <b>resolverTorres(' + n + ', 1, 3, 2)</b> — llamada inicial, <b>NO</b> recursiva.');
+  go(n, 1, 3, 2);
+  S('h0', null, 'Pila vacía. Se imprimieron <b>' + mov + '</b> ' + (mov === 1 ? 'movimiento' : 'movimientos') +
+    ' = 2<sup>' + n + '</sup> − 1 con <b>' + calls + '</b> ' + (calls === 1 ? 'llamada' : 'llamadas') + '.');
+  return steps;
+}
+
+function traceRota(n){
+  var steps = [], logs = [], calls = 0, ret = '—';
+  var stack = [{ fn:'main()', arg:'', state:'wait', ret:'' }];
+
+  function vars(){
+    var top = stack[stack.length-1];
+    var numero = (top && top.fn.indexOf('factorialMal') === 0) ? top.arg.replace('numero=','') : '—';
+    return [{k:'numero', v:numero}, {k:'profundidad', v:String(stack.length)},
+            {k:'llamadas', v:String(calls)}, {k:'último return', v:ret}];
+  }
+  function S(line, ev, ex, alert){
+    if(steps.length >= MAXS) return;
+    steps.push({ line:line, ev:ev||null,
+      stack: stack.map(function(f){ return {fn:f.fn, arg:f.arg, state:f.state, ret:f.ret}; }),
+      vars:vars(), explain:ex, alert:alert||null, logs:logs.slice() });
+  }
+
+  S('i0', null, 'main llama a <b>factorialMal(' + n + ')</b>. Observa la condición <b>== 1</b> (sin el <code>&lt;=</code>).');
+
+  if(n >= 1){
+    var v = n;
+    while(v >= 1){
+      calls++;
+      stack.push({ fn:'factorialMal(numero='+v+')', arg:String(v), state:'act', ret:'' });
+      S('i1', null, 'Copia #' + calls + ' con <b>numero = ' + v + '</b>.');
+      S('i3', null, '¿<b>numero == 1</b> con numero = ' + v + ' ?');
+      if(v === 1){
+        S('i3', 't', '<b>true</b> → aquí sí llega al caso base.');
+        var tc = stack[stack.length-1];
+        tc.state = 'ret'; tc.ret = '1';
+        S('i4', null, '<b>return 1;</b> y la cadena de retornos sube.');
+        stack.pop(); ret = '1';
+        logs.push({cls:'ok', t:'factorialMal(1) → 1'});
+        while(stack.length > 1){
+          var top = stack[stack.length-1];
+          calls++;
+          var res = top.arg * ret;
+          top.state = 'ret'; top.ret = String(res);
+          S('i6', null, 'Se reanuda la copia con numero = ' + top.arg + ': ' + top.arg + ' × ' + ret + ' = <b>' + res + '</b>.');
+          stack.pop(); ret = String(res);
+          logs.push({cls:'ok', t:'factorialMal('+top.arg+') → '+res});
+        }
+        break;
+      }
+      S('i3', 'f', '<b>false</b> (' + v + ' ≠ 1): baja a <b>factorialMal(' + (v-1) + ')</b>.');
+      var pa = stack[stack.length-1];
+      pa.state = 'wait';
+      S('i6', null, 'La copia queda en PAUSA y llama a sí misma con numero = ' + (v-1) + '.');
+      v--;
+    }
+    S('i0', null, 'Terminó… pero <b>sólo porque n ≥ 1</b>: la condición <code>== 1</code> sí se alcanzó. Si main llamara con <b>0</b>, la cuenta pasaría 0, −1, −2… y nunca valdría 1.');
+    return steps;
+  }
+
+  var val = n;
+  while(stack.length < MAXF){
+    calls++;
+    stack.push({ fn:'factorialMal(numero='+val+')', arg:String(val), state:'act', ret:'' });
+    S('i1', null, 'Copia #' + calls + ' con <b>numero = ' + val + '</b> (llega a ser negativo).');
+    S('i3', null, '¿<b>numero == 1</b> con numero = ' + val + ' ?');
+    S('i3', 'f', '<b>false</b> → ' + val + ' no es 1; la cuenta sigue bajando.');
+    var pf = stack[stack.length-1];
+    pf.state = 'wait';
+    S('i6', null, 'Llamada a sí mismo con numero = ' + (val-1) + '. <b>' + stack.length +
+      '</b> copias ya ocupan la pila y ninguna ha llegado al caso base.');
+    val--;
+  }
+  S('i6', null, 'La pila de ejecución ya no admite más registros de activación.',
+    '<b>java.lang.StackOverflowError</b> — el caso base <code>numero == 1</code> <b>nunca</b> se alcanza con n = ' +
+    n + ': la sucesión es ' + n + ', ' + (n-1) + ', ' + (n-2) + ', … hasta el infinito.');
+  logs.push({cls:'bad', t:'java.lang.StackOverflowError'});
+  return steps;
+}
+
+/* ---------- render ---------- */
+
+function drawStack(stack){
+  var box = $('#stackBox');
+  if(!stack.length){
+    box.innerHTML = '<div class="fr-empty">la pila está vacía: ninguna llamada activa</div>';
+    return;
+  }
+  var html = '';
+  for(var i = stack.length - 1; i >= 0; i--){
+    var f = stack[i];
+    var right = f.state === 'ret' ? '→ ' + f.ret : (f.state === 'wait' ? 'en pausa' : 'ejecutando');
+    html += '<div class="fr ' + f.state + '"><span class="fr-fn">' + f.fn +
+            '</span><span class="fr-ret">' + right + '</span></div>';
+  }
+  box.innerHTML = html;
+}
+
+function drawVars(vars){
+  var html = '';
+  vars.forEach(function(v){ html += '<div class="var"><i>' + v.k + '</i><b>' + v.v + '</b></div>'; });
+  $('#varStrip').innerHTML = html;
+}
+
+function drawConsole(logs){
+  if(!logs.length){ $('#simConsole').innerHTML = '<span class="dim">(sin salida todavía)</span>'; return; }
+  $('#simConsole').innerHTML = logs.map(function(l){
+    return '<div class="' + (l.cls || 'dim') + '">' + l.t + '</div>';
+  }).join('');
+}
+
+function render(){
+  var st = sim.steps[sim.pos];
+  if(!st) return;
+  var panel = document.querySelector('.sim-panel.active');
+  var lines = panel.querySelectorAll('.cl');
+  for(var i = 0; i < lines.length; i++) lines[i].classList.remove('hit');
+  if(st.line){
+    var el = panel.querySelector('[data-id="' + st.line + '"]');
+    if(el) el.classList.add('hit');
+  }
+  var chip = panel.querySelector('.ev');
+  if(chip){
+    chip.className = 'ev';
+    if(st.ev){
+      chip.classList.add('on', st.ev === 't' ? 't' : 'f');
+      chip.textContent = st.ev === 't' ? 'true' : 'false';
+    } else { chip.textContent = ''; }
+  }
+  drawStack(st.stack);
+  drawVars(st.vars);
+  drawConsole(st.logs);
+  $('#simExplain').innerHTML = st.explain || '';
+  var al = $('#simAlert');
+  if(st.alert){ al.innerHTML = st.alert; al.classList.add('show'); }
+  else { al.classList.remove('show'); al.innerHTML = ''; }
+  $('#simPos').textContent = sim.pos === 0
+    ? ('listo · ' + sim.steps.length + ' pasos')
+    : ('paso ' + (sim.pos + 1) + '/' + sim.steps.length);
+}
+
+function rebuild(){
+  var n = readN();
+  sim.n = n;
+  setNumSpans(n);
+  var builders = { fact:traceFact, fib:traceFib, hanoi:traceHanoi, rota:traceRota };
+  sim.steps = builders[sim.mode](n);
+  sim.pos = 0;
+  render();
+}
+
+function pickSim(m){
+  sim.mode = m;
+  var tabs = document.querySelectorAll('#simTabs .tab-btn');
+  for(var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('active', tabs[i].dataset.tab === m);
+  var panels = document.querySelectorAll('.sim-panel');
+  for(var j = 0; j < panels.length; j++) panels[j].classList.toggle('active', panels[j].dataset.mode === m);
+  $('#lblN').textContent = MODES[m].lbl;
+  $('#inN').value = MODES[m].n;
+  rebuild();
+}
+
+function simStep(){ if(sim.pos < sim.steps.length - 1){ sim.pos++; render(); } }
+function simEnd(){ sim.pos = sim.steps.length - 1; render(); }
+function simReset(){ rebuild(); }
+
+/* ==================== FRACTAL LO (fig. 15.22) ==================== */
+function drawLo(n){
+  var segs = [];
+  (function rec(l, xA, yA, xB, yB){
+    if(l === 0){ segs.push([xA, yA, xB, yB]); return; }
+    var xC = (xA + xB) / 2, yC = (yA + yB) / 2;
+    var xD = xA + (xC - xA) / 2 - (yC - yA) / 2;
+    var yD = yA + (yC - yA) / 2 + (xC - xA) / 2;
+    rec(l - 1, xD, yD, xA, yA);
+    rec(l - 1, xD, yD, xC, yC);
+    rec(l - 1, xD, yD, xB, yB);
+  })(n, 100, 90, 290, 200);
+
+  var minx = 1e9, miny = 1e9, maxx = -1e9, maxy = -1e9;
+  segs.forEach(function(s){
+    if(s[0] < minx) minx = s[0]; if(s[0] > maxx) maxx = s[0];
+    if(s[2] < minx) minx = s[2]; if(s[2] > maxx) maxx = s[2];
+    if(s[1] < miny) miny = s[1]; if(s[1] > maxy) maxy = s[1];
+    if(s[3] < miny) miny = s[3]; if(s[3] > maxy) maxy = s[3];
+  });
+  var pad = 14, w = Math.max(maxx - minx, 1), h = Math.max(maxy - miny, 1);
+  var svg = $('#loSvg');
+  svg.setAttribute('viewBox', (minx - pad) + ' ' + (miny - pad) + ' ' + (w + 2 * pad) + ' ' + (h + 2 * pad));
+  var lines = segs.map(function(s){
+    return '<line x1="' + s[0] + '" y1="' + s[1] + '" x2="' + s[2] + '" y2="' + s[3] + '"/>';
+  }).join('');
+  var sw = n > 3 ? 0.9 : (n > 2 ? 1.3 : 2);
+  svg.innerHTML = '<g stroke="#E8A33D" stroke-width="' + sw +
+    '" stroke-linecap="round" fill="none">' + lines + '</g>';
+  $('#loCap').innerHTML = 'nivel <b>' + n + '</b> · <b>' + segs.length + '</b> segmentos (3<sup>' + n +
+    '</sup>) · <b>' + ((Math.pow(3, n + 1) - 1) / 2) + '</b> llamadas a dibujarFractal';
+  var btns = document.querySelectorAll('#fracBtns .tab-btn');
+  for(var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', +btns[i].dataset.n === n);
+}
+
+window.pickSim = pickSim;
+window.simStep = simStep;
+window.simEnd = simEnd;
+window.simReset = simReset;
+window.drawLo = drawLo;
+
+pickSim('fact');
+drawLo(0);
+</script>
+
+
+</body>
+</html>

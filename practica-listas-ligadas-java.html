@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Práctica guiada: Listas ligadas en Java</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1B1F2B; --ink-2:#242A3B; --card:#F5F1E8; --card-line:#DED6C2;
+  --text:#E4E7ED; --text-dim:#9AA1B4; --amber:#E8A33D; --teal:#4FB0AE; --rose:#E06C75;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--ink);color:var(--text);font-family:'Inter',sans-serif;line-height:1.65}
+.container{max-width:920px;margin:0 auto;padding:40px 20px}
+h1,h2,h3{font-family:'Fraunces',serif}
+code,pre,.mono{font-family:'JetBrains Mono',monospace}
+p{margin-bottom:14px}
+ul,ol{margin:0 0 16px 22px}
+li{margin-bottom:6px}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#2a2f3f 0%,#1f2333 100%);border-left:4px solid var(--amber);padding:40px;border-radius:8px;margin-bottom:40px}
+.badge{display:inline-block;background:var(--amber);color:var(--ink);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;text-transform:uppercase;margin-bottom:16px}
+.hero h1{font-size:2.4em;margin-bottom:12px;font-weight:700}
+.hero p{color:var(--text-dim);font-size:1.05em}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.meta span{background:var(--ink-2);border:1px solid var(--card-line);padding:6px 12px;border-radius:6px;font-size:13px;color:var(--text-dim)}
+
+/* SIGNATURE: checklist + progreso */
+.signature{background:var(--ink-2);border:2px solid var(--card-line);border-radius:8px;padding:26px;margin-bottom:50px}
+.signature h2{font-size:1.4em;color:var(--amber);margin-bottom:6px}
+.progress-wrap{background:var(--ink);border:1px solid var(--card-line);border-radius:20px;height:14px;overflow:hidden;margin:14px 0 8px}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .35s ease}
+.progress-text{font-size:13px;color:var(--text-dim);font-family:'JetBrains Mono',monospace}
+.checks{list-style:none;margin:16px 0 0;margin-left:0}
+.checks li{background:var(--ink);border:1px solid var(--card-line);border-radius:6px;padding:10px 14px;margin-bottom:8px;cursor:pointer;display:flex;gap:12px;align-items:center;user-select:none}
+.checks li:hover{border-color:var(--amber)}
+.checks li .box{width:20px;height:20px;border:2px solid var(--amber);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--ink);font-weight:700;font-size:13px}
+.checks li.done{border-color:var(--teal)}
+.checks li.done .box{background:var(--teal);border-color:var(--teal)}
+.checks li.done span.txt{text-decoration:line-through;color:var(--text-dim)}
+
+/* SECCIONES */
+section{margin-bottom:56px}
+section h2{font-size:1.8em;color:var(--amber);margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.step-num{background:var(--amber);color:var(--ink);min-width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+section h3{font-size:1.25em;color:var(--teal);margin:24px 0 10px}
+.goal{background:var(--ink-2);border-left:4px solid var(--teal);padding:16px 18px;border-radius:4px;margin:18px 0}
+.goal strong{color:var(--teal)}
+
+.tip,.warn,.key-point{padding:16px 18px;border-radius:4px;margin:18px 0}
+.tip{background:rgba(79,176,174,.08);border-left:4px solid var(--teal)}
+.tip strong{color:var(--teal)}
+.warn{background:rgba(224,108,117,.1);border-left:4px solid var(--rose)}
+.warn strong{color:var(--rose)}
+.warn::before{content:"⚠ ";color:var(--rose);font-weight:700}
+.key-point{background:rgba(232,163,61,.08);border-left:4px solid var(--amber)}
+.key-point strong{color:var(--amber)}
+
+/* Código */
+.code-head{background:var(--card);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px 6px 0 0;border:1px solid var(--card-line);border-bottom:none;display:inline-block}
+.code-panel{background:var(--ink);border:1px solid var(--card-line);padding:18px;border-radius:0 6px 6px 6px;margin:0 0 20px;overflow-x:auto}
+.code-panel.nohead{border-radius:6px;margin-top:10px}
+pre{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text);white-space:pre}
+.kw{color:var(--amber);font-weight:600}
+.tp{color:var(--teal)}
+.cm{color:var(--text-dim);font-style:italic}
+.num{color:#FFD580}
+.str{color:#98C379}
+.an{color:var(--rose)}
+.file{color:var(--rose);font-weight:600}
+
+/* Tarjetas */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:18px 0}
+.card{background:var(--ink-2);border:1px solid var(--card-line);border-radius:6px;padding:16px}
+.card h4{color:var(--amber);font-family:'Fraunces',serif;margin-bottom:6px}
+.card p{color:var(--text-dim);font-size:14px;margin:0}
+
+/* Tabs por SO */
+.tabs{display:flex;gap:6px;margin:18px 0 0;flex-wrap:wrap}
+.tab-btn{background:var(--ink-2);border:1px solid var(--card-line);color:var(--text-dim);padding:8px 16px;border-radius:6px 6px 0 0;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px}
+.tab-btn.active{background:var(--amber);color:var(--ink);border-color:var(--amber);font-weight:600}
+.tab-panel{display:none;background:var(--ink-2);border:1px solid var(--card-line);padding:18px;border-radius:0 6px 6px 6px}
+.tab-panel.active{display:block}
+
+/* Tablas */
+table{width:100%;border-collapse:collapse;margin:18px 0}
+th{background:var(--ink-2);color:var(--amber);text-align:left;padding:12px;border-bottom:2px solid var(--card-line);font-weight:600}
+td{padding:11px 12px;border-bottom:1px solid var(--card-line);vertical-align:top}
+td code{color:var(--amber)}
+
+/* Active recall */
+.quiz-item{background:var(--ink-2);border:1px solid var(--card-line);border-radius:6px;margin-bottom:10px;overflow:hidden}
+.quiz-q{padding:16px 18px;cursor:pointer;display:flex;gap:12px;align-items:center}
+.quiz-q:before{content:"Q";background:var(--amber);color:var(--ink);width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.quiz-a{display:none;padding:0 18px 16px 56px;color:var(--text)}
+.quiz-item.open .quiz-a{display:block}
+
+.footer-note{margin-top:60px;padding-top:20px;border-top:1px solid var(--card-line);color:var(--text-dim);font-size:14px;text-align:center}
+.footer-note .name{display:block;margin-top:8px;color:var(--amber);font-family:'JetBrains Mono',monospace;font-weight:600}
+
+/* NAVEGACIÓN */
+.back-nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.back-nav a{display:inline-block;color:var(--teal);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:13px;border:1px solid var(--card-line);padding:8px 14px;border-radius:6px;background:var(--ink-2);transition:border-color .15s, color .15s}
+.back-nav a:hover{border-color:var(--teal);color:#fff}
+
+.pager{margin:48px 0 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch}
+.pager-item{display:flex;flex-direction:column;justify-content:center;gap:3px;background:var(--ink-2);border:1px solid var(--card-line);border-radius:8px;padding:12px 16px;text-decoration:none;color:var(--text);transition:border-color .15s, transform .15s}
+.pager-item:hover{border-color:var(--teal);transform:translateY(-1px)}
+.pager-prev{text-align:left}
+.pager-next{text-align:right;align-items:flex-end}
+.pager-dir{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);font-family:'Inter',sans-serif}
+.pager-tema{font-family:'Fraunces',serif;font-size:15px;color:#fff;font-weight:600}
+.pager-home{align-items:center;justify-content:center;min-width:70px}
+.pager-home .pager-dir{color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em;text-transform:none}
+@media (max-width:640px){
+  .pager{grid-template-columns:1fr 1fr}
+  .pager-home{grid-column:1/-1;order:-1}
+}
+
+@media (max-width:700px){
+  .hero{padding:24px}
+  .hero h1{font-size:1.8em}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- NAVEGACIÓN SUPERIOR -->
+  <div class="back-nav">
+    <a href="index.html">← Volver al índice</a>
+    <a href="listas-enlazadas-java.html">📖 Objeto interactivo: Listas enlazadas</a>
+    <a href="Apuntes/Listas.png" download>Descargar infografía (Apuntes)</a>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="badge">Práctica guiada · Unidad II</span>
+    <h1>Listas ligadas en Java: del proyecto a la consola</h1>
+    <p>En esta práctica construirás una lista ligada simple desde cero. Crearás el proyecto en Apache NetBeans, programarás las clases, probarás el programa con un menú interactivo y finalmente lo ejecutarás desde la <strong>consola</strong> (terminal de Windows, macOS o Linux), como lo haría un programa real.</p>
+    <div class="meta">
+      <span>⏱ Duración estimada: 2 h</span>
+      <span>👥 Individual o en pareja</span>
+      <span>🧰 JDK 17+ · NetBeans · Consola</span>
+    </div>
+  </div>
+
+  <!-- SIGNATURE: CHECKLIST -->
+  <div class="signature">
+    <h2>Tu ruta de trabajo</h2>
+    <p>Marca cada paso al terminarlo. Tu avance se guarda mientras la página esté abierta.</p>
+    <div class="progress-wrap"><div class="progress-bar" id="bar"></div></div>
+    <div class="progress-text" id="progressText">0 de 7 pasos completados</div>
+    <ul class="checks" id="checks">
+      <li onclick="toggleCheck(this)"><span class="box"></span><span class="txt">Paso 1 · Verificar el JDK y NetBeans</span></li>
+      <li onclick="toggleCheck(this)"><span class="box"></span><span class="txt">Paso 2 · Crear el proyecto en NetBeans</span></li>
+      <li onclick="toggleCheck(this)"><span class="box"></span><span class="txt">Paso 3 · Crear la clase Nodo</span></li>
+      <li onclick="toggleCheck(this)"><span class="box"></span><span class="txt">Paso 4 · Crear la clase ListaEnlazada</span></li>
+      <li onclick="toggleCheck(this)"><span class="box"></span><span class="txt">Paso 5 · Crear el menú principal (Main)</span></li>
+      <li onclick="toggleCheck(this)"><span class="box"></span><span class="txt">Paso 6 · Ejecutar y probar desde NetBeans</span></li>
+      <li onclick="toggleCheck(this)"><span class="box"></span><span class="txt">Paso 7 · Ejecutar desde la consola</span></li>
+    </ul>
+  </div>
+
+  <!-- PASO 1 -->
+  <section>
+    <h2><span class="step-num">1</span> Verificar el JDK y NetBeans</h2>
+    <div class="goal"><strong>Objetivo:</strong> confirmar que tu equipo puede compilar y ejecutar programas Java.</div>
+    <p>NetBeans necesita un <strong>JDK</strong> (Java Development Kit) instalado. Si ya seguiste la <a href="guia-instalacion-java-netbeans.html" style="color:var(--teal);text-decoration:underline;">guía de instalación de Java y NetBeans</a>, solo verifica que todo esté listo.</p>
+
+    <h3>1.1 Verifica el JDK desde la consola</h3>
+    <p>Abre la terminal de tu sistema y escribe:</p>
+    <div class="code-head">terminal</div>
+    <div class="code-panel"><pre><span class="kw">java</span> -version
+<span class="kw">javac</span> -version</pre></div>
+    <p>Ambos comandos deben mostrar una versión (17 o superior). Si aparece un error del tipo <em>"no se reconoce como un comando"</em>, revisa la sección de problemas al final de la práctica.</p>
+
+    <h3>1.2 Abre NetBeans</h3>
+    <p>Inicia Apache NetBeans. Si es la primera vez, confirma que en <em>Tools → Java Platforms</em> aparezca tu JDK como plataforma predeterminada.</p>
+    <div class="tip"><strong>💡 Consejo:</strong> Crea una carpeta exclusiva para tus prácticas, por ejemplo <span class="mono">EDD/Practicas</span>. Así todos tus proyectos quedan ordenados y fáciles de entregar.</div>
+  </section>
+
+  <!-- PASO 2 -->
+  <section>
+    <h2><span class="step-num">2</span> Crear el proyecto en NetBeans</h2>
+    <div class="goal"><strong>Objetivo:</strong> generar la estructura base de un proyecto Java de consola.</div>
+
+    <h3>2.1 Nuevo proyecto</h3>
+    <ol>
+      <li>Ve al menú <strong>File → New Project…</strong> (o presiona <span class="mono">Ctrl+Shift+N</span> / <span class="mono">Cmd+Shift+N</span>).</li>
+      <li>En la categoría <strong>Java with Ant</strong>, selecciona <strong>Java Application</strong>. Pulsa <strong>Next</strong>.</li>
+      <li>Escribe el nombre del proyecto: <span class="mono">PracticaListasLigadas</span>.</li>
+      <li>Elige la carpeta de ubicación (la carpeta <span class="mono">EDD/Practicas</span> que creaste).</li>
+      <li>Deja marcada la opción <em>Create Main Class</em> y escribe el nombre <span class="mono">Main</span> junto con el paquete.</li>
+      <li>En <strong>Package name</strong> escribe <span class="mono">com.uthh.edd.unidad2.listas</span> (formato del curso: <span class="mono">com.uthh.edd.unidadN.tema</span>).</li>
+      <li>Pulsa <strong>Finish</strong>.</li>
+    </ol>
+
+    <h3>2.2 Entiende la estructura creada</h3>
+    <p>En la ventana <em>Projects</em> verás una carpeta con esta organización:</p>
+    <div class="code-head">Projects</div>
+    <div class="code-panel"><pre>PracticaListasLigadas
+├── Source Packages
+│   └── com.uthh.edd.unidad2.listas
+│       └── <span class="file">Main.java</span>
+├── Test Packages
+├── Libraries
+└── Files
+    ├── build.xml
+    └── nbproject/</pre></div>
+
+    <div class="key-point"><strong>🔑 Punto clave:</strong> todo tu código va dentro de <em>Source Packages</em>. NetBeans lo compila automáticamente y lo guarda en las carpetas <span class="mono">build/</span> y <span class="mono">dist/</span>, que usaremos en la consola.</div>
+
+    <h3>2.3 Verifica que compila</h3>
+    <p>Presiona <strong>F11</strong> (Build Project). Si la ventana <em>Output</em> muestra <span class="mono">BUILD SUCCESSFUL</span>, la base del proyecto está lista.</p>
+  </section>
+
+  <!-- PASO 3 -->
+  <section>
+    <h2><span class="step-num">3</span> Crear la clase Nodo</h2>
+    <div class="goal"><strong>Objetivo:</strong> programar la pieza básica de la lista: un nodo con un dato y una referencia al siguiente.</div>
+
+    <div class="analogy-box" style="display:none"></div>
+    <p>Imagina una búsqueda del tesoro: cada pista te dice <strong>dónde está la siguiente pista</strong>. Un nodo funciona igual: guarda un dato y la "dirección" del siguiente nodo.</p>
+
+    <h3>3.1 Crea el archivo</h3>
+    <p>Clic derecho sobre el paquete <span class="mono">com.uthh.edd.unidad2.listas</span> → <strong>New → Java Class…</strong> → nombre: <span class="mono">Nodo</span>.</p>
+
+    <h3>3.2 Escribe el código</h3>
+    <div class="code-head">Nodo.java</div>
+    <div class="code-panel"><pre><span class="kw">package</span> com.uthh.edd.unidad2.listas;
+
+<span class="cm">/**
+ * Nodo de una lista ligada simple.
+ * Guarda un dato entero y una referencia al siguiente nodo.
+ */</span>
+<span class="kw">public class</span> Nodo {
+
+    <span class="kw">int</span> dato;          <span class="cm">// valor almacenado en el nodo</span>
+    Nodo siguiente;     <span class="cm">// referencia al siguiente nodo (null si es el último)</span>
+
+    <span class="kw">public</span> Nodo(<span class="kw">int</span> dato) {
+        <span class="kw">this</span>.dato = dato;
+        <span class="kw">this</span>.siguiente = <span class="kw">null</span>;
+    }
+}</pre></div>
+
+    <div class="tip"><strong>💡 Lee esto en voz alta:</strong> "Un Nodo tiene un dato y tiene un siguiente". La palabra <code>this</code> significa "este objeto": <code>this.dato</code> es el dato <em>de este nodo</em>.</div>
+  </section>
+
+  <!-- PASO 4 -->
+  <section>
+    <h2><span class="step-num">4</span> Crear la clase ListaEnlazada</h2>
+    <div class="goal"><strong>Objetivo:</strong> implementar las operaciones básicas: insertar, buscar, eliminar, mostrar y medir el tamaño.</div>
+
+    <h3>4.1 Crea el archivo</h3>
+    <p>Clic derecho sobre el paquete → <strong>New → Java Class…</strong> → nombre: <span class="mono">ListaEnlazada</span>.</p>
+
+    <h3>4.2 Escribe el código</h3>
+    <div class="code-head">ListaEnlazada.java</div>
+    <div class="code-panel"><pre><span class="kw">package</span> com.uthh.edd.unidad2.listas;
+
+<span class="kw">public class</span> ListaEnlazada {
+
+    <span class="kw">private</span> Nodo cabeza;   <span class="cm">// primer nodo de la lista</span>
+    <span class="kw">private</span> <span class="kw">int</span> tamanio;   <span class="cm">// cantidad de nodos almacenados</span>
+
+    <span class="kw">public</span> ListaEnlazada() {
+        <span class="kw">this</span>.cabeza = <span class="kw">null</span>;
+        <span class="kw">this</span>.tamanio = <span class="num">0</span>;
+    }
+
+    <span class="kw">public boolean</span> estaVacia() {
+        <span class="kw">return</span> cabeza == <span class="kw">null</span>;
+    }
+
+    <span class="kw">public int</span> getTamanio() {
+        <span class="kw">return</span> tamanio;
+    }
+
+    <span class="cm">// Inserta al inicio. Costo: O(1)</span>
+    <span class="kw">public void</span> insertarInicio(<span class="kw">int</span> valor) {
+        Nodo nuevo = <span class="kw">new</span> Nodo(valor);
+        nuevo.siguiente = cabeza;   <span class="cm">// el nuevo apunta al antiguo primero</span>
+        cabeza = nuevo;             <span class="cm">// el nuevo pasa a ser la cabeza</span>
+        tamanio++;
+    }
+
+    <span class="cm">// Inserta al final. Costo: O(n)</span>
+    <span class="kw">public void</span> insertarFinal(<span class="kw">int</span> valor) {
+        Nodo nuevo = <span class="kw">new</span> Nodo(valor);
+        <span class="kw">if</span> (estaVacia()) {
+            cabeza = nuevo;
+        } <span class="kw">else</span> {
+            Nodo actual = cabeza;
+            <span class="kw">while</span> (actual.siguiente != <span class="kw">null</span>) {
+                actual = actual.siguiente;   <span class="cm">// avanzar hasta el último nodo</span>
+            }
+            actual.siguiente = nuevo;
+        }
+        tamanio++;
+    }
+
+    <span class="kw">public boolean</span> buscar(<span class="kw">int</span> valor) {
+        Nodo actual = cabeza;
+        <span class="kw">while</span> (actual != <span class="kw">null</span>) {
+            <span class="kw">if</span> (actual.dato == valor) {
+                <span class="kw">return true</span>;
+            }
+            actual = actual.siguiente;
+        }
+        <span class="kw">return false</span>;
+    }
+
+    <span class="cm">// Elimina la primera aparición del valor. Devuelve true si lo eliminó.</span>
+    <span class="kw">public boolean</span> eliminar(<span class="kw">int</span> valor) {
+        <span class="kw">if</span> (estaVacia()) {
+            <span class="kw">return false</span>;
+        }
+        <span class="kw">if</span> (cabeza.dato == valor) {       <span class="cm">// caso 1: está en la cabeza</span>
+            cabeza = cabeza.siguiente;
+            tamanio--;
+            <span class="kw">return true</span>;
+        }
+        Nodo anterior = cabeza;               <span class="cm">// caso 2: está en medio o al final</span>
+        Nodo actual = cabeza.siguiente;
+        <span class="kw">while</span> (actual != <span class="kw">null</span>) {
+            <span class="kw">if</span> (actual.dato == valor) {
+                anterior.siguiente = actual.siguiente;  <span class="cm">// "saltar" el nodo</span>
+                tamanio--;
+                <span class="kw">return true</span>;
+            }
+            anterior = actual;
+            actual = actual.siguiente;
+        }
+        <span class="kw">return false</span>;
+    }
+
+    <span class="kw">public void</span> mostrar() {
+        <span class="kw">if</span> (estaVacia()) {
+            System.out.println(<span class="str">"(lista vacía)"</span>);
+            <span class="kw">return</span>;
+        }
+        Nodo actual = cabeza;
+        <span class="kw">while</span> (actual != <span class="kw">null</span>) {
+            System.out.print(actual.dato);
+            <span class="kw">if</span> (actual.siguiente != <span class="kw">null</span>) {
+                System.out.print(<span class="str">" -> "</span>);
+            }
+            actual = actual.siguiente;
+        }
+        System.out.println();
+    }
+}</pre></div>
+
+    <div class="warn"><strong>Error frecuente:</strong> en <code>eliminar</code>, si olvidas el caso 1 (eliminar la cabeza), la lista se rompe. Además, no uses <code>==</code> para comparar textos: aquí comparamos <code>int</code>, por eso sí funciona.</div>
+
+    <h3>4.3 Dibuja lo que pasa en memoria</h3>
+    <p>Antes de probar, haz este ejercicio en papel: dibuja tres cajas (nodos) con flechas. Luego simula <code>insertarInicio(7)</code> y <code>insertarFinal(9)</code> cambiando las flechas una por una. Si puedes predecir el resultado, entendiste la lista.</p>
+    <div class="tip"><strong>💡 Simulador interactivo:</strong> ¿Quieres ver cómo se conectan y desconectan los nodos en tiempo real? Puedes interactuar con el simulador visual en el objeto de aprendizaje de <a href="listas-enlazadas-java.html" style="color:var(--teal);text-decoration:underline;">Listas Enlazadas</a>.</div>
+  </section>
+
+  <!-- PASO 5 -->
+  <section>
+    <h2><span class="step-num">5</span> Crear el menú principal (Main)</h2>
+    <div class="goal"><strong>Objetivo:</strong> crear un programa de consola interactivo que use la lista.</div>
+
+    <p>NetBeans ya creó <span class="mono">Main.java</span>. Ábrelo (doble clic) y reemplaza todo su contenido con el siguiente código:</p>
+    <div class="code-head">Main.java</div>
+    <div class="code-panel"><pre><span class="kw">package</span> com.uthh.edd.unidad2.listas;
+
+<span class="kw">import</span> java.util.Scanner;
+
+<span class="kw">public class</span> Main {
+
+    <span class="kw">public static void</span> main(String[] args) {
+        Scanner teclado = <span class="kw">new</span> Scanner(System.in);
+        ListaEnlazada lista = <span class="kw">new</span> ListaEnlazada();
+        <span class="kw">int</span> opcion;
+
+        <span class="kw">do</span> {
+            System.out.println(<span class="str">"\n===== MENÚ LISTA LIGADA ====="</span>);
+            System.out.println(<span class="str">"1. Insertar al inicio"</span>);
+            System.out.println(<span class="str">"2. Insertar al final"</span>);
+            System.out.println(<span class="str">"3. Buscar un valor"</span>);
+            System.out.println(<span class="str">"4. Eliminar un valor"</span>);
+            System.out.println(<span class="str">"5. Mostrar la lista"</span>);
+            System.out.println(<span class="str">"6. Ver tamaño"</span>);
+            System.out.println(<span class="str">"0. Salir"</span>);
+            System.out.print(<span class="str">"Opción: "</span>);
+            opcion = teclado.nextInt();
+
+            <span class="kw">switch</span> (opcion) {
+                <span class="kw">case</span> <span class="num">1</span>:
+                    System.out.print(<span class="str">"Valor: "</span>);
+                    lista.insertarInicio(teclado.nextInt());
+                    <span class="kw">break</span>;
+                <span class="kw">case</span> <span class="num">2</span>:
+                    System.out.print(<span class="str">"Valor: "</span>);
+                    lista.insertarFinal(teclado.nextInt());
+                    <span class="kw">break</span>;
+                <span class="kw">case</span> <span class="num">3</span>:
+                    System.out.print(<span class="str">"Valor a buscar: "</span>);
+                    <span class="kw">int</span> buscado = teclado.nextInt();
+                    System.out.println(lista.buscar(buscado)
+                            ? <span class="str">"Sí está en la lista"</span>
+                            : <span class="str">"No está en la lista"</span>);
+                    <span class="kw">break</span>;
+                <span class="kw">case</span> <span class="num">4</span>:
+                    System.out.print(<span class="str">"Valor a eliminar: "</span>);
+                    <span class="kw">int</span> eliminado = teclado.nextInt();
+                    System.out.println(lista.eliminar(eliminado)
+                            ? <span class="str">"Eliminado"</span>
+                            : <span class="str">"No encontrado"</span>);
+                    <span class="kw">break</span>;
+                <span class="kw">case</span> <span class="num">5</span>:
+                    lista.mostrar();
+                    <span class="kw">break</span>;
+                <span class="kw">case</span> <span class="num">6</span>:
+                    System.out.println(<span class="str">"Tamaño: "</span> + lista.getTamanio());
+                    <span class="kw">break</span>;
+                <span class="kw">case</span> <span class="num">0</span>:
+                    System.out.println(<span class="str">"Hasta luego"</span>);
+                    <span class="kw">break</span>;
+                <span class="kw">default</span>:
+                    System.out.println(<span class="str">"Opción inválida"</span>);
+            }
+        } <span class="kw">while</span> (opcion != <span class="num">0</span>);
+
+        teclado.close();
+    }
+}</pre></div>
+
+    <div class="tip"><strong>💡 ¿Por qué <code>do … while</code>?</strong> El menú debe mostrarse al menos una vez y repetirse hasta que el usuario elija <code>0</code>. Es el patrón típico de un menú de consola.</div>
+  </section>
+
+  <!-- PASO 6 -->
+  <section>
+    <h2><span class="step-num">6</span> Ejecutar y probar desde NetBeans</h2>
+    <div class="goal"><strong>Objetivo:</strong> compilar, ejecutar y verificar que cada opción del menú funciona.</div>
+
+    <ol>
+      <li>Guarda todos los archivos (<span class="mono">Ctrl+Shift+S</span>).</li>
+      <li>Presiona <strong>F6</strong> (Run Project) o el botón ▶.</li>
+      <li>La salida aparece en la ventana <strong>Output</strong>, en la parte inferior. Escribe tus respuestas en el mismo panel, donde dice el cursor.</li>
+    </ol>
+
+    <h3>6.1 Casos de prueba obligatorios</h3>
+    <p>Ejecuta esta secuencia exacta y compara tu resultado con la columna de la derecha:</p>
+    <table>
+      <thead>
+        <tr><th>Tu entrada (opción → valor)</th><th>Resultado esperado al mostrar la lista (opción 5)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>1 → 10</code>, <code>1 → 20</code>, <code>1 → 30</code></td><td><code>30 -> 20 -> 10</code></td></tr>
+        <tr><td><code>2 → 40</code></td><td><code>30 -> 20 -> 10 -> 40</code></td></tr>
+        <tr><td><code>3 → 20</code></td><td><code>Sí está en la lista</code></td></tr>
+        <tr><td><code>3 → 99</code></td><td><code>No está en la lista</code></td></tr>
+        <tr><td><code>4 → 30</code> (cabeza)</td><td><code>Eliminado</code>; luego la lista queda <code>20 -> 10 -> 40</code></td></tr>
+        <tr><td><code>4 → 40</code> (final)</td><td><code>Eliminado</code>; luego la lista queda <code>20 -> 10</code></td></tr>
+        <tr><td><code>6</code></td><td><code>Tamaño: 2</code></td></tr>
+        <tr><td><code>4 → 77</code></td><td><code>No encontrado</code></td></tr>
+        <tr><td><code>5</code> con la lista vacía (tras borrar todo)</td><td><code>(lista vacía)</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="warn"><strong>Si algo no coincide:</strong> revisa primero los casos 1 (inserción al inicio) y 4 (eliminar la cabeza). La mayoría de los errores de listas están ahí.</div>
+  </section>
+
+  <!-- PASO 7 -->
+  <section>
+    <h2><span class="step-num">7</span> Ejecutar desde la consola</h2>
+    <div class="goal"><strong>Objetivo:</strong> ejecutar el programa fuera de NetBeans, usando solo la terminal. Así es como se ejecutan los programas en servidores y sistemas reales.</div>
+
+    <h3>7.1 Genera el archivo ejecutable (.jar)</h3>
+    <p>En NetBeans presiona <strong>F11</strong> (Build Project). NetBeans crea automáticamente el archivo:</p>
+    <div class="code-head">Ruta generada</div>
+    <div class="code-panel"><pre>PracticaListasLigadas/dist/<span class="file">PracticaListasLigadas.jar</span></pre></div>
+
+    <h3>7.2 Ejecuta desde la terminal de tu sistema</h3>
+    <p>Elige la pestaña de tu sistema operativo:</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('win',this)">Windows</button>
+      <button class="tab-btn" onclick="showTab('mac',this)">macOS</button>
+      <button class="tab-btn" onclick="showTab('lin',this)">Linux</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-win">
+      <p>Abre <strong>Símbolo del sistema (cmd)</strong> o <strong>PowerShell</strong>. Luego escribe (ajusta la ruta a tu carpeta):</p>
+      <div class="code-panel nohead"><pre><span class="kw">cd</span> C:\EDD\Practicas\PracticaListasLigadas\dist
+<span class="kw">java</span> -jar PracticaListasLigadas.jar</pre></div>
+    </div>
+
+    <div class="tab-panel" id="tab-mac">
+      <p>Abre la app <strong>Terminal</strong>. Luego escribe (ajusta la ruta a tu carpeta):</p>
+      <div class="code-panel nohead"><pre><span class="kw">cd</span> ~/EDD/Practicas/PracticaListasLigadas/dist
+<span class="kw">java</span> -jar PracticaListasLigadas.jar</pre></div>
+    </div>
+
+    <div class="tab-panel" id="tab-lin">
+      <p>Abre tu terminal favorita. Luego escribe (ajusta la ruta a tu carpeta):</p>
+      <div class="code-panel nohead"><pre><span class="kw">cd</span> ~/EDD/Practicas/PracticaListasLigadas/dist
+<span class="kw">java</span> -jar PracticaListasLigadas.jar</pre></div>
+    </div>
+
+    <div class="key-point"><strong>🔑 Qué significa cada parte:</strong>
+      <span class="mono">java</span> arranca la máquina virtual de Java · <span class="mono">-jar</span> indica que vas a ejecutar un paquete JAR · <span class="mono">PracticaListasLigadas.jar</span> es tu programa. El jar ya sabe cuál es la clase <span class="mono">Main</span> gracias al manifiesto que NetBeans genera.
+    </div>
+
+    <h3>7.3 Alternativa manual (sin NetBeans)</h3>
+    <p>Para entender qué hace realmente el compilador, también puedes compilar a mano. Desde la carpeta raíz del proyecto (<span class="mono">PracticaListasLigadas</span>):</p>
+    <div class="code-panel nohead"><pre><span class="cm"># 1. Compilar todos los .java y guardar las .class en la carpeta "bin"</span>
+javac -d bin src/com/uthh/edd/unidad2/listas/*.java
+
+<span class="cm"># 2. Ejecutar la clase principal (nota: se usa el nombre del paquete completo)</span>
+java -cp bin com.uthh.edd.unidad2.listas.Main</pre></div>
+
+    <div class="tip"><strong>💡 Observa la diferencia:</strong> <span class="mono">javac</span> compila (crea archivos <span class="mono">.class</span>), y <span class="mono">java</span> ejecuta. En el comando <span class="mono">java</span> escribes el <em>nombre completo</em> de la clase, con puntos en lugar de carpetas. Así se llama <em>nombre cualificado</em>.</div>
+
+    <h3>7.4 Prueba de consola</h3>
+    <p>Repite la secuencia de casos del Paso 6 directamente en la terminal. El resultado debe ser idéntico al de NetBeans. Si lo es, tu programa ya funciona como cualquier aplicación de consola profesional.</p>
+
+    <h3>7.5 Problemas comunes en consola</h3>
+    <table>
+      <thead>
+        <tr><th>Mensaje de error</th><th>Causa probable</th><th>Solución</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>'java' no se reconoce como un comando</code></td><td>El JDK no está en el PATH</td><td>Reinstala el JDK o agrega su carpeta <code>bin</code> al PATH; reinicia la terminal.</td></tr>
+        <tr><td><code>no se encuentra el archivo jar</code></td><td>No se ha compilado el proyecto</td><td>Presiona F11 en NetBeans y verifica la carpeta <code>dist</code>.</td></tr>
+        <tr><td><code>no se encontró o no se pudo cargar la clase principal</code></td><td>Falta el paquete en la ruta o el jar no es el de este proyecto</td><td>Ejecuta el jar desde la carpeta <code>dist</code> y revisa que el paquete sea <code>com.uthh.edd.unidad2.listas</code>.</td></tr>
+        <tr><td><code>InputMismatchException</code></td><td>Escribiste texto donde el programa espera un número</td><td>Escribe solo enteros en las opciones y valores.</td></tr>
+        <tr><td><code>NoSuchElementException</code></td><td>Se cerró la entrada (Ctrl+D / Ctrl+Z) antes de terminar</td><td>Escribe <code>0</code> para salir correctamente.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- RETO -->
+  <section>
+    <h2><span class="step-num">★</span> Reto final (opcional)</h2>
+    <p>Si terminaste antes, amplía tu lista con estas operaciones. Trabaja primero en papel y después programa:</p>
+    <div class="cards">
+      <div class="card"><h4>Insertar en posición</h4><p>Método <code>insertarEnPosicion(int pos, int valor)</code>. Caso especial: <code>pos = 0</code>.</p></div>
+      <div class="card"><h4>Invertir la lista</h4><p>Método <code>invertir()</code> sin crear nodos nuevos: solo cambia las flechas.</p></div>
+      <div class="card"><h4>Contar pares</h4><p>Método <code>contarPares()</code> que recorra la lista y devuelva cuántos valores son pares.</p></div>
+      <div class="card"><h4>Opción en el menú</h4><p>Agrega la opción <code>7</code> al menú para ejecutar tu nuevo método y vuélvelo a probar en consola.</p></div>
+    </div>
+  </section>
+
+  <!-- PARETO -->
+  <section>
+    <h2><span class="step-num">★</span> Lo esencial (Principio de Pareto)</h2>
+    <p>Si recuerdas solo estas cinco ideas, dominarás el 80% de la práctica:</p>
+    <ol>
+      <li><strong>Un nodo = dato + referencia al siguiente.</strong> Toda la lista se construye así.</li>
+      <li><strong>La cabeza es la puerta de entrada.</strong> Si la pierdes, pierdes la lista.</li>
+      <li><strong>Para insertar o eliminar en medio, necesitas al anterior.</strong> Por eso usamos la variable <code>anterior</code>.</li>
+      <li><strong>Siempre actualiza <code>tamanio</code>.</strong> Es fácil olvidarlo y dar un dato incorrecto.</li>
+      <li><strong>Compila en NetBeans, ejecuta en consola.</strong> El <code>.jar</code> de <code>dist/</code> es tu programa final.</li>
+    </ol>
+  </section>
+
+  <!-- ACTIVE RECALL -->
+  <section>
+    <h2><span class="step-num">?</span> Active recall: pon a prueba tu comprensión</h2>
+    <p>Intenta responder antes de abrir cada pregunta.</p>
+
+    <div class="quiz-item"><div class="quiz-q" onclick="this.parentElement.classList.toggle('open')">¿Por qué <code>insertarInicio</code> es O(1) y <code>insertarFinal</code> es O(n)?</div>
+      <div class="quiz-a">En <code>insertarInicio</code> solo cambiamos dos referencias, sin importar cuántos nodos haya. En <code>insertarFinal</code> debemos recorrer toda la lista hasta el último nodo, así que el tiempo crece con <em>n</em>.</div></div>
+
+    <div class="quiz-item"><div class="quiz-q" onclick="this.parentElement.classList.toggle('open')">¿Qué pasaría si en <code>eliminar</code> no existiera el caso de la cabeza?</div>
+      <div class="quiz-a">Si el valor estuviera en la cabeza, el ciclo empezaría con <code>actual = cabeza.siguiente</code> y nunca lo encontraría, por lo que no se eliminaría. Además, la variable <code>anterior</code> no tendría nodo previo que modificar.</div></div>
+
+    <div class="quiz-item"><div class="quiz-q" onclick="this.parentElement.classList.toggle('open')">¿Qué significa la palabra <code>this</code> en el constructor de <code>Nodo</code>?</div>
+      <div class="quiz-a">Significa "este objeto". <code>this.dato = dato</code> asigna el parámetro recibido al atributo del nodo que se está creando, distinguiendo ambos nombres.</div></div>
+
+    <div class="quiz-item"><div class="quiz-q" onclick="this.parentElement.classList.toggle('open')">¿Cuál es la diferencia entre ejecutar desde NetBeans y desde <code>java -jar</code>?</div>
+      <div class="quiz-a">NetBeans compila y ejecuta dentro de su entorno (botón F6). <code>java -jar</code> ejecuta el archivo ya empaquetado en <code>dist/</code> directamente en la terminal, sin necesidad del IDE. Es como funcionan los programas reales.</div></div>
+  </section>
+
+  <p class="footer-note">
+    Práctica guiada del curso de Estructura de Datos (E-ETD-2): listas ligadas simples en Java, desde la creación del proyecto en NetBeans hasta su ejecución en consola.
+    <span class="name">MTI Luis Alberto Mendoza San Juan</span>
+  </p>
+
+  <!-- NAVEGACIÓN ENTRE TEMAS (PAGER) -->
+  <nav class="pager" aria-label="Navegación entre temas">
+    <a class="pager-item pager-prev" href="listas-enlazadas-java.html">
+      <span class="pager-dir">← Concepto y simulación</span>
+      <span class="pager-tema">Listas Enlazadas (Teoría)</span>
+    </a>
+    <a class="pager-item pager-home" href="index.html" title="Volver al índice">
+      <span class="pager-dir">Índice</span>
+    </a>
+    <a class="pager-item pager-next" href="pilas-java-explicacion.html">
+      <span class="pager-dir">Tema siguiente →</span>
+      <span class="pager-tema">Pilas</span>
+    </a>
+  </nav>
+</div>
+
+<script>
+// Checklist con barra de progreso
+const TOTAL = 7;
+function toggleCheck(el){
+  el.classList.toggle('done');
+  const box = el.querySelector('.box');
+  box.textContent = el.classList.contains('done') ? '✓' : '';
+  actualizarProgreso();
+}
+function actualizarProgreso(){
+  const hechos = document.querySelectorAll('.checks li.done').length;
+  document.getElementById('bar').style.width = (hechos / TOTAL * 100) + '%';
+  document.getElementById('progressText').textContent = hechos + ' de ' + TOTAL + ' pasos completados';
+}
+
+// Pestañas por sistema operativo
+function showTab(id, btn){
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
